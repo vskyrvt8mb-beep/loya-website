@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loya — оплата прошла успешно</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="logo">💛 Loya</a>
+  </nav>
+
+  <div class="success-box">
+    <h1>🎉 Оплата прошла успешно!</h1>
+    <p id="loading-text">Готовим ваш ключ доступа...</p>
+    <div id="key-box" style="display:none">
+      <p>Ваш лицензионный ключ — вставьте его в приложении, в разделе <b>Настройки → Подписка</b>:</p>
+      <div class="license-key-box" id="license-key"></div>
+      <p style="font-size:13px;color:#8a7a6a">Ключ также отправлен на вашу почту.</p>
+      <a href="#" class="btn-primary" id="download-link" style="margin-top:16px;display:inline-block;">Скачать приложение</a>
+    </div>
+    <div id="error-box" style="display:none">
+      <p>Не удалось найти ключ автоматически. Не переживайте — напишите нам, и мы вышлем его вручную.</p>
+    </div>
+  </div>
+
+  <footer>Loya</footer>
+
+  <script>
+    // ССЫЛКУ НА СКАЧИВАНИЕ ПРИЛОЖЕНИЯ ЗАМЕНИТЬ на реальную после того, как соберёте
+    // установщик (см. корневой README.md проекта приложения, раздел про сборку).
+    document.getElementById('download-link').href = 'https://example.com/loya-setup.exe';
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+
+    async function loadLicense() {
+      if (!sessionId) {
+        document.getElementById('loading-text').style.display = 'none';
+        document.getElementById('error-box').style.display = 'block';
+        return;
+      }
+      try {
+        const res = await fetch('/api/get-license-by-session?session_id=' + encodeURIComponent(sessionId));
+        const data = await res.json();
+        if (data.licenseKey) {
+          document.getElementById('loading-text').style.display = 'none';
+          document.getElementById('license-key').textContent = data.licenseKey;
+          document.getElementById('key-box').style.display = 'block';
+        } else {
+          throw new Error('not_ready');
+        }
+      } catch (err) {
+        document.getElementById('loading-text').style.display = 'none';
+        document.getElementById('error-box').style.display = 'block';
+      }
+    }
+    loadLicense();
+  </script>
+</body>
+</html>

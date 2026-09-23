@@ -1,0 +1,60 @@
+:root {
+  --color-primary: #a9682f;
+  --color-primary-hover: #8f5623;
+  --color-text: #241c1c;
+  --color-bg: #f5f4f2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--color-bg); color: var(--color-text);
+}
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px; max-width: 1100px; margin: 0 auto;
+}
+.logo { font-size: 20px; font-weight: 800; color: var(--color-primary); text-decoration: none; }
+.nav a.cta {
+  background: var(--color-primary); color: #fff; padding: 10px 20px; border-radius: 10px;
+  text-decoration: none; font-weight: 700; font-size: 14px;
+}
+.hero {
+  max-width: 780px; margin: 60px auto; padding: 0 24px; text-align: center;
+}
+.hero h1 { font-size: 40px; font-weight: 800; margin-bottom: 16px; line-height: 1.15; }
+.hero p { font-size: 18px; color: #5a4a3d; margin-bottom: 28px; line-height: 1.5; }
+.btn-primary {
+  display: inline-block; background: var(--color-primary); color: #fff; padding: 15px 32px;
+  border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; border: none; cursor: pointer;
+}
+.btn-primary:hover { background: var(--color-primary-hover); }
+.features {
+  max-width: 900px; margin: 60px auto; padding: 0 24px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;
+}
+.feature { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.feature .emoji { font-size: 28px; margin-bottom: 10px; }
+.feature h3 { margin: 0 0 8px; font-size: 16px; }
+.feature p { margin: 0; font-size: 14px; color: #6b5c4c; line-height: 1.5; }
+
+.pricing-card {
+  max-width: 420px; margin: 60px auto; background: #fff; border-radius: 18px; padding: 36px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.1); text-align: center;
+}
+.pricing-card .price { font-size: 44px; font-weight: 800; margin: 12px 0; }
+.pricing-card .price span { font-size: 16px; font-weight: 500; color: #8a7a6a; }
+.pricing-card ul { text-align: left; list-style: none; padding: 0; margin: 24px 0; }
+.pricing-card li { padding: 8px 0; font-size: 14px; color: #4b3d31; }
+.pricing-card li::before { content: '✓ '; color: #16a34a; font-weight: 700; }
+input[type="email"] {
+  width: 100%; padding: 13px 16px; border: 1px solid #d9cfc2; border-radius: 10px;
+  font-size: 15px; margin-bottom: 14px; font-family: inherit;
+}
+#pricing-error { color: #dc2626; font-size: 13px; margin-top: 10px; display: none; }
+
+.success-box { max-width: 480px; margin: 80px auto; text-align: center; padding: 0 24px; }
+.license-key-box {
+  font-family: monospace; font-size: 22px; font-weight: 700; background: #fff;
+  border: 2px dashed var(--color-primary); border-radius: 12px; padding: 18px; margin: 24px 0; letter-spacing: 1px;
+}
+footer { text-align: center; padding: 40px 24px; color: #9a8b7c; font-size: 13px; }

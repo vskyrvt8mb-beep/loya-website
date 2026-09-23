@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loya — тарифы</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="logo">💛 Loya</a>
+  </nav>
+
+  <div class="pricing-card">
+    <h2>Подписка Loya</h2>
+    <div class="price">€19<span>/месяц</span></div>
+    <ul>
+      <li>Неограниченное число клиентов и карт</li>
+      <li>Email и Telegram рассылки</li>
+      <li>Полная аналитика</li>
+      <li>Google Wallet для клиентов</li>
+      <li>Поддержка</li>
+    </ul>
+    <form id="checkout-form">
+      <input type="email" id="email" placeholder="Ваш email" required>
+      <button type="submit" class="btn-primary" style="width:100%">Оформить подписку</button>
+    </form>
+    <div id="pricing-error"></div>
+  </div>
+
+  <footer>Оплата через Stripe. Отменить подписку можно в любой момент.</footer>
+
+  <script>
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      const errEl = document.getElementById('pricing-error');
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Секунду...';
+      try {
+        const res = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: document.getElementById('email').value })
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Что-то пошло не так');
+        }
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Оформить подписку';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "loya-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт Loya: лендинг, оплата подписки через Stripe, выдача и проверка лицензионных ключей для приложения.",
+  "dependencies": {
+    "stripe": "^16.12.0",
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}
