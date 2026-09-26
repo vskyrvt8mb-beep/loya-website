@@ -13,7 +13,9 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { email } = req.body || {};
+    const { email, lang } = req.body || {};
+    // Язык сайта — чтобы после оплаты (или отмены) человек вернулся на свой язык.
+    const safeLang = ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'en';
     if (!email) {
       res.status(400).json({ error: 'email обязателен' });
       return;
@@ -24,9 +26,15 @@ module.exports = async (req, res) => {
       payment_method_types: ['card'],
       customer_email: email,
       line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      // 3 дня бесплатно — карту Stripe всё равно попросит привязать сразу (это его
+      // стандартное поведение для подписок с пробным периодом — нужно для защиты от
+      // одного и того же человека, открывающего пробный период по кругу), но первое
+      // реальное списание произойдёт только через 3 дня. Если клиент отменит раньше —
+      // ничего не спишется вообще.
+      subscription_data: { trial_period_days: 3 },
       // {CHECKOUT_SESSION_ID} — плейсхолдер, который Stripe сам подставит в ссылку редиректа.
-      success_url: `${process.env.PUBLIC_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.PUBLIC_URL}/pricing.html`,
+      success_url: `${process.env.PUBLIC_URL}/success.html?session_id={CHECKOUT_SESSION_ID}&lang=${safeLang}`,
+      cancel_url: `${process.env.PUBLIC_URL}/pricing.html?lang=${safeLang}`,
       // Позволяет клиенту отменить подписку самому, без обращения к вам — Stripe сам
       // покажет ему защищённую страницу управления подпиской (Customer Portal нужно
       // один раз включить в настройках Stripe: Settings → Billing → Customer portal).
