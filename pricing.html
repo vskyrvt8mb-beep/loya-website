@@ -3,60 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Loya — тарифы</title>
-<link rel="stylesheet" href="style.css">
+<title>Loya — €9.99 / месяц, 3 дня бесплатно</title>
+<meta name="theme-color" content="#07080b">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Loya — €9.99 / месяц, 3 дня бесплатно">
+<meta property="og:image" content="https://loya-website-one.vercel.app/og-image.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
 </head>
-<body>
-  <nav class="nav">
-    <a href="/" class="logo">💛 Loya</a>
-  </nav>
-
-  <div class="pricing-card">
-    <h2>Подписка Loya</h2>
-    <div class="price">€19<span>/месяц</span></div>
-    <ul>
-      <li>Неограниченное число клиентов и карт</li>
-      <li>Email и Telegram рассылки</li>
-      <li>Полная аналитика</li>
-      <li>Google Wallet для клиентов</li>
-      <li>Поддержка</li>
-    </ul>
-    <form id="checkout-form">
-      <input type="email" id="email" placeholder="Ваш email" required>
-      <button type="submit" class="btn-primary" style="width:100%">Оформить подписку</button>
-    </form>
-    <div id="pricing-error"></div>
+<body class="page" data-page="pricing">
+<header class="nav scrolled">
+  <div class="container nav-inner">
+    <a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
+    <div class="nav-right">
+      <select class="lang-select" aria-label="Language"><option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option></select>
+    </div>
   </div>
-
-  <footer>Оплата через Stripe. Отменить подписку можно в любой момент.</footer>
-
-  <script>
-    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = e.target.querySelector('button');
-      const errEl = document.getElementById('pricing-error');
-      errEl.style.display = 'none';
-      btn.disabled = true;
-      btn.textContent = 'Секунду...';
-      try {
-        const res = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: document.getElementById('email').value })
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Что-то пошло не так');
-        }
-      } catch (err) {
-        errEl.textContent = err.message;
-        errEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Оформить подписку';
-      }
-    });
-  </script>
+</header>
+<main>
+  <div class="panel plan" style="max-width:520px">
+    <div class="plan-badge" data-i18n="trialBadge"></div>
+    <div class="plan-name" data-i18n="pTitle"></div>
+    <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+    <div class="plan-compare" data-i18n="priceCompare"></div>
+    <form class="checkout" novalidate>
+      <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Ваш email" required autofocus>
+      <button type="submit" class="btn btn-primary">🎁 <span data-i18n="priceCta"></span></button>
+      <div class="checkout-err"></div>
+    </form>
+    <p class="plan-note" data-i18n="priceNote"></p>
+    <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+    <ul class="plan-list" style="margin-top:26px;gap:10px"><li data-i18n="pf1"></li><li data-i18n="pf2"></li><li data-i18n="pf3"></li><li data-i18n="pf4"></li><li data-i18n="pf5"></li><li data-i18n="pf6"></li></ul>
+    <p style="margin-top:22px"><a href="/" class="muted" data-i18n="sBack"></a></p>
+  </div>
+</main>
+<script src="/i18n.js"></script>
+<script src="/site.js"></script>
 </body>
 </html>

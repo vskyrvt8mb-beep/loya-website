@@ -1,1137 +1,226 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loya — Автономная программа лояльности без комиссий</title>
-    <meta name="description" content="Карты лояльности, рассылки на email и Telegram, аналитика клиентов — всё в одном приложении. Первые 3 дня бесплатно, потом €9.99/месяц.">
-    <meta property="og:title" content="Loya — Автономная программа лояльности без комиссий">
-    <meta property="og:description" content="Карты лояльности, рассылки на email и Telegram, аналитика клиентов — всё в одном приложении. Первые 3 дня бесплатно, потом €9.99/месяц.">
-    <meta property="og:image" content="https://loya-website-one.vercel.app/og-image.png">
-    <meta property="og:url" content="https://loya-website-one.vercel.app/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Montserrat & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        graphite: {
-                            950: '#060709',
-                            900: '#0b0d12',
-                            850: '#11141d',
-                            800: '#171b26',
-                            700: '#222838',
-                            600: '#2f374c'
-                        },
-                        gold: {
-                            100: '#fff7d6',
-                            300: '#f7e28b',
-                            400: '#ebd062',
-                            500: '#d4af37',
-                            600: '#b88e28',
-                            700: '#8c6819'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Montserrat', 'Plus Jakarta Sans', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        /* Custom Gold and Glass Styling */
-        body {
-            background-color: #07080b;
-            color: #f3f4f6;
-            font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FFF2B2 0%, #D4AF37 50%, #997415 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gold-gradient-bg {
-            background: linear-gradient(135deg, #E6C251 0%, #D4AF37 50%, #997415 100%);
-        }
-
-        .gold-btn-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .gold-btn-hover:hover {
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.45);
-            transform: translateY(-2px);
-        }
-
-        .glass-panel {
-            background: rgba(17, 20, 29, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-        }
-
-        .glass-panel-glow {
-            background: rgba(23, 27, 38, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.08);
-        }
-
-        .gold-border-glow:hover {
-            border-color: rgba(212, 175, 55, 0.5);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
-        }
-
-        /* Ambient background glow */
-        .ambient-glow-1 {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(0,0,0,0) 70%);
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0d12;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #222838;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d4af37;
-        }
-
-        /* Range Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none;
-            background: #222838;
-            height: 6px;
-            border-radius: 3px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: #d4af37;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loya — программа лояльности, которая возвращает клиентов</title>
+<meta name="description" content="Электронные карты лояльности, сканер в телефоне, умные рассылки и аналитика для кафе, салонов и магазинов. 3 дня бесплатно, затем €9.99 в месяц.">
+<meta name="theme-color" content="#07080b">
+<meta property="og:title" content="Loya — программа лояльности, которая возвращает клиентов">
+<meta property="og:description" content="Электронные карты, сканер в телефоне, умные рассылки и аналитика. 3 дня бесплатно, затем €9.99 в месяц.">
+<meta property="og:image" content="https://loya-website-one.vercel.app/og-image.png">
+<meta property="og:url" content="https://loya-website-one.vercel.app/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<link rel="preload" as="image" href="/img/dashboard_ru.webp">
 </head>
-<body class="antialiased selection:bg-gold-500 selection:text-graphite-950">
+<body data-page="home">
 
-    <div class="ambient-glow-1"></div>
-
-    <!-- NAVIGATION BAR -->
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 glass-panel border-b border-gold-500/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Logo -->
-            <a href="#" class="flex items-center gap-3 group">
-                <img src="logo.png" alt="Loya" class="w-10 h-10 rounded-xl shadow-lg group-hover:scale-105 transition-transform object-cover">
-                <div class="flex flex-col">
-                    <span class="text-2xl font-extrabold tracking-wider text-white flex items-center gap-1.5">
-                        LOYA <span class="text-xs px-2 py-0.5 rounded-full bg-gold-500/20 text-gold-300 font-semibold border border-gold-500/30">PRO</span>
-                    </span>
-                    <span class="text-[10px] text-gray-400 tracking-widest uppercase">Self-hosted CRM</span>
-                </div>
-            </a>
-
-            <!-- Desktop Navigation -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
-                <a href="#features" class="hover:text-gold-400 transition-colors" data-i18n="navFeatures">Возможности</a>
-                <a href="#demo" class="hover:text-gold-400 transition-colors" data-i18n="navDemo">Интерфейс</a>
-                <a href="#niches" class="hover:text-gold-400 transition-colors" data-i18n="navNiches">Для кого</a>
-                <a href="#calculator" class="hover:text-gold-400 transition-colors" data-i18n="navCalculator">Калькулятор</a>
-                <a href="#pricing" class="hover:text-gold-400 transition-colors" data-i18n="navPricing">Тарифы</a>
-            </nav>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-4">
-                <select id="lang-switch" onchange="setSiteLang(this.value)" class="bg-graphite-900 border border-graphite-700 text-gray-300 text-xs rounded-lg px-2 py-2 focus:outline-none focus:border-gold-500">
-                    <option value="ru">RU</option>
-                    <option value="en">EN</option>
-                    <option value="sk">SK</option>
-                    <option value="uk">UA</option>
-                </select>
-                <button onclick="openModal()" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-sm gold-btn-hover">
-                    <i class="fa-solid fa-rocket"></i>
-                    <span data-i18n="navCta">Попробовать бесплатно</span>
-                </button>
-                <button class="md:hidden text-gray-300 hover:text-white p-2" onclick="toggleMobileMenu()">
-                    <i class="fa-solid fa-bars text-xl" id="menuIcon"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden glass-panel border-t border-gold-500/10 px-6 py-6 space-y-4">
-            <a href="#features" onclick="toggleMobileMenu()" class="block text-gray-300 hover:text-gold-400">Возможности</a>
-            <a href="#demo" onclick="toggleMobileMenu()" class="block text-gray-300 hover:text-gold-400">Интерфейс</a>
-            <a href="#niches" onclick="toggleMobileMenu()" class="block text-gray-300 hover:text-gold-400">Для кого</a>
-            <a href="#calculator" onclick="toggleMobileMenu()" class="block text-gray-300 hover:text-gold-400">Калькулятор</a>
-            <a href="#pricing" onclick="toggleMobileMenu()" class="block text-gray-300 hover:text-gold-400">Тарифы</a>
-            <button onclick="toggleMobileMenu(); openModal();" class="w-full py-3 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-center">
-                Попробовать бесплатно
-            </button>
-        </div>
-    </header>
-
-    <main class="pt-28">
-        <!-- HERO SECTION -->
-        <section class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                
-                <!-- Trust Badges -->
-                <div class="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-1.5 px-4 rounded-full glass-panel text-xs sm:text-sm text-gray-300 mb-8 border border-gold-500/20 shadow-inner">
-                    <span class="flex items-center gap-1.5 text-gold-400 font-semibold" data-i18n-html="badgeNoCommission">
-                        <i class="fa-solid fa-bolt"></i> Без комиссий с каждой карты
-                    </span>
-                    <span class="text-gray-600">•</span>
-                    <span class="flex items-center gap-1.5 text-gray-300" data-i18n-html="badgeLocalData">
-                        <i class="fa-solid fa-shield-halved text-gold-500"></i> 100% Локальные данные
-                    </span>
-                    <span class="text-gray-600 hidden sm:inline">•</span>
-                    <span class="flex items-center gap-1.5 text-gray-300 hidden sm:flex" data-i18n-html="badgeOffline">
-                        <i class="fa-solid fa-wifi text-gold-500"></i> Офлайн-режим
-                    </span>
-                </div>
-
-                <!-- Main Title -->
-                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-5xl mx-auto mb-6" data-i18n-html="heroTitle">
-                    Программа лояльности для бизнеса — <br class="hidden sm:inline">
-                    <span class="gold-gradient-text">без комиссий</span> с каждого клиента
-                </h1>
-
-                <!-- Subtitle -->
-                <p class="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto font-normal leading-relaxed mb-10" data-i18n="heroSubtitle">
-                    Электронные карты, рассылки в Telegram и Email, полная аналитика клиентов — всё в одном автономном приложении для вашего ПК. Первые 3 дня — бесплатно.
-                </p>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto mb-16">
-                    <a href="#demo" class="w-full sm:w-auto px-8 py-4 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-base gold-btn-hover flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-desktop text-lg"></i>
-                        <span data-i18n="heroCtaDemo">Протестировать демо</span>
-                    </a>
-                    <button onclick="openModal('Получить консультацию')" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel hover:bg-graphite-800 text-white font-semibold text-base border border-gold-500/30 transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-circle-play text-gold-400"></i>
-                        <span data-i18n="heroCtaPresentation">Запросить презентацию</span>
-                    </button>
-                </div>
-
-                <!-- Stats Bar -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-6 border-t border-gray-800/80">
-                    <div class="p-4 rounded-2xl glass-panel">
-                        <div class="text-2xl sm:text-3xl font-extrabold text-white mb-1">0%</div>
-                        <div class="text-xs sm:text-sm text-gray-400" data-i18n="statCommission">Комиссий за транзакции</div>
-                    </div>
-                    <div class="p-4 rounded-2xl glass-panel">
-                        <div class="text-2xl sm:text-3xl font-extrabold text-gold-400 mb-1">100%</div>
-                        <div class="text-xs sm:text-sm text-gray-400" data-i18n="statPrivacy">Конфиденциальность</div>
-                    </div>
-                    <div class="p-4 rounded-2xl glass-panel">
-                        <div class="text-2xl sm:text-3xl font-extrabold text-white mb-1" data-i18n="statScanSpeedVal">&lt; 1 сек</div>
-                        <div class="text-xs sm:text-sm text-gray-400" data-i18n="statScanSpeed">Считывание карт QR</div>
-                    </div>
-                    <div class="p-4 rounded-2xl glass-panel">
-                        <div class="text-2xl sm:text-3xl font-extrabold text-gold-400 mb-1" data-i18n="statTrialVal">3 дня</div>
-                        <div class="text-xs sm:text-sm text-gray-400" data-i18n="statTrial">Бесплатный пробный период</div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- INTERACTIVE APP DEMO SECTION (MOCKUP OF SELF DOG / LOYA UI) -->
-        <section id="demo" class="py-20 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center mb-12">
-                    <span class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-2 block" data-i18n="demoBadge">Система изнутри</span>
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white" data-i18n="demoTitle">Интерактивный интерфейс приложения</h2>
-                    <p class="text-gray-400 mt-2 max-w-2xl mx-auto" data-i18n="demoSubtitle">Попробуйте понажимать на вкладки ниже, чтобы оценить удобство рабочего стола оператора</p>
-                </div>
-
-                <!-- Desktop Mockup Container -->
-                <div class="rounded-2xl glass-panel-glow border border-gold-500/30 overflow-hidden shadow-2xl">
-                    
-                    <!-- App Titlebar -->
-                    <div class="bg-graphite-950 px-4 py-3 border-b border-graphite-700/60 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="flex gap-1.5">
-                                <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
-                                <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
-                                <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
-                            </div>
-                            <span class="text-xs font-semibold text-gray-400 flex items-center gap-2">
-                                <i class="fa-solid fa-shield text-gold-500"></i> Self Dog / Loya Desktop App v3.4 (Offline Mode)
-                            </span>
-                        </div>
-                        <div class="text-xs text-gold-400 font-medium px-2 py-1 rounded bg-gold-500/10 border border-gold-500/20">
-                            🟢 База данных подключена
-                        </div>
-                    </div>
-
-                    <!-- App Body Layout -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[580px] bg-graphite-900">
-                        
-                        <!-- Sidebar Navigation -->
-                        <div class="lg:col-span-3 bg-graphite-950/70 p-4 border-r border-graphite-800 flex flex-col justify-between">
-                            <div class="space-y-6">
-                                <div class="px-3 py-2 rounded-xl bg-graphite-850 flex items-center gap-3 border border-graphite-700">
-                                    <div class="w-8 h-8 rounded-lg gold-gradient-bg flex items-center justify-center font-bold text-graphite-950 text-xs">
-                                        SD
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-bold text-white">Self Dog</div>
-                                        <div class="text-[11px] text-gray-400">Кофейни & Заведения</div>
-                                    </div>
-                                </div>
-
-                                <nav class="space-y-1" id="appTabs">
-                                    <button onclick="switchTab('tab-main')" class="app-tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-gold-400 bg-gold-500/10 border border-gold-500/30">
-                                        <i class="fa-solid fa-house w-5"></i> Главная
-                                    </button>
-                                    <button onclick="switchTab('tab-clients')" class="app-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-gray-400 hover:text-white hover:bg-graphite-800">
-                                        <i class="fa-solid fa-users w-5"></i> Клиенты и карты
-                                    </button>
-                                    <button onclick="switchTab('tab-marketing')" class="app-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-gray-400 hover:text-white hover:bg-graphite-800">
-                                        <i class="fa-solid fa-bullhorn w-5"></i> Маркетинг & Сегменты
-                                    </button>
-                                    <button onclick="switchTab('tab-settings')" class="app-tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-gray-400 hover:text-white hover:bg-graphite-800">
-                                        <i class="fa-solid fa-sliders w-5"></i> Настройки и Ниши
-                                    </button>
-                                </nav>
-                            </div>
-
-                            <div class="pt-4 border-t border-graphite-800 text-xs text-gray-500 flex justify-between items-center px-2">
-                                <span>Версия: Premium</span>
-                                <span class="text-gold-500">Без комиссий</span>
-                            </div>
-                        </div>
-
-                        <!-- Main Display Area -->
-                        <div class="lg:col-span-9 p-6 bg-graphite-900 overflow-y-auto">
-                            
-                            <!-- TAB 1: MAIN DASHBOARD -->
-                            <div id="tab-main" class="tab-content space-y-6">
-                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-graphite-800">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white">Панель управления</h3>
-                                        <p class="text-xs text-gray-400">Сводка ключевых показателей за сегодня</p>
-                                    </div>
-                                    <button class="px-3 py-1.5 rounded-lg bg-gold-500/10 text-gold-300 text-xs font-semibold border border-gold-500/30 flex items-center gap-2">
-                                        <i class="fa-solid fa-gear"></i> Настроить Dashboard
-                                    </button>
-                                </div>
-
-                                <!-- Top Stats Row -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <!-- Best Client Widget -->
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700/80 relative overflow-hidden">
-                                        <div class="text-xs text-gold-400 font-semibold tracking-wider uppercase mb-1">Самый активный клиент месяца</div>
-                                        <div class="flex items-center gap-3 my-2">
-                                            <div class="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-400 font-bold">
-                                                🏆
-                                            </div>
-                                            <div>
-                                                <div class="font-bold text-white">Vlad</div>
-                                                <div class="text-xs text-gray-400">27 сессий за месяц</div>
-                                            </div>
-                                        </div>
-                                        <div class="mt-3 flex gap-2">
-                                            <input type="text" placeholder="Подарок: небольшой спешел" class="bg-graphite-900 text-xs text-gray-300 px-3 py-1.5 rounded border border-graphite-700 w-full">
-                                            <button class="bg-gold-500 text-graphite-950 font-bold px-3 py-1.5 rounded text-xs">Сохранить</button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Client Activity Donut -->
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700/80 flex flex-col justify-between">
-                                        <div class="text-xs text-gray-400 font-semibold">Активность клиентов</div>
-                                        <div class="flex items-center justify-between my-2">
-                                            <div class="space-y-1 text-xs">
-                                                <div class="flex items-center gap-2 text-gray-300">
-                                                    <span class="w-2 h-2 rounded-full bg-gold-500"></span> Постоянные: 25%
-                                                </div>
-                                                <div class="flex items-center gap-2 text-gray-300">
-                                                    <span class="w-2 h-2 rounded-full bg-blue-400"></span> Новые за месяц: 75%
-                                                </div>
-                                                <div class="flex items-center gap-2 text-gray-300">
-                                                    <span class="w-2 h-2 rounded-full bg-gray-500"></span> Неактивные: 0%
-                                                </div>
-                                            </div>
-                                            <div class="w-12 h-12 rounded-full border-4 border-gold-500 border-t-blue-400 flex items-center justify-center font-bold text-xs text-white">
-                                                8
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Counters -->
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700/80 flex flex-col justify-between">
-                                        <div>
-                                            <div class="text-xs text-gray-400">Всего карт в системе</div>
-                                            <div class="text-3xl font-extrabold text-white mt-1">25 <span class="text-xs font-normal text-gray-500">карт</span></div>
-                                        </div>
-                                        <div class="pt-2 border-t border-graphite-800 flex justify-between text-xs text-gray-400">
-                                            <span>Сценариев сегодня: <b class="text-gold-400">52</b></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Weather & Trigger Section -->
-                                <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-2xl">
-                                            ☀️
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-white flex items-center gap-2">
-                                                Трнава, Словакия <span class="text-gold-400">12°C</span>
-                                            </div>
-                                            <div class="text-xs text-gray-400">Хорошая погода — отличный повод позвать клиентов на кофе!</div>
-                                        </div>
-                                    </div>
-                                    <button onclick="triggerToast('Рассылка сформирована и готова к отправке!')" class="px-4 py-2 rounded-lg bg-gold-500 text-graphite-950 font-bold text-xs gold-btn-hover whitespace-nowrap">
-                                        Запустить рассылку
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- TAB 2: CLIENTS TABLE -->
-                            <div id="tab-clients" class="tab-content hidden space-y-4">
-                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                                    <input type="text" placeholder="Поиск клиента по имени, email или телефону..." class="bg-graphite-850 border border-graphite-700 rounded-xl px-4 py-2.5 text-sm text-white w-full sm:w-80 focus:outline-none focus:border-gold-500">
-                                    <button class="px-4 py-2.5 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-xs flex items-center gap-2">
-                                        <i class="fa-solid fa-plus"></i> Добавить клиента
-                                    </button>
-                                </div>
-
-                                <!-- Clients Cards Grid Mockup -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Client Card 1 -->
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col justify-between space-y-3">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <div class="font-bold text-white text-base">Ignat</div>
-                                                <div class="text-xs text-gray-400">ignat@yandex.ru • +7 (900) ***-**-01</div>
-                                            </div>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">Активен</span>
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <span class="text-xs font-semibold text-gold-400 mr-2">Штампы:</span>
-                                            <span class="px-2 py-1 rounded bg-gold-500 text-graphite-950 text-xs font-bold">8/10</span>
-                                            <span class="text-xs text-gray-500">10-й кофе бесплатно</span>
-                                        </div>
-                                        <div class="flex gap-2">
-                                            <span class="text-[10px] px-2 py-1 rounded bg-graphite-800 text-gray-300">-5% скидка</span>
-                                            <span class="text-[10px] px-2 py-1 rounded bg-graphite-800 text-gray-300">Кэшбэк 3%</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Client Card 2 -->
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col justify-between space-y-3">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <div class="font-bold text-white text-base">Vlad</div>
-                                                <div class="text-xs text-gray-400">vlad.dev@gmail.com • 4 сентября</div>
-                                            </div>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gold-500/20 text-gold-400 border border-gold-500/30">VIP Гость</span>
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <span class="text-xs font-semibold text-gold-400 mr-2">Штампы:</span>
-                                            <span class="px-2 py-1 rounded bg-gold-500 text-graphite-950 text-xs font-bold">7/10</span>
-                                            <span class="text-xs text-gray-500">10-й визит бесплатно</span>
-                                        </div>
-                                        <div class="flex gap-2">
-                                            <span class="text-[10px] px-2 py-1 rounded bg-graphite-800 text-gold-400">Персональный бонус</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- TAB 3: MARKETING -->
-                            <div id="tab-marketing" class="tab-content hidden space-y-6">
-                                <div>
-                                    <h3 class="text-xl font-bold text-white">Сегменты клиентов & Рассылки</h3>
-                                    <p class="text-xs text-gray-400">Управляйте повторными продажами в 1 клик</p>
-                                </div>
-
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 text-center">
-                                        <div class="text-2xl font-extrabold text-gold-400">6</div>
-                                        <div class="text-xs text-gray-400 mt-1">Только активные</div>
-                                        <button class="mt-3 text-[11px] text-gold-300 underline">Перейти к рассылке</button>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 text-center">
-                                        <div class="text-2xl font-extrabold text-white">2</div>
-                                        <div class="text-xs text-gray-400 mt-1">Не были более 30 дней</div>
-                                        <button class="mt-3 text-[11px] text-gold-300 underline">Вернуть гостя</button>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 text-center">
-                                        <div class="text-2xl font-extrabold text-white">0</div>
-                                        <div class="text-xs text-gray-400 mt-1">Именинники (14 дней)</div>
-                                        <button class="mt-3 text-[11px] text-gray-500">Поздравить</button>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 text-center">
-                                        <div class="text-2xl font-extrabold text-gold-400">VIP</div>
-                                        <div class="text-xs text-gray-400 mt-1">Топ постоянных</div>
-                                        <button class="mt-3 text-[11px] text-gold-300 underline">Спецпредложение</button>
-                                    </div>
-                                </div>
-
-                                <div class="p-5 rounded-xl bg-graphite-850 border border-graphite-700 space-y-3">
-                                    <div class="font-bold text-white text-sm">Каналы коммуникации:</div>
-                                    <div class="flex flex-wrap gap-3">
-                                        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-semibold">
-                                            <i class="fa-brands fa-telegram text-base"></i> Telegram Bot (Подключен)
-                                        </div>
-                                        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30 text-xs font-semibold">
-                                            <i class="fa-solid fa-envelope text-base"></i> Email рассылки (Подключен)
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- TAB 4: SETTINGS -->
-                            <div id="tab-settings" class="tab-content hidden space-y-6">
-                                <div>
-                                    <h3 class="text-xl font-bold text-white">Настройки и профиль бизнеса</h3>
-                                    <p class="text-xs text-gray-400">Настройте программу под специфику заведения</p>
-                                </div>
-
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-gold-500/40 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer">
-                                        <div class="w-10 h-10 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center">
-                                            <i class="fa-solid fa-store"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-white">Бренд и вид бизнеса</span>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer hover:border-gold-500/30">
-                                        <div class="w-10 h-10 rounded-full bg-graphite-800 text-gray-300 flex items-center justify-center">
-                                            <i class="fa-brands fa-telegram"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-gray-300">Telegram Бот</span>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer hover:border-gold-500/30">
-                                        <div class="w-10 h-10 rounded-full bg-graphite-800 text-gray-300 flex items-center justify-center">
-                                            <i class="fa-solid fa-wifi"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-gray-300">Авторизация по Wi-Fi</span>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer hover:border-gold-500/30">
-                                        <div class="w-10 h-10 rounded-full bg-graphite-800 text-gray-300 flex items-center justify-center">
-                                            <i class="fa-solid fa-qrcode"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-gray-300">Дизайн карточек</span>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer hover:border-gold-500/30">
-                                        <div class="w-10 h-10 rounded-full bg-graphite-800 text-gray-300 flex items-center justify-center">
-                                            <i class="fa-solid fa-lock"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-gray-300">Защита PIN-кодом</span>
-                                    </div>
-                                    <div class="p-4 rounded-xl bg-graphite-850 border border-graphite-700 flex flex-col items-center justify-center text-center space-y-2 cursor-pointer hover:border-gold-500/30">
-                                        <div class="w-10 h-10 rounded-full bg-graphite-800 text-gray-300 flex items-center justify-center">
-                                            <i class="fa-solid fa-headset"></i>
-                                        </div>
-                                        <span class="text-xs font-bold text-gray-300">Поддержка SOS</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- BUSINESS NICHE SELECTOR SECTION -->
-        <section id="niches" class="py-20 bg-graphite-950/80 border-y border-graphite-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center mb-12">
-                    <span class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-2 block" data-i18n="nichesBadge">Адаптивность</span>
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white" data-i18n="nichesTitle">Готовое решение под вашу сферу</h2>
-                    <p class="text-gray-400 mt-2" data-i18n="nichesSubtitle">Выберите ваше направление бизнеса, чтобы увидеть персональную конфигурацию</p>
-                </div>
-
-                <!-- Niche Selector Buttons -->
-                <div class="flex flex-wrap justify-center gap-3 mb-12" id="nicheButtons">
-                    <button onclick="selectNiche('coffee')" class="niche-btn active px-5 py-3 rounded-xl font-bold text-sm transition-all glass-panel border border-gold-500 text-gold-300">
-                        ☕ Кофейни и Пекарни
-                    </button>
-                    <button onclick="selectNiche('barber')" class="niche-btn px-5 py-3 rounded-xl font-medium text-sm transition-all glass-panel border border-graphite-700 text-gray-400 hover:text-white">
-                        ✂️ Барбершопы
-                    </button>
-                    <button onclick="selectNiche('beauty')" class="niche-btn px-5 py-3 rounded-xl font-medium text-sm transition-all glass-panel border border-graphite-700 text-gray-400 hover:text-white">
-                        💄 Салоны красоты & Ногти
-                    </button>
-                    <button onclick="selectNiche('grooming')" class="niche-btn px-5 py-3 rounded-xl font-medium text-sm transition-all glass-panel border border-graphite-700 text-gray-400 hover:text-white">
-                        🐕 Груминг и Зоотовары
-                    </button>
-                    <button onclick="selectNiche('retail')" class="niche-btn px-5 py-3 rounded-xl font-medium text-sm transition-all glass-panel border border-graphite-700 text-gray-400 hover:text-white">
-                        🛍️ Шоурумы и Магазины
-                    </button>
-                </div>
-
-                <!-- Dynamic Niche Preview Card -->
-                <div class="max-w-4xl mx-auto glass-panel p-8 rounded-3xl border border-gold-500/20 grid grid-cols-1 md:grid-cols-2 gap-8 items-center" id="nicheDisplay">
-                    
-                    <!-- Left: Description -->
-                    <div class="space-y-4">
-                        <div class="inline-block px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold uppercase tracking-wider" id="nicheBadge">
-                            Конфигурация "Кофейня"
-                        </div>
-                        <h3 class="text-2xl font-bold text-white" id="nicheTitle">Штамп-карты «6-й стакан бесплатно»</h3>
-                        <p class="text-gray-300 text-sm leading-relaxed" id="nicheDesc">
-                            Автоматически начисляйте виртуальные штампы за покупки. Клиентам больше не нужны бумажные карточки, которые постоянно теряются. Все штампы отображаются в смартфоне!
-                        </p>
-                        <ul class="space-y-2 text-xs text-gray-300" id="nichePerks">
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Увеличение частоты визитов на +38%</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Быстрый сканер QR-кодов на кассе</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Авто-напоминания в Telegram при неактивности</li>
-                        </ul>
-                    </div>
-
-                    <!-- Right: Digital Pass Mockup -->
-                    <div class="relative flex justify-center">
-                        <div class="w-full max-w-xs rounded-2xl p-6 text-white shadow-2xl border border-gold-500/40 relative overflow-hidden transition-all duration-500 transform hover:rotate-1" id="nicheCardBg" style="background: linear-gradient(135deg, #1b1f2c 0%, #0d0f17 100%);">
-                            <div class="flex justify-between items-center mb-6">
-                                <span class="text-xs font-bold tracking-widest uppercase text-gold-400" id="nicheCardBrand">LOYA COFFEE</span>
-                                <i class="fa-solid fa-wifi text-gold-500 text-xs"></i>
-                            </div>
-                            <div class="text-center py-4">
-                                <div class="text-xs text-gray-400 mb-2">Накоплено штампов</div>
-                                <div class="flex justify-center gap-2 mb-4" id="nicheStamps">
-                                    <span class="w-8 h-8 rounded-full bg-gold-500 text-graphite-950 flex items-center justify-center font-bold text-xs">☕</span>
-                                    <span class="w-8 h-8 rounded-full bg-gold-500 text-graphite-950 flex items-center justify-center font-bold text-xs">☕</span>
-                                    <span class="w-8 h-8 rounded-full bg-gold-500 text-graphite-950 flex items-center justify-center font-bold text-xs">☕</span>
-                                    <span class="w-8 h-8 rounded-full bg-gold-500 text-graphite-950 flex items-center justify-center font-bold text-xs">☕</span>
-                                    <span class="w-8 h-8 rounded-full bg-graphite-800 text-gray-600 flex items-center justify-center font-bold text-xs">5</span>
-                                </div>
-                                <div class="text-[11px] text-gold-300 font-medium">Еще 1 посещение до подарка!</div>
-                            </div>
-                            <div class="pt-4 border-t border-gray-800 flex justify-between text-[10px] text-gray-400">
-                                <span>Владелец: Александр</span>
-                                <span>ID: #88492</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </section>
-
-        <!-- KEY FEATURES SECTION -->
-        <section id="features" class="py-20 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center mb-16">
-                    <span class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-2 block" data-i18n="featuresBadge">Преимущества</span>
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white" data-i18n="featuresTitle">Почему выбирают автономный софт Loya</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
-                    <!-- Card 1 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-coins"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">0% Комиссий с транзакций</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Облачные сервисы берут процент с каждого клиента или высокую абонентскую плату за каждого кассира. С Loya вы экономите десятки тысяч рублей ежемесячно.
-                        </p>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-lock"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">100% Локальные данные</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Вся база клиентов, история покупок и телефоны хранятся строго на вашем компьютере. Никаких утечек базы конкурентам и блокировок из-за санкций.
-                        </p>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Telegram & Email рассылки</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Отправляйте push-уведомления и сообщения клиентам прямо из программы. Автоматически возвращайте тех, кто не заходил более 30 дней.
-                        </p>
-                    </div>
-
-                    <!-- Card 4 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-wifi-slash"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Работает без интернета</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Если на точке отключили Wi-Fi или сотовую связь, касса продолжит списывать и начислять бонусы без сбоев.
-                        </p>
-                    </div>
-
-                    <!-- Card 5 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-cake-candles"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Авто-поздравления</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Система сама отслеживает Дни рождения ваших клиентов и отправляет им подарки или повышенные бонусы заранее.
-                        </p>
-                    </div>
-
-                    <!-- Card 6 -->
-                    <div class="p-8 rounded-2xl glass-panel gold-border-glow transition-all">
-                        <div class="w-12 h-12 rounded-xl gold-gradient-bg flex items-center justify-center text-graphite-950 font-bold text-xl mb-6">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Встроенная аналитика</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">
-                            Наглядные графики LTV, среднего чека, активности гостей и эффективности маркетинговых акций без сложных таблиц.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-        </section>
-
-        <!-- INTERACTIVE CALCULATOR SECTION -->
-        <section id="calculator" class="py-20 bg-graphite-950/90 border-t border-graphite-800">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center mb-12">
-                    <span class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-2 block" data-i18n="calcBadge">Калькулятор Выгоды</span>
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white" data-i18n="calcTitle">Сколько вы сэкономите с Loya?</h2>
-                    <p class="text-gray-400 mt-2" data-i18n="calcSubtitle">Сравните расходы с облачными сервисами, берущими % за карты и обслуживание</p>
-                </div>
-
-                <div class="glass-panel p-8 sm:p-10 rounded-3xl border border-gold-500/30 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    
-                    <!-- Sliders -->
-                    <div class="lg:col-span-7 space-y-6">
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="text-sm font-semibold text-gray-300" data-i18n="calcClientsLabel">Клиентов в месяц:</label>
-                                <span class="text-xl font-bold text-gold-400" id="clientsValue">1,500</span>
-                            </div>
-                            <input type="range" id="clientsRange" min="200" max="10000" step="100" value="1500" class="w-full">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="text-sm font-semibold text-gray-300" data-i18n="calcCheckLabel">Средний чек:</label>
-                                <span class="text-xl font-bold text-gold-400" id="checkValue">650 ₽</span>
-                            </div>
-                            <input type="range" id="checkRange" min="100" max="5000" step="50" value="650" class="w-full">
-                        </div>
-
-                        <div class="p-4 rounded-xl bg-graphite-850/80 border border-graphite-700 text-xs text-gray-400" data-i18n="calcHint">
-                            💡 Расчет основан на стандартной комиссии сторонних сервисов (3-5% от оборота по картам лояльности или абонентской плате за рабочие места).
-                        </div>
-                    </div>
-
-                    <!-- Result Panel -->
-                    <div class="lg:col-span-5 text-center p-6 rounded-2xl bg-gradient-to-b from-graphite-800 to-graphite-900 border border-gold-500/40">
-                        <div class="text-xs font-bold uppercase text-gray-400 tracking-wider mb-2" data-i18n="calcSavingsLabel">Ваша экономия за 1 год:</div>
-                        <div class="text-3xl sm:text-4xl font-extrabold gold-gradient-text my-3" id="savingsTotal">
-                            585,000 ₽
-                        </div>
-                        <p class="text-xs text-gray-400 mb-6" data-i18n="calcSavingsNote">Эти деньги останутся в вашей чистой прибыли!</p>
-                        <button onclick="openModal('Зафиксировать экономию')" class="w-full py-3.5 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-sm gold-btn-hover" data-i18n="calcCta">
-                            Получить программы без комиссий
-                        </button>
-                    </div>
-
-                </div>
-
-            </div>
-        </section>
-
-        <!-- PRICING SECTION -->
-        <section id="pricing" class="py-20 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="text-center mb-16">
-                    <span class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-2 block">Прозрачные тарифы</span>
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white">Один тариф. Без скрытых платежей</h2>
-                    <p class="text-gray-400 mt-2">Фиксированная подписка — никакого процента с ваших продаж</p>
-                </div>
-
-                <div class="max-w-md mx-auto">
-                    <div class="glass-panel-glow p-8 rounded-3xl border-2 border-gold-500 relative flex flex-col justify-between">
-                        <div class="absolute -top-3.5 right-6 px-3 py-1 rounded-full gold-gradient-bg text-graphite-950 font-extrabold text-[10px] tracking-wider uppercase">
-                            3 ДНЯ БЕСПЛАТНО
-                        </div>
-                        <div>
-                            <div class="text-lg font-bold text-gold-300 mb-2">Loya — полный доступ</div>
-                            <div class="text-xs text-gray-400 mb-6">Всё включено, без ограничений по числу клиентов и карт</div>
-                            <div class="text-3xl font-extrabold text-gold-400 mb-6">
-                                €9.99 <span class="text-xs font-normal text-gray-400">/ месяц, отмена в любой момент</span>
-                            </div>
-                            <ul class="space-y-3 text-sm text-gray-300 mb-8">
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Неограниченная база клиентов и карт</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> QR-сканирование штампов и скидок, офлайн-режим</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Email и Telegram рассылки</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Полная аналитика и авто-сегментация клиентов</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> Google Wallet для клиентов</li>
-                            </ul>
-                        </div>
-                        <button onclick="openModal()" class="w-full py-3.5 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-sm gold-btn-hover">
-                            Начать бесплатно на 3 дня
-                        </button>
-                        <p class="text-center text-[11px] text-gray-500 mt-3">Карта привязывается сразу, но первое списание — только через 3 дня.</p>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- CTA & FOOTER -->
-        <footer class="bg-graphite-950 border-t border-graphite-800 pt-16 pb-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-gold-500/20 text-center mb-16 relative overflow-hidden">
-                    <div class="ambient-glow-1"></div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-4 relative z-10" data-i18n="footerCtaTitle">
-                        Готовы запустить программу лояльности без комиссий?
-                    </h2>
-                    <p class="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 relative z-10" data-i18n="footerCtaSubtitle">
-                        3 дня бесплатно — без звонков и демонстраций, начните пользоваться прямо сейчас.
-                    </p>
-                    <button onclick="openModal()" class="px-8 py-4 rounded-xl gold-gradient-bg text-graphite-950 font-bold text-base gold-btn-hover relative z-10 inline-flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span data-i18n="footerCtaButton">Начать бесплатно</span>
-                    </button>
-                </div>
-
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 border-t border-graphite-800 text-xs text-gray-500">
-                    <div class="flex items-center gap-2 text-white font-bold">
-                        <img src="logo.png" alt="Loya" class="w-6 h-6 rounded object-cover">
-                        LOYA © 2026
-                    </div>
-                    <div data-i18n="footerTagline">
-                        Автономные системы учета и лояльности для локального бизнеса.
-                    </div>
-                    <div class="flex gap-4">
-                        <a href="#" class="hover:text-gold-400" data-i18n="footerPrivacy">Политика конфиденциальности</a>
-                        <a href="#" class="hover:text-gold-400" data-i18n="footerDocs">Документация</a>
-                    </div>
-                </div>
-
-            </div>
-        </footer>
-    </main>
-
-    <!-- TOAST NOTIFICATION SYSTEM -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 glass-panel border border-gold-500/50 px-5 py-3 rounded-xl text-xs text-white flex items-center gap-3 hidden shadow-2xl">
-        <i class="fa-solid fa-circle-check text-gold-400 text-base"></i>
-        <span id="toastMsg">Успешно!</span>
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
+    <nav class="nav-links">
+      <a href="#features" data-i18n="navFeatures">Возможности</a>
+      <a href="#how" data-i18n="navHow">Как работает</a>
+      <a href="#tour" data-i18n="navTour">Программа</a>
+      <a href="#pricing" data-i18n="navPricing">Цена</a>
+      <a href="#faq" data-i18n="navFaq">Вопросы</a>
+    </nav>
+    <div class="nav-right">
+      <select class="lang-select" aria-label="Language">
+        <option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option>
+      </select>
+      <a href="#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Попробовать бесплатно</a>
+      <button class="nav-burger" aria-label="Menu">☰</button>
     </div>
+  </div>
+</header>
 
-    <!-- JAVASCRIPT INTERACTIONS -->
-    <script>
-        function switchTab(tabId) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            // Remove active style from buttons
-            document.querySelectorAll('.app-tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'text-gold-400', 'bg-gold-500/10', 'border', 'border-gold-500/30');
-                btn.classList.add('text-gray-400');
-            });
+<main>
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="container hero-grid">
+      <div>
+        <div class="badge"><b>NEW</b><span data-i18n="heroBadge"></span></div>
+        <h1 class="hero-title"><span data-i18n="heroTitle1"></span><span class="gold" data-i18n="heroTitle2"></span></h1>
+        <p class="hero-sub" data-i18n="heroSub"></p>
+        <div class="hero-ctas">
+          <a href="#pricing" class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a>
+          <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2"></span></a>
+        </div>
+        <div class="hero-note" data-i18n="heroNote"></div>
+        <div class="trust"><span data-i18n="trust1"></span><span data-i18n="trust2"></span><span data-i18n="trust3"></span><span data-i18n="trust4"></span></div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="laptop"><img id="hero-shot" src="/img/dashboard_ru.webp" alt="" width="1600" height="1000"></div>
+        <div class="phone"><div class="phone-scr">
+          <div class="ph-head"><span>☕ Café Aurora</span><span class="ph-live">● LIVE</span></div>
+          <div class="ph-cam"><div class="ph-qr"><i></i></div><div class="ph-ret"><b></b><b></b><b></b><b></b></div></div>
+          <div class="ph-verdict"><i>✓</i><span data-i18n="phVerdict"></span></div>
+          <div class="ph-name" data-i18n="phName"></div>
+          <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
+            <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft"></div></div>
+        </div></div>
+        <div class="chip c1" data-i18n="chip1"></div>
+        <div class="chip c2" data-i18n="chip2"></div>
+        <div class="chip c3" data-i18n="chip3"></div>
+      </div>
+    </div>
+  </section>
 
-            // Show current
-            document.getElementById(tabId).classList.remove('hidden');
+  <div class="niches">
+    <div class="container">
+      <div class="niches-title" data-i18n="nichesTitle"></div>
+      <div class="niches-row"><span data-i18n="n1"></span><span data-i18n="n2"></span><span data-i18n="n3"></span><span data-i18n="n4"></span><span data-i18n="n5"></span><span data-i18n="n6"></span><span data-i18n="n7"></span><span data-i18n="n8"></span></div>
+    </div>
+  </div>
 
-            // Style active button
-            event.currentTarget.classList.add('active', 'text-gold-400', 'bg-gold-500/10', 'border', 'border-gold-500/30');
-            event.currentTarget.classList.remove('text-gray-400');
-        }
+  <section class="section prob">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="probTitle"></h2>
+      <p class="lead reveal" data-i18n="probSub"></p>
+      <div class="cards3" style="text-align:left">
+        <div class="card reveal"><div class="icon">🗂️</div><h3 data-i18n="prob1T"></h3><p data-i18n="prob1D"></p></div>
+        <div class="card reveal"><div class="icon">👻</div><h3 data-i18n="prob2T"></h3><p data-i18n="prob2D"></p></div>
+        <div class="card reveal"><div class="icon">💸</div><h3 data-i18n="prob3T"></h3><p data-i18n="prob3D"></p></div>
+      </div>
+    </div>
+  </section>
 
-        const nichesData = {
-            coffee: {
-                badge: 'Конфигурация "Кофейня & Пекарня"',
-                title: 'Штамп-карты «6-й стакан бесплатно»',
-                desc: 'Автоматически начисляйте виртуальные штампы за покупки. Клиентам больше не нужны бумажные карточки, которые постоянно теряются.',
-                perks: [
-                    'Увеличение частоты визитов на +38%',
-                    'Быстрый сканер QR-кодов на кассе',
-                    'Авто-напоминания в Telegram при неактивности'
-                ],
-                brand: 'LOYA COFFEE',
-                stamps: ['☕', '☕', '☕', '☕', '5'],
-                subtext: 'Еще 1 посещение до бесплатного кофе!'
-            },
-            barber: {
-                badge: 'Конфигурация "Барбершоп"',
-                title: 'Кэшбэк и накопительные скидки на стрижки',
-                desc: 'Позвольте гостям накапливать бонусные рубли за каждую услугу и косметологию. Увеличьте возвратность клиентов без скидок в убыток.',
-                perks: [
-                    'Учет постоянных гостей и их мастеров',
-                    'Авто-напоминание подстричься через 3 недели',
-                    'Специальный кэшбэк на средства ухода'
-                ],
-                brand: 'BARBER LOYA',
-                stamps: ['💈', '💈', '💈', '4', '5'],
-                subtext: 'Накоплено 450 бонусов на стрижку'
-            },
-            beauty: {
-                badge: 'Конфигурация "Салон Красоты"',
-                title: 'Подарки к праздникам и VIP-статусы',
-                desc: 'Сегментируйте клиенток по видам процедур (маникюр, окрашивание, спа) и предлагайте персонализированные бонусы.',
-                perks: [
-                    'Персональные поздравления с Днем Рождения',
-                    'Привязка скидки к чеку мастера',
-                    'Онлайн-карточка в мобильном кошельке'
-                ],
-                brand: 'BEAUTY STUDIO',
-                stamps: ['💅', '💅', '💅', '💅', '💅'],
-                subtext: 'Вам доступен VIP-статус -15%'
-            },
-            grooming: {
-                badge: 'Конфигурация "Груминг & Зоо"',
-                title: 'Карта питомца и комплексный уход',
-                desc: 'Ведение истории визитов питомца, напоминания о прививках и комплексном груминге прямо в Telegram хозяина.',
-                perks: [
-                    'Карточка клиента с кличкой питомца',
-                    'Бонусная система за стрижки и гигиену',
-                    'Скидки на покупку кормов'
-                ],
-                brand: 'PET CARE LOYA',
-                stamps: ['🐕', '🐕', '🐕', '4', '5'],
-                subtext: 'Штамп за комплексный груминг'
-            },
-            retail: {
-                badge: 'Конфигурация "Ритейл & Шоурум"',
-                title: 'Накопительные дисконтные карты',
-                desc: 'Замените пластиковые карты на виртуальные. Клиент сканирует QR на кассе и мгновенно получает свою скидку.',
-                perks: [
-                    'Полная замена пластиковых карт',
-                    'Мгновенный поиск по номеру телефона',
-                    'Рост среднего чека за счет бонусов'
-                ],
-                brand: 'LOYA BOUTIQUE',
-                stamps: ['🛍️', '🛍️', '3', '4', '5'],
-                subtext: 'Текущий уровень: Накопительная 7%'
-            }
-        };
+  <section class="section" id="how" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="howTitle"></h2>
+      <p class="lead reveal" data-i18n="howSub"></p>
+      <div class="steps" style="text-align:left">
+        <div class="step reveal"><h3 data-i18n="step1T"></h3><p data-i18n="step1D"></p></div>
+        <div class="step reveal"><h3 data-i18n="step2T"></h3><p data-i18n="step2D"></p></div>
+        <div class="step reveal"><h3 data-i18n="step3T"></h3><p data-i18n="step3D"></p></div>
+      </div>
+    </div>
+  </section>
 
-        function selectNiche(key) {
-            const data = nichesData[key];
-            if (!data) return;
+  <section class="section" id="tour" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="tourTitle"></h2>
+      <p class="lead reveal" data-i18n="tourSub"></p>
+      <div class="tour-tabs">
+        <button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash"></button>
+        <button class="tour-tab" data-tab="scan" data-i18n="tabScan"></button>
+        <button class="tour-tab" data-tab="marketing" data-i18n="tabMkt"></button>
+        <button class="tour-tab" data-tab="clients" data-i18n="tabClients"></button>
+        <button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics"></button>
+      </div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_ru.webp" alt="" loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap"></p>
+    </div>
+  </section>
 
-            // Highlight button
-            document.querySelectorAll('.niche-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-gold-500', 'text-gold-300');
-                btn.classList.add('border-graphite-700', 'text-gray-400');
-            });
-            event.currentTarget.classList.add('active', 'border-gold-500', 'text-gold-300');
-            event.currentTarget.classList.remove('border-graphite-700', 'text-gray-400');
+  <section class="section" id="features" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="featTitle"></h2>
+      <p class="lead reveal" data-i18n="featSub"></p>
+      <div class="features" style="text-align:left">
+        <div class="card reveal"><div class="icon">🃏</div><h3 data-i18n="f1T"></h3><p data-i18n="f1D"></p></div>
+        <div class="card reveal"><div class="icon">📱</div><h3 data-i18n="f2T"></h3><p data-i18n="f2D"></p></div>
+        <div class="card reveal"><div class="icon">🤖</div><h3 data-i18n="f3T"></h3><p data-i18n="f3D"></p></div>
+        <div class="card reveal"><div class="icon">🎯</div><h3 data-i18n="f4T"></h3><p data-i18n="f4D"></p></div>
+        <div class="card reveal"><div class="icon">📊</div><h3 data-i18n="f5T"></h3><p data-i18n="f5D"></p></div>
+        <div class="card reveal"><div class="icon">⚡</div><h3 data-i18n="f6T"></h3><p data-i18n="f6D"></p></div>
+        <div class="card reveal"><div class="icon">👥</div><h3 data-i18n="f7T"></h3><p data-i18n="f7D"></p></div>
+        <div class="card reveal"><div class="icon">🎟️</div><h3 data-i18n="f8T"></h3><p data-i18n="f8D"></p></div>
+        <div class="card reveal"><div class="icon">🔒</div><h3 data-i18n="f9T"></h3><p data-i18n="f9D"></p></div>
+      </div>
+    </div>
+  </section>
 
-            // Fill details
-            document.getElementById('nicheBadge').innerText = data.badge;
-            document.getElementById('nicheTitle').innerText = data.title;
-            document.getElementById('nicheDesc').innerText = data.desc;
-            document.getElementById('nicheCardBrand').innerText = data.brand;
+  <section class="section" id="calc" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="calcTitle"></h2>
+      <p class="lead reveal" data-i18n="calcSub"></p>
+      <div class="calc reveal" style="text-align:left">
+        <div>
+          <div class="calc-row"><label><span data-i18n="calcVisitors"></span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
+          <div class="calc-row"><label><span data-i18n="calcCheck"></span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
+          <div class="calc-row"><label><span data-i18n="calcRate"></span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
+        </div>
+        <div class="calc-result">
+          <div class="lbl" data-i18n="calcResult"></div>
+          <div class="calc-big gold" id="calc-out"></div>
+          <div class="calc-roi" id="calc-roi"></div>
+          <div class="calc-note" data-i18n="calcNote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            // Perks
-            const perksHtml = data.perks.map(p => `<li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-400"></i> ${p}</li>`).join('');
-            document.getElementById('nichePerks').innerHTML = perksHtml;
+  <section class="section" id="pricing" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle"></h2>
+      <p class="lead reveal" data-i18n="priceSub"></p>
+      <div class="pricing-wrap" style="text-align:left">
+        <div class="plan reveal">
+          <div class="plan-badge" data-i18n="trialBadge"></div>
+          <div class="plan-name" data-i18n="planName"></div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+          <div class="plan-compare" data-i18n="priceCompare"></div>
+          <form class="checkout" novalidate>
+            <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Ваш email" required>
+            <button type="submit" class="btn btn-primary">🎁 <span data-i18n="priceCta"></span></button>
+            <div class="checkout-err"></div>
+          </form>
+          <p class="plan-note" data-i18n="priceNote"></p>
+          <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+        </div>
+        <ul class="plan-list reveal"><li data-i18n="pf1"></li><li data-i18n="pf2"></li><li data-i18n="pf3"></li><li data-i18n="pf4"></li><li data-i18n="pf5"></li><li data-i18n="pf6"></li><li data-i18n="pf7"></li><li data-i18n="pf8"></li><li data-i18n="pf9"></li><li data-i18n="pf10"></li></ul>
+      </div>
+    </div>
+  </section>
 
-            // Stamps mockup
-            const stampsHtml = data.stamps.map(s => {
-                const isIcon = isNaN(s);
-                return `<span class="w-8 h-8 rounded-full ${isIcon ? 'bg-gold-500 text-graphite-950' : 'bg-graphite-800 text-gray-600'} flex items-center justify-center font-bold text-xs">${s}</span>`;
-            }).join('');
-            document.getElementById('nicheStamps').innerHTML = stampsHtml;
-        }
+  <section class="section" id="faq" style="padding-top:30px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="faqTitle"></h2>
+      <div class="faq" style="text-align:left">
+        <details class="reveal"><summary data-i18n="q1"></summary><p data-i18n="a1"></p></details>
+        <details class="reveal"><summary data-i18n="q2"></summary><p data-i18n="a2"></p></details>
+        <details class="reveal"><summary data-i18n="q3"></summary><p data-i18n="a3"></p></details>
+        <details class="reveal"><summary data-i18n="q4"></summary><p data-i18n="a4"></p></details>
+        <details class="reveal"><summary data-i18n="q5"></summary><p data-i18n="a5"></p></details>
+        <details class="reveal"><summary data-i18n="q6"></summary><p data-i18n="a6"></p></details>
+        <details class="reveal"><summary data-i18n="q7"></summary><p data-i18n="a7"></p></details>
+        <details class="reveal"><summary data-i18n="q8"></summary><p data-i18n="a8"></p></details>
+      </div>
+    </div>
+  </section>
 
-        const clientsRange = document.getElementById('clientsRange');
-        const checkRange = document.getElementById('checkRange');
-        const clientsValue = document.getElementById('clientsValue');
-        const checkValue = document.getElementById('checkValue');
-        const savingsTotal = document.getElementById('savingsTotal');
+  <div class="container">
+    <div class="final reveal">
+      <h2 class="h2" data-i18n="finalTitle"></h2>
+      <p data-i18n="finalSub"></p>
+      <a href="#pricing" class="btn btn-primary">🎁 <span data-i18n="finalCta"></span></a>
+    </div>
+  </div>
+</main>
 
-        // Валюта зависит от выбранного языка сайта — соответствует основным рынкам,
-        // где используется каждый язык.
-        const CURRENCY_BY_LANG = { ru: '₽', en: '$', sk: '€', uk: '₴' };
-        const LOCALE_BY_LANG = { ru: 'ru-RU', en: 'en-US', sk: 'sk-SK', uk: 'uk-UA' };
-        let siteLang = 'ru';
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div><a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a><p class="foot-tag" data-i18n="footTag"></p></div>
+      <div><h4 data-i18n="footProduct"></h4><a href="#features" data-i18n="navFeatures"></a><a href="#pricing" data-i18n="navPricing"></a><a href="#" data-download data-i18n="footDownload"></a></div>
+      <div><h4 data-i18n="footSupport"></h4><a href="#faq" data-i18n="navFaq"></a><a href="mailto:vladnaruto12@gmail.com" data-i18n="footContact"></a><a href="mailto:vladnaruto12@gmail.com">vladnaruto12@gmail.com</a></div>
+    </div>
+    <div class="foot-bottom"><span>© <span data-year></span> Loya. <span data-i18n="footRights"></span></span><span>Windows 10 · 11</span></div>
+  </div>
+</footer>
 
-        const SITE_I18N = {
-          ru: {
-            navFeatures: 'Возможности', navDemo: 'Интерфейс', navNiches: 'Для кого', navCalculator: 'Калькулятор', navPricing: 'Тарифы', navCta: 'Попробовать бесплатно',
-            calcBadge: 'Калькулятор Выгоды', calcTitle: 'Сколько вы сэкономите с Loya?', calcSubtitle: 'Сравните расходы с облачными сервисами, берущими % за карты и обслуживание',
-            calcClientsLabel: 'Клиентов в месяц:', calcCheckLabel: 'Средний чек:',
-            calcHint: '💡 Расчёт основан на стандартной комиссии сторонних сервисов (3-5% от оборота по картам лояльности или абонентской плате за рабочие места).',
-            calcSavingsLabel: 'Ваша экономия за 1 год:', calcSavingsNote: 'Эти деньги останутся в вашей чистой прибыли!', calcCta: 'Получить программы без комиссий',
-            heroTitle: 'Программа лояльности для бизнеса — <br class="hidden sm:inline"><span class="gold-gradient-text">без комиссий</span> с каждого клиента',
-            badgeLocalData: '<i class="fa-solid fa-shield-halved text-gold-500"></i> 100% Локальные данные',
-            badgeOffline: '<i class="fa-solid fa-wifi text-gold-500"></i> Офлайн-режим',
-            heroSubtitle: 'Электронные карты, рассылки в Telegram и Email, полная аналитика клиентов — всё в одном автономном приложении для вашего ПК. Первые 3 дня — бесплатно.',
-            heroCtaDemo: 'Протестировать демо', heroCtaPresentation: 'Запросить презентацию',
-            statCommission: 'Комиссий за транзакции', statPrivacy: 'Конфиденциальность', statScanSpeed: 'Считывание карт QR', statTrial: 'Бесплатный пробный период',
-            nichesBadge: 'Адаптивность', nichesTitle: 'Готовое решение под вашу сферу', nichesSubtitle: 'Выберите ваше направление бизнеса, чтобы увидеть персональную конфигурацию',
-            featuresBadge: 'Преимущества', featuresTitle: 'Почему выбирают автономный софт Loya',
-            footerCtaTitle: 'Готовы запустить программу лояльности без комиссий?', footerCtaSubtitle: '3 дня бесплатно — без звонков и демонстраций, начните пользоваться прямо сейчас.', footerCtaButton: 'Начать бесплатно',
-            footerTagline: 'Автономные системы учёта и лояльности для локального бизнеса.', footerPrivacy: 'Политика конфиденциальности', footerDocs: 'Документация',
-            badgeNoCommission: '<i class="fa-solid fa-bolt"></i> Без комиссий с каждой карты',
-            demoBadge: 'Система изнутри', demoTitle: 'Интерактивный интерфейс приложения', demoSubtitle: 'Попробуйте понажимать на вкладки ниже, чтобы оценить удобство рабочего стола оператора',
-            statScanSpeedVal: '< 1 сек', statTrialVal: '3 дня'
-          },
-          en: {
-            navFeatures: 'Features', navDemo: 'Interface', navNiches: 'Who it\u2019s for', navCalculator: 'Calculator', navPricing: 'Pricing', navCta: 'Try for free',
-            calcBadge: 'Savings Calculator', calcTitle: 'How much will you save with Loya?', calcSubtitle: 'Compare costs with cloud services that take a % on cards and service fees',
-            calcClientsLabel: 'Clients per month:', calcCheckLabel: 'Average check:',
-            calcHint: '💡 Based on the standard commission of third-party services (3-5% of loyalty card turnover, or per-seat subscription fees).',
-            calcSavingsLabel: 'Your savings per year:', calcSavingsNote: 'That money stays in your net profit!', calcCta: 'Get commission-free loyalty',
-            heroTitle: 'A loyalty program for your business — <br class="hidden sm:inline"><span class="gold-gradient-text">commission-free</span> on every customer',
-            badgeLocalData: '<i class="fa-solid fa-shield-halved text-gold-500"></i> 100% Local data',
-            badgeOffline: '<i class="fa-solid fa-wifi text-gold-500"></i> Offline mode',
-            heroSubtitle: 'Digital cards, Telegram and email campaigns, full customer analytics — all in one standalone app for your PC. First 3 days free.',
-            heroCtaDemo: 'Try the demo', heroCtaPresentation: 'Request a presentation',
-            statCommission: 'Transaction fees', statPrivacy: 'Privacy', statScanSpeed: 'QR card scan time', statTrial: 'Free trial period',
-            nichesBadge: 'Adaptable', nichesTitle: 'A ready-made solution for your field', nichesSubtitle: 'Pick your business type to see a personalized setup',
-            featuresBadge: 'Benefits', featuresTitle: 'Why businesses choose standalone Loya',
-            footerCtaTitle: 'Ready to launch a commission-free loyalty program?', footerCtaSubtitle: '3 days free — no calls or demos, start using it right now.', footerCtaButton: 'Start for free',
-            footerTagline: 'Standalone loyalty and record-keeping systems for local businesses.', footerPrivacy: 'Privacy Policy', footerDocs: 'Documentation',
-            badgeNoCommission: '<i class="fa-solid fa-bolt"></i> No commission on any card',
-            demoBadge: 'Under the hood', demoTitle: 'Interactive app interface', demoSubtitle: 'Click through the tabs below to see how the operator desktop works',
-            statScanSpeedVal: '< 1 sec', statTrialVal: '3 days'
-          },
-          sk: {
-            navFeatures: 'Funkcie', navDemo: 'Rozhranie', navNiches: 'Pre koho', navCalculator: 'Kalkulačka', navPricing: 'Cenník', navCta: 'Vyskúšať zadarmo',
-            calcBadge: 'Kalkulačka úspor', calcTitle: 'Koľko ušetríte s Loya?', calcSubtitle: 'Porovnajte náklady s cloudovými službami, ktoré si berú % z kariet a poplatky za obsluhu',
-            calcClientsLabel: 'Klientov za mesiac:', calcCheckLabel: 'Priemerný účet:',
-            calcHint: '💡 Výpočet vychádza zo štandardnej provízie iných služieb (3-5 % z obratu vernostných kariet alebo mesačný poplatok za miesto).',
-            calcSavingsLabel: 'Vaša úspora za 1 rok:', calcSavingsNote: 'Tieto peniaze zostanú vo vašom čistom zisku!', calcCta: 'Získať vernostný program bez provízií',
-            heroTitle: 'Vernostný program pre váš biznes — <br class="hidden sm:inline"><span class="gold-gradient-text">bez provízií</span> z každého zákazníka',
-            badgeLocalData: '<i class="fa-solid fa-shield-halved text-gold-500"></i> 100% Lokálne dáta',
-            badgeOffline: '<i class="fa-solid fa-wifi text-gold-500"></i> Offline režim',
-            heroSubtitle: 'Digitálne karty, kampane cez Telegram a email, kompletná analytika zákazníkov — všetko v jednej samostatnej aplikácii pre váš počítač. Prvé 3 dni zadarmo.',
-            heroCtaDemo: 'Vyskúšať demo', heroCtaPresentation: 'Vyžiadať prezentáciu',
-            statCommission: 'Provízie z transakcií', statPrivacy: 'Súkromie', statScanSpeed: 'Rýchlosť skenovania QR', statTrial: 'Bezplatná skúšobná doba',
-            nichesBadge: 'Prispôsobiteľné', nichesTitle: 'Hotové riešenie pre váš odbor', nichesSubtitle: 'Vyberte typ vášho biznisu a uvidíte prispôsobenú konfiguráciu',
-            featuresBadge: 'Výhody', featuresTitle: 'Prečo si vyberajú samostatný softvér Loya',
-            footerCtaTitle: 'Pripravení spustiť vernostný program bez provízií?', footerCtaSubtitle: '3 dni zadarmo — bez hovorov a demo prezentácií, začnite používať hneď teraz.', footerCtaButton: 'Začať zadarmo',
-            footerTagline: 'Samostatné systémy evidencie a vernosti pre lokálny biznis.', footerPrivacy: 'Zásady ochrany osobných údajov', footerDocs: 'Dokumentácia',
-            badgeNoCommission: '<i class="fa-solid fa-bolt"></i> Bez provízie z každej karty',
-            demoBadge: 'Pod kapotou', demoTitle: 'Interaktívne rozhranie aplikácie', demoSubtitle: 'Preklikajte si karty nižšie a vyskúšajte si pracovný stol operátora',
-            statScanSpeedVal: '< 1 sek', statTrialVal: '3 dni'
-          },
-          uk: {
-            navFeatures: 'Можливості', navDemo: 'Інтерфейс', navNiches: 'Для кого', navCalculator: 'Калькулятор', navPricing: 'Тарифи', navCta: 'Спробувати безкоштовно',
-            calcBadge: 'Калькулятор вигоди', calcTitle: 'Скільки ви заощадите з Loya?', calcSubtitle: 'Порівняйте витрати з хмарними сервісами, що беруть % за картки та обслуговування',
-            calcClientsLabel: 'Клієнтів на місяць:', calcCheckLabel: 'Середній чек:',
-            calcHint: '💡 Розрахунок базується на стандартній комісії сторонніх сервісів (3-5% від обороту карток лояльності або абонплаті за робочі місця).',
-            calcSavingsLabel: 'Ваша економія за 1 рік:', calcSavingsNote: 'Ці гроші залишаться у вашому чистому прибутку!', calcCta: 'Отримати програму без комісій',
-            heroTitle: 'Програма лояльності для бізнесу — <br class="hidden sm:inline"><span class="gold-gradient-text">без комісій</span> з кожного клієнта',
-            badgeLocalData: '<i class="fa-solid fa-shield-halved text-gold-500"></i> 100% Локальні дані',
-            badgeOffline: '<i class="fa-solid fa-wifi text-gold-500"></i> Офлайн-режим',
-            heroSubtitle: 'Електронні картки, розсилки в Telegram та Email, повна аналітика клієнтів — усе в одному автономному застосунку для вашого ПК. Перші 3 дні — безкоштовно.',
-            heroCtaDemo: 'Протестувати демо', heroCtaPresentation: 'Запросити презентацію',
-            statCommission: 'Комісій за транзакції', statPrivacy: 'Конфіденційність', statScanSpeed: 'Зчитування карток QR', statTrial: 'Безкоштовний пробний період',
-            nichesBadge: 'Адаптивність', nichesTitle: 'Готове рішення під вашу сферу', nichesSubtitle: 'Оберіть напрям бізнесу, щоб побачити персональну конфігурацію',
-            featuresBadge: 'Переваги', featuresTitle: 'Чому обирають автономний софт Loya',
-            footerCtaTitle: 'Готові запустити програму лояльності без комісій?', footerCtaSubtitle: '3 дні безкоштовно — без дзвінків і демонстрацій, почніть користуватися просто зараз.', footerCtaButton: 'Почати безкоштовно',
-            footerTagline: 'Автономні системи обліку та лояльності для локального бізнесу.', footerPrivacy: 'Політика конфіденційності', footerDocs: 'Документація',
-            badgeNoCommission: '<i class="fa-solid fa-bolt"></i> Без комісій з кожної картки',
-            demoBadge: 'Система зсередини', demoTitle: 'Інтерактивний інтерфейс застосунку', demoSubtitle: 'Спробуйте натискати на вкладки нижче, щоб оцінити зручність робочого столу оператора',
-            statScanSpeedVal: '< 1 сек', statTrialVal: '3 дні'
-          }
-        };
+<div class="sticky-cta"><a href="#pricing" class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a></div>
 
-        function setSiteLang(lang) {
-          siteLang = lang;
-          document.getElementById('lang-switch').value = lang;
-          document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.dataset.i18n;
-            const text = SITE_I18N[lang][key];
-            if (text) el.textContent = text;
-          });
-          document.querySelectorAll('[data-i18n-html]').forEach(el => {
-            const key = el.dataset.i18nHtml;
-            const html = SITE_I18N[lang][key];
-            if (html) el.innerHTML = html;
-          });
-          updateCalculator();
-        }
-
-        function updateCalculator() {
-            const clients = parseInt(clientsRange.value);
-            const check = parseInt(checkRange.value);
-            const currency = CURRENCY_BY_LANG[siteLang] || '€';
-            const locale = LOCALE_BY_LANG[siteLang] || 'ru-RU';
-
-            clientsValue.innerText = clients.toLocaleString(locale);
-            checkValue.innerText = check.toLocaleString(locale) + ' ' + currency;
-
-            // Расчёт: месячный оборот * 5% типичной комиссии сторонних сервисов * 12 месяцев.
-            // Валюта здесь чисто отображается по выбранному языку — расчёт условный,
-            // ориентировочный, курс между валютами не пересчитывается по-настоящему.
-            const monthlyTurnover = clients * check;
-            const yearlySavings = Math.round(monthlyTurnover * 0.05 * 12);
-
-            savingsTotal.innerText = yearlySavings.toLocaleString(locale) + ' ' + currency;
-        }
-
-        clientsRange.addEventListener('input', updateCalculator);
-        checkRange.addEventListener('input', updateCalculator);
-
-        function openModal(subtext) {
-            // Раньше здесь открывалось окно "оставить заявку" — теперь ведём сразу
-            // на настоящую оплату (та же страница, что уже подключена к Stripe).
-            window.location.href = 'pricing.html';
-        }
-
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        function triggerToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
-        }
-    </script>
+<script src="/i18n.js"></script>
+<script src="/site.js"></script>
 </body>
 </html>
