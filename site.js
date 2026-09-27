@@ -23,6 +23,7 @@
     document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    if (document.body.dataset.page === 'privacy') document.title = `Loya — ${t('footPrivacy')}`;
     if (document.body.dataset.page === 'pricing') document.title = `Loya — ${t('pTitle')} · €9.99`;
     if (document.body.dataset.page === 'success') document.title = `Loya — ${t('sTitle').replace(/\s*🎉/, '')}`;
     if (document.body.dataset.page === 'home') {

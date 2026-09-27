@@ -66,6 +66,7 @@ ru: {
   sTitle: 'Добро пожаловать в Loya! 🎉', sLoading: 'Готовим ваш ключ доступа…', sStep1: 'Скачайте программу', sStep1D: 'Установка в один клик — для Windows 10 и 11.', sDownload: 'Скачать Loya для Windows',
   sStep2: 'Вставьте ключ', sStep2D: 'Откройте Настройки → Подписка и вставьте этот ключ:', sCopy: 'Копировать', sCopied: 'Скопировано ✓', sKeySent: 'Ключ также отправлен на вашу почту.',
   sStep3: 'Готово!', sStep3D: 'Программа сама покажет короткую презентацию и поможет всё настроить.', sError: 'Не удалось найти ключ автоматически. Не переживайте — напишите нам, и мы вышлем его вручную.', sBack: '← На главную',
+  footPrivacy: 'Политика конфиденциальности',
   pTitle: 'Оформление подписки'
 },
 uk: {
@@ -134,6 +135,7 @@ uk: {
   sTitle: 'Ласкаво просимо до Loya! 🎉', sLoading: 'Готуємо ваш ключ доступу…', sStep1: 'Завантажте програму', sStep1D: 'Встановлення в один клік — для Windows 10 і 11.', sDownload: 'Завантажити Loya для Windows',
   sStep2: 'Вставте ключ', sStep2D: 'Відкрийте Налаштування → Підписка та вставте цей ключ:', sCopy: 'Копіювати', sCopied: 'Скопійовано ✓', sKeySent: 'Ключ також надіслано на вашу пошту.',
   sStep3: 'Готово!', sStep3D: 'Програма сама покаже коротку презентацію й допоможе все налаштувати.', sError: 'Не вдалося знайти ключ автоматично. Не хвилюйтеся — напишіть нам, і ми надішлемо його вручну.', sBack: '← На головну',
+  footPrivacy: 'Політика конфіденційності',
   pTitle: 'Оформлення підписки'
 },
 sk: {
@@ -202,6 +204,7 @@ sk: {
   sTitle: 'Vitajte v Loya! 🎉', sLoading: 'Pripravujeme váš prístupový kľúč…', sStep1: 'Stiahnite si program', sStep1D: 'Inštalácia jedným klikom — pre Windows 10 a 11.', sDownload: 'Stiahnuť Loya pre Windows',
   sStep2: 'Vložte kľúč', sStep2D: 'Otvorte Nastavenia → Predplatné a vložte tento kľúč:', sCopy: 'Kopírovať', sCopied: 'Skopírované ✓', sKeySent: 'Kľúč sme poslali aj na váš e-mail.',
   sStep3: 'Hotovo!', sStep3D: 'Program sám ukáže krátku prezentáciu a pomôže so všetkým nastavením.', sError: 'Kľúč sa nepodarilo nájsť automaticky. Nebojte sa — napíšte nám a pošleme ho ručne.', sBack: '← Na úvod',
+  footPrivacy: 'Ochrana osobných údajov',
   pTitle: 'Objednávka predplatného'
 },
 en: {
@@ -270,6 +273,7 @@ en: {
   sTitle: 'Welcome to Loya! 🎉', sLoading: 'Preparing your access key…', sStep1: 'Download the app', sStep1D: 'One-click installation for Windows 10 and 11.', sDownload: 'Download Loya for Windows',
   sStep2: 'Paste your key', sStep2D: 'Open Settings → Subscription and paste this key:', sCopy: 'Copy', sCopied: 'Copied ✓', sKeySent: 'We’ve also emailed the key to you.',
   sStep3: 'Done!', sStep3D: 'The app will show a short intro and help you set everything up.', sError: 'We couldn’t find your key automatically. Don’t worry — contact us and we’ll send it manually.', sBack: '← Back to home',
+  footPrivacy: 'Privacy policy',
   pTitle: 'Start your subscription'
 }
 };
