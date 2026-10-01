@@ -1,5 +1,12 @@
 {
   "rewrites": [
-    { "source": "/r/:slug", "destination": "/api/reg-page?slug=:slug" }
+    {
+      "source": "/r/:slug",
+      "destination": "/api/reg-page?slug=:slug"
+    },
+    {
+      "source": "/owner/:token",
+      "destination": "/api/owner-page?token=:token"
+    }
   ]
 }

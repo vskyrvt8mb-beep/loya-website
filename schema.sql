@@ -63,3 +63,30 @@ create index if not exists idx_onreg_phone on online_registrations (license_key,
 create index if not exists idx_onreg_time on online_registrations (license_key, created_at);
 alter table business_profiles enable row level security;
 alter table online_registrations enable row level security;
+
+-- «Доступ из дома»: копия показателей для владельца и очередь правок.
+-- Данные клиентов попадают сюда только если владелец сам включил функцию в программе;
+-- при выключении строка удаляется.
+create table if not exists owner_access (
+  license_key text primary key,
+  token text unique not null,
+  pass_salt text not null,
+  pass_hash text not null,
+  snapshot jsonb,
+  snapshot_at timestamptz,
+  fail_count int not null default 0,
+  locked_until timestamptz,
+  created_at timestamptz not null default now()
+);
+create table if not exists owner_commands (
+  id bigint generated always as identity primary key,
+  license_key text not null,
+  cmd jsonb not null,
+  status text not null default 'pending',   -- pending | done | failed
+  result text,
+  created_at timestamptz not null default now(),
+  done_at timestamptz
+);
+create index if not exists idx_owner_cmd_pending on owner_commands (license_key, status);
+alter table owner_access enable row level security;
+alter table owner_commands enable row level security;
