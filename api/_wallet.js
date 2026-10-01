@@ -58,7 +58,7 @@ function clean(v, max) { return String(v == null ? '' : v).slice(0, max); }
 
 // Публичный адрес сайта — им подписаны ссылки на картинку баннера (heroImage), которую
 // у себя на серверах скачивает и кеширует сам Google.
-const SITE_URL = process.env.PUBLIC_URL || 'https://loya-website-one.vercel.app';
+const SITE_URL = process.env.PUBLIC_URL || 'https://loya-loyalty.com';
 
 // Ссылка на «баннер» карты: своя картинка для каждого бизнеса (имя, цвет, вид бизнеса)
 // и для текущего состояния карты клиента (сколько штампов уже есть, сколько накоплено).
@@ -105,7 +105,7 @@ function buildObject(licenseKey, card, brand) {
       classId,
       state: 'ACTIVE',
       hexBackgroundColor: passBg,
-      logo: { sourceUri: { uri: 'https://loya-website-one.vercel.app/logo.png' }, contentDescription: { defaultValue: { language: lang, value: 'Loya' } } },
+      logo: { sourceUri: { uri: `${SITE_URL}/logo.png` }, contentDescription: { defaultValue: { language: lang, value: 'Loya' } } },
       heroImage: { sourceUri: { uri: heroImageUrl(card, brand, lang) }, contentDescription: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } } },
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },

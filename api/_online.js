@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 const { supabase, licenseActive, sendMail, EMAIL_RE } = (() => { const m = require('./_mail'); return m; })();
 
-const SITE_URL = process.env.PUBLIC_URL || 'https://loya-website-one.vercel.app';
+const SITE_URL = process.env.PUBLIC_URL || 'https://loya-loyalty.com';
 
 // Простейшая защита от накруток (в памяти функции — достаточно против одиночных ботов;
 // общий суточный лимит на бизнес считается по базе).
@@ -140,6 +140,8 @@ async function register(body, ip) {
 async function pull({ licenseKey, ack }) {
   if (!(await licenseActive(licenseKey))) return { status: 403, error: 'license_inactive' };
   const key = licenseKey.trim();
+  // Храним заявки недолго: после передачи программе — 90 дней (для защиты от повторных бонусов), затем удаляем.
+  await supabase.from('online_registrations').delete().eq('license_key', key).lt('delivered_at', new Date(Date.now() - 90 * 86400000).toISOString());
   const ids = Array.isArray(ack) ? ack.map(Number).filter(Number.isInteger).slice(0, 200) : [];
   if (ids.length) await supabase.from('online_registrations').update({ delivered_at: new Date().toISOString() }).eq('license_key', key).in('id', ids);
   const { data } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
