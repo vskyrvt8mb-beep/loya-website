@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const r = await fetch(`https://walletobjects.googleapis.com/walletobjects/v1/genericObject/${encodeURIComponent(object.id)}`, {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ textModulesData: object.textModulesData, header: object.header, cardTitle: object.cardTitle, hexBackgroundColor: object.hexBackgroundColor })
+      body: JSON.stringify({ textModulesData: object.textModulesData, header: object.header, cardTitle: object.cardTitle, hexBackgroundColor: object.hexBackgroundColor, heroImage: object.heroImage })
     });
     if (r.status === 404) { res.status(200).json({ ok: true, saved: false }); return; }
     if (!r.ok) { res.status(502).json({ error: 'google_' + r.status }); return; }

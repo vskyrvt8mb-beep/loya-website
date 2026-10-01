@@ -56,6 +56,26 @@ const CUR = { EUR: '€', USD: '$', RUB: '₽', UAH: '₴' };
 
 function clean(v, max) { return String(v == null ? '' : v).slice(0, max); }
 
+// Публичный адрес сайта — им подписаны ссылки на картинку баннера (heroImage), которую
+// у себя на серверах скачивает и кеширует сам Google.
+const SITE_URL = process.env.PUBLIC_URL || 'https://loya-website-one.vercel.app';
+
+// Ссылка на «баннер» карты: своя картинка для каждого бизнеса (имя, цвет, вид бизнеса)
+// и для текущего состояния карты клиента (сколько штампов уже есть, сколько накоплено).
+// Картинку рисует /api/wallet-hero.png — она пересоздаётся заново при каждом изменении
+// прогресса, потому что состояние закодировано прямо в адресе ссылки.
+function heroImageUrl(card, brand, lang) {
+  const q = new URLSearchParams({
+    type: card.type, name: clean(brand.name || 'Loya', 60), color: brand.color || '', niche: brand.niche || 'other',
+    currency: brand.currency || 'EUR', lang: ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'ru',
+    v: String(card.stamp_count || 0) + '.' + String(card.spend_accumulated || 0) // меняет URL при каждом скане
+  });
+  if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
+  else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); }
+  else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
+  return `${SITE_URL}/api/wallet-hero.png?${q.toString()}`;
+}
+
 // Прогресс карты для строки на пассе.
 function progress(card, lang, currency) {
   const W = TEXT[lang] || TEXT.en;
@@ -74,6 +94,8 @@ function buildObject(licenseKey, card, brand) {
   const W = TEXT[lang];
   const { classId, objectId } = ids(licenseKey, card.code);
   const color = /^#[0-9a-fA-F]{6}$/.test(brand.color || '') ? brand.color : '#b8862d';
+  // Сама карта — тёмная графитовая, как в программе; фирменный цвет — в акцентах баннера.
+  const passBg = '#20252d';
   const p = progress(card, lang, brand.currency);
   const typeName = card.type === 'discount' ? W.discount : card.type === 'spend' ? W.spend : W.stamp;
   return {
@@ -82,8 +104,9 @@ function buildObject(licenseKey, card, brand) {
       id: objectId,
       classId,
       state: 'ACTIVE',
-      hexBackgroundColor: color,
+      hexBackgroundColor: passBg,
       logo: { sourceUri: { uri: 'https://loya-website-one.vercel.app/logo.png' }, contentDescription: { defaultValue: { language: lang, value: 'Loya' } } },
+      heroImage: { sourceUri: { uri: heroImageUrl(card, brand, lang) }, contentDescription: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } } },
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },
       header: { defaultValue: { language: lang, value: clean(card.client_name || typeName, 60) } },
