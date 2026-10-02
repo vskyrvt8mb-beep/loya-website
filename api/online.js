@@ -5,7 +5,8 @@ const h_publish = require('./_x_online_publish');
 const h_register = require('./_x_online_register');
 const h_pull = require('./_x_online_pull');
 const h_page = require('./_x_online_page');
-const ACTIONS = { 'publish': h_publish, 'register': h_register, 'pull': h_pull, 'page': h_page };
+const h_pos = require('./_x_pos');
+const ACTIONS = { 'pos-in': h_pos, 'pos-key': h_pos, 'pos-pull': h_pos, 'publish': h_publish, 'register': h_register, 'pull': h_pull, 'page': h_page };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }

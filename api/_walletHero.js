@@ -173,10 +173,10 @@ function buildHeroSvg({ card, brand, niche, lang }) {
 </svg>`;
 }
 
-function renderHeroPng(args) {
+function renderHeroPng(args, width) {
   const svg = buildHeroSvg(args);
   const resvg = new Resvg(svg, {
-    fitTo: { mode: 'width', value: W },
+    fitTo: { mode: 'width', value: width || W },
     font: { fontFiles: [FONT_BOLD, FONT_REG], loadSystemFonts: false, defaultFontFamily: 'Carlito' }
   });
   return resvg.render().asPng();

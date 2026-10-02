@@ -164,4 +164,4 @@ async function putClass(token, classId) {
   return r.status === 409 ? { ok: true, status: 200, message: '' } : r;   // класс уже есть — это нормально
 }
 
-module.exports = { putObject, putClass, serviceAccount, signJwt, checkLicense, buildObject, accessToken };
+module.exports = { progress, TEXT, putObject, putClass, serviceAccount, signJwt, checkLicense, buildObject, accessToken };
