@@ -1,12 +1,68 @@
 {
   "rewrites": [
     {
+      "source": "/api/wallet-link",
+      "destination": "/api/wallet?action=link"
+    },
+    {
+      "source": "/api/wallet-update",
+      "destination": "/api/wallet?action=update"
+    },
+    {
+      "source": "/api/wallet-hero.png",
+      "destination": "/api/wallet?action=hero"
+    },
+    {
+      "source": "/api/send-mail",
+      "destination": "/api/core?action=send-mail"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/api/core?action=health"
+    },
+    {
+      "source": "/api/profile-publish",
+      "destination": "/api/online?action=publish"
+    },
+    {
+      "source": "/api/online-register",
+      "destination": "/api/online?action=register"
+    },
+    {
+      "source": "/api/online-pull",
+      "destination": "/api/online?action=pull"
+    },
+    {
       "source": "/r/:slug",
-      "destination": "/api/reg-page?slug=:slug"
+      "destination": "/api/online?action=page&slug=:slug"
+    },
+    {
+      "source": "/api/owner-sync",
+      "destination": "/api/owner?action=sync"
+    },
+    {
+      "source": "/api/owner-login",
+      "destination": "/api/owner?action=login"
+    },
+    {
+      "source": "/api/owner-data",
+      "destination": "/api/owner?action=data"
+    },
+    {
+      "source": "/api/owner-command",
+      "destination": "/api/owner?action=command"
     },
     {
       "source": "/owner/:token",
-      "destination": "/api/owner-page?token=:token"
+      "destination": "/api/owner?action=page&token=:token"
     }
-  ]
+  ],
+  "functions": {
+    "api/wallet.js": {
+      "includeFiles": "api/fonts/**"
+    },
+    "api/core.js": {
+      "includeFiles": "api/fonts/**"
+    }
+  }
 }
