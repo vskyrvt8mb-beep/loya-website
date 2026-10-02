@@ -39,7 +39,9 @@ async function data({ session }) {
   const list = (rows || []).map(r => {
     const state = licenseState(r);
     return { key: r.license_key, email: r.email || '', state, status: r.status || '', plan: r.plan || 'stripe', banned: !!r.banned, note: r.note || '',
-      freeUntil: r.free_until ? String(r.free_until).slice(0, 10) : '', created: r.created_at || '', lastSeen: r.last_seen_at || '', version: r.app_version || '' };
+      freeUntil: r.free_until ? String(r.free_until).slice(0, 10) : '', created: r.created_at || '', lastSeen: r.last_seen_at || '', version: r.app_version || '',
+      // есть ли у ключа подписка Stripe (сами id наружу не отдаём) — чтобы предупредить при удалении
+      hasStripe: Object.keys(r).some(k => /^stripe_/.test(k) && r[k]) };
   });
   const recent = (x) => x.lastSeen && now - new Date(x.lastSeen).getTime() < 7 * 86400e3;
   const stats = {
@@ -55,7 +57,27 @@ async function data({ session }) {
   return { status: 200, ok: true, stats, list };
 }
 
-async function action({ session, op, key, email, note, freeUntil }) {
+// Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
+// Подписку в Stripe это НЕ отменяет — её отменяют в кабинете Stripe (в окне удаления это написано).
+const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log'];
+async function deleteKeys(keys) {
+  const deleted = [], failed = [];
+  for (const k of keys) {
+    // карты Apple Wallet: сначала устройства (по номерам карт), потом сами карты
+    try {
+      const { data: passes } = await supabase.from('apple_passes').select('serial').eq('license_key', k);
+      const serials = (passes || []).map(p => p.serial);
+      if (serials.length) await supabase.from('apple_registrations').delete().in('serial', serials);
+      await supabase.from('apple_passes').delete().eq('license_key', k);
+    } catch (e) { /* таблиц ещё нет — нечего удалять */ }
+    for (const t of LINKED_TABLES) { try { await supabase.from(t).delete().eq('license_key', k); } catch (e) { /* таблицы нет */ } }
+    const { error } = await supabase.from('licenses').delete().eq('license_key', k);
+    if (error) failed.push(k); else deleted.push(k);
+  }
+  return { deleted, failed };
+}
+
+async function action({ session, op, key, keys, email, note, freeUntil }) {
   if (!check(session)) return { status: 401, error: 'session' };
   const until = /^\d{4}-\d{2}-\d{2}$/.test(String(freeUntil || '')) ? freeUntil : null;
   if (op === 'create_free') {
@@ -65,6 +87,13 @@ async function action({ session, op, key, email, note, freeUntil }) {
     const { error } = await supabase.from('licenses').insert({ license_key: newKey, email: mail, status: 'active', plan: 'free', note: str(note, 300) || null, free_until: until });
     if (error) return { status: 500, error: 'db_error', detail: String(error.message || '').slice(0, 140) };
     return { status: 200, ok: true, key: newKey };
+  }
+  if (op === 'delete') {
+    const list = (Array.isArray(keys) ? keys : [key]).map(v => str(v, 40)).filter(v => /^LOYA-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(v));
+    if (!list.length) return { status: 400, error: 'key' };
+    if (list.length > 200) return { status: 400, error: 'too_many' };
+    const r = await deleteKeys([...new Set(list)]);
+    return { status: 200, ok: true, deleted: r.deleted.length, failed: r.failed.length };
   }
   const k = str(key, 40);
   if (!/^LOYA-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(k)) return { status: 400, error: 'key' };
