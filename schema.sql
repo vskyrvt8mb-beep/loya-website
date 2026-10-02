@@ -90,3 +90,12 @@ create table if not exists owner_commands (
 create index if not exists idx_owner_cmd_pending on owner_commands (license_key, status);
 alter table owner_access enable row level security;
 alter table owner_commands enable row level security;
+
+-- Админка подписок: бесплатный доступ, блокировка, заметка, «когда программа выходила на связь».
+-- Безопасно выполнять повторно.
+alter table licenses add column if not exists plan text not null default 'stripe';   -- stripe | free
+alter table licenses add column if not exists banned boolean not null default false;
+alter table licenses add column if not exists note text;
+alter table licenses add column if not exists free_until date;                      -- для бесплатного доступа «до даты»
+alter table licenses add column if not exists last_seen_at timestamptz;
+alter table licenses add column if not exists app_version text;

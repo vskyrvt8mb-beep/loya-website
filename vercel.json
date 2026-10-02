@@ -55,6 +55,22 @@
     {
       "source": "/owner/:token",
       "destination": "/api/owner?action=page&token=:token"
+    },
+    {
+      "source": "/admin",
+      "destination": "/api/core?action=admin-page"
+    },
+    {
+      "source": "/api/admin-login",
+      "destination": "/api/core?action=admin-login"
+    },
+    {
+      "source": "/api/admin-data",
+      "destination": "/api/core?action=admin-data"
+    },
+    {
+      "source": "/api/admin-action",
+      "destination": "/api/core?action=admin-action"
     }
   ],
   "functions": {
