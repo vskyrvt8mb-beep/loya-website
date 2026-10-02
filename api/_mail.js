@@ -32,11 +32,7 @@ function getTransport() {
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]{2,}$/;
 function cleanName(s) { return String(s || '').replace(/[\r\n"<>\\]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) || 'Loya'; }
 
-async function licenseActive(key) {
-  if (!key || typeof key !== 'string' || key.length > 100) return false;
-  const { data, error } = await supabase.from('licenses').select('status').eq('license_key', key.trim()).single();
-  return !error && !!data && data.status === 'active';
-}
+const { licenseActive } = require('./_license');
 
 async function countSince(filter) {
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();

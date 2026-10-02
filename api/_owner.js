@@ -96,11 +96,23 @@ async function data({ token, session }) {
 const str = (v, max) => String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 async function command({ token, session, cmd }) {
   const g = await guard(token, session); if (!g.ok) return g;
-  if (!cmd || typeof cmd !== 'object' || !['client_add', 'client_edit'].includes(cmd.type)) return { status: 400, error: 'bad_command' };
-  const clean = { type: cmd.type, name: str(cmd.name, 100), phone: str(cmd.phone, 30), email: str(cmd.email, 120).toLowerCase(), notes: str(cmd.notes, 500) };
-  if (!clean.name) return { status: 400, error: 'bad_name' };
-  if (clean.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean.email)) return { status: 400, error: 'bad_email' };
-  if (cmd.type === 'client_edit') { clean.id = Number(cmd.id); if (!Number.isInteger(clean.id) || clean.id < 1) return { status: 400, error: 'bad_id' }; }
+  if (!cmd || typeof cmd !== 'object' || !['client_add', 'client_edit', 'card_add'].includes(cmd.type)) return { status: 400, error: 'bad_command' };
+  let clean;
+  if (cmd.type === 'card_add') {
+    // Выдать клиенту карту: тип и параметры строго в разумных пределах; name — только для подписи в списке правок.
+    const id = Number(cmd.id); if (!Number.isInteger(id) || id < 1) return { status: 400, error: 'bad_id' };
+    const cardType = ['stamp', 'discount', 'spend'].includes(cmd.cardType) ? cmd.cardType : null;
+    if (!cardType) return { status: 400, error: 'bad_card' };
+    const n = Number(cmd.value);
+    const ok = cardType === 'stamp' ? Number.isInteger(n) && n >= 2 && n <= 50 : cardType === 'discount' ? Number.isInteger(n) && n >= 1 && n <= 100 : Number.isFinite(n) && n >= 1 && n <= 1000000;
+    if (!ok) return { status: 400, error: 'bad_value' };
+    clean = { type: 'card_add', id, cardType, value: cardType === 'spend' ? Math.round(n * 100) / 100 : n, title: str(cmd.title, 80), send: cmd.send !== false, name: str(cmd.name, 100) };
+  } else {
+    clean = { type: cmd.type, name: str(cmd.name, 100), phone: str(cmd.phone, 30), email: str(cmd.email, 120).toLowerCase(), notes: str(cmd.notes, 500) };
+    if (!clean.name) return { status: 400, error: 'bad_name' };
+    if (clean.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean.email)) return { status: 400, error: 'bad_email' };
+    if (cmd.type === 'client_edit') { clean.id = Number(cmd.id); if (!Number.isInteger(clean.id) || clean.id < 1) return { status: 400, error: 'bad_id' }; }
+  }
   const { count } = await supabase.from('owner_commands').select('id', { count: 'exact', head: true }).eq('license_key', g.row.license_key).eq('status', 'pending');
   if ((count || 0) >= 20) return { status: 429, error: 'queue_full' };
   const { data: row, error } = await supabase.from('owner_commands').insert({ license_key: g.row.license_key, cmd: clean }).select().single();

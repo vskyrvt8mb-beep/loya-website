@@ -111,8 +111,11 @@ function progressLine(frac, bigText, caption, accent) {
 
 function moneyFmt(v, currency, lang) {
   const n = Math.round((Number(v) || 0) * 100) / 100;
-  const t = Number.isInteger(n) ? String(n) : n.toFixed(2);
-  const sym = { EUR: '€', USD: '$', GBP: '£', UAH: '₴' }[currency] || currency || '€';
+  let t = Number.isInteger(n) ? String(n) : n.toFixed(2);
+  if (lang !== 'en') t = t.replace('.', ',');
+  // Знака ₽ в шрифте баннера нет (в тексте самой карты Google рисует его сам) — пишем словами.
+  const sym = currency === 'RUB' ? (lang === 'ru' || lang === 'uk' ? 'руб.' : 'RUB')
+    : ({ EUR: '€', USD: '$', GBP: '£', UAH: '₴', CZK: 'Kč', PLN: 'zł' }[currency] || currency || '€');
   return lang === 'en' ? `${sym}${t}` : `${t} ${sym}`;
 }
 

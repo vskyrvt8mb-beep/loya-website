@@ -22,27 +22,29 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const { data, error } = await supabase
-      .from('licenses')
-      .select('status')
-      .eq('license_key', licenseKey.trim())
-      .single();
-
-    if (error || !data) {
+    const L = require('./_license');
+    const data = await L.getLicense(licenseKey);
+    if (!data) {
       res.status(200).json({ active: false, message: 'Ключ не найден. Проверьте, что скопировали его полностью.' });
       return;
     }
+    // Отмечаем, когда программа выходила на связь и какой версии — это видно в админке.
+    const appVersion = typeof (req.body || {}).appVersion === 'string' ? req.body.appVersion.slice(0, 20) : null;
+    try { await supabase.from('licenses').update({ last_seen_at: new Date().toISOString(), ...(appVersion ? { app_version: appVersion } : {}) }).eq('license_key', licenseKey.trim()); } catch (e) { /* колонок ещё нет — не страшно */ }
 
-    const active = data.status === 'active';
+    const state = L.licenseState(data);
+    const active = state === 'active';
     const messages = {
       past_due: 'Не удалось списать оплату за подписку. Проверьте карту на сайте.',
-      canceled: 'Подписка отменена.'
+      canceled: 'Подписка отменена.',
+      banned: 'Доступ к программе заблокирован. Свяжитесь с поддержкой Loya.',
+      free_expired: 'Бесплатный доступ закончился. Оформите подписку на сайте loya-loyalty.com.'
     };
 
     res.status(200).json({
       active,
-      status: data.status,
-      message: active ? '' : (messages[data.status] || 'Подписка неактивна.')
+      status: state,
+      message: active ? '' : (messages[state] || 'Подписка неактивна.')
     });
   } catch (err) {
     // Собственная ошибка сервера — намеренно НЕ блокируем (active: true не отдаём, но

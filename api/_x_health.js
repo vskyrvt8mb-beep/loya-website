@@ -16,6 +16,18 @@ module.exports = async (req, res) => {
   };
   try { const sa = JSON.parse(process.env.GOOGLE_WALLET_SERVICE_ACCOUNT || ''); out.walletKeyValid = !!(sa && sa.client_email && sa.private_key); } catch (e) { /* не JSON */ }
   try { const { error } = await supabase.from('licenses').select('license_key').limit(1); out.db = !error; } catch (e) { out.db = false; }
+  // Таблицы базы: если их не создали (не выполнен schema.sql), функции регистрации по ссылке, доступа
+  // из дома и счётчика писем работать не будут — показываем, каких именно не хватает.
+  out.tablesMissing = [];
+  if (out.db) {
+    for (const t of ['licenses', 'mail_log', 'business_profiles', 'online_registrations', 'owner_access', 'owner_commands']) {
+      try { const { error } = await supabase.from(t).select('*').limit(1); if (error) out.tablesMissing.push(t); } catch (e) { out.tablesMissing.push(t); }
+    }
+    // Новые колонки для админки (бесплатный доступ, блокировка, «последний вход»).
+    if (!out.tablesMissing.includes('licenses')) {
+      try { const { error } = await supabase.from('licenses').select('plan, banned, note, free_until, last_seen_at, app_version').limit(1); if (error) out.tablesMissing.push('licenses (новые колонки)'); } catch (e) { out.tablesMissing.push('licenses (новые колонки)'); }
+    }
+  }
   // Баннер карты: пробуем нарисовать тестовую картинку — так видно, что шрифты и рисовалка на месте.
   out.hero = false; out.heroError = '';
   try {
@@ -27,8 +39,8 @@ module.exports = async (req, res) => {
   const key = typeof body.licenseKey === 'string' ? body.licenseKey.trim().slice(0, 100) : '';
   if (key && out.db) {
     try {
-      const { data } = await supabase.from('licenses').select('status').eq('license_key', key).maybeSingle();
-      out.license = data ? data.status : 'not_found';
+      const L = require('./_license');
+      out.license = L.licenseState(await L.getLicense(key));
     } catch (e) { out.license = 'unknown'; }
   }
   res.setHeader('Cache-Control', 'no-store');

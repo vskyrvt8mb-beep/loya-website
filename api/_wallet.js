@@ -32,9 +32,7 @@ function signJwt(sa, payload) {
 
 // Подписка должна быть активной — иначе карты не выпускаем.
 async function checkLicense(licenseKey) {
-  if (!licenseKey || typeof licenseKey !== 'string') return false;
-  const { data, error } = await supabase.from('licenses').select('status').eq('license_key', licenseKey.trim()).single();
-  return !error && data && data.status === 'active';
+  return require('./_license').licenseActive(licenseKey);
 }
 
 // Идентификаторы: бизнес — по хэшу ключа лицензии (сам ключ Google не видит),
@@ -81,7 +79,7 @@ function heroImageUrl(card, brand, lang) {
 function progress(card, lang, currency) {
   const W = TEXT[lang] || TEXT.en;
   const cur = CUR[currency] || '€';
-  const money = (v) => { const n = Math.round((Number(v) || 0) * 100) / 100; const t = Number.isInteger(n) ? String(n) : n.toFixed(2); return lang === 'en' ? cur + t : `${t} ${cur}`; };
+  const money = (v) => { const n = Math.round((Number(v) || 0) * 100) / 100; let t = Number.isInteger(n) ? String(n) : n.toFixed(2); if (lang !== 'en') t = t.replace('.', ','); return lang === 'en' ? cur + t : `${t} ${cur}`; };
   if (card.type === 'discount') return { header: W.hDiscount, body: `-${Number(card.discount_percent) || 0}%` };
   if (card.type === 'spend') {
     const acc = money(card.spend_accumulated);

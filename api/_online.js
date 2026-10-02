@@ -52,7 +52,8 @@ function cleanProfile(p, prev) {
 async function publishProfile({ licenseKey, profile }) {
   if (!(await licenseActive(licenseKey))) return { status: 403, error: 'license_inactive' };
   const key = licenseKey.trim();
-  const { data: row } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', key).maybeSingle();
+  const { data: row, error: selErr } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', key).maybeSingle();
+  if (selErr) return { status: 500, error: 'db_error', detail: String(selErr.message || '').slice(0, 140) };
   const clean = cleanProfile(profile, row && row.profile);
   let slug = row && row.slug;
   if (!slug) {
@@ -65,7 +66,7 @@ async function publishProfile({ licenseKey, profile }) {
     if (!slug) return { status: 500, error: 'slug_failed' };
   }
   const { error } = await supabase.from('business_profiles').upsert({ license_key: key, slug, profile: clean, updated_at: new Date().toISOString() });
-  if (error) return { status: 500, error: 'save_failed' };
+  if (error) return { status: 500, error: 'db_error', detail: String(error.message || '').slice(0, 140) };
   return { status: 200, ok: true, slug, url: `${SITE_URL}/r/${slug}` };
 }
 
@@ -144,7 +145,8 @@ async function pull({ licenseKey, ack }) {
   await supabase.from('online_registrations').delete().eq('license_key', key).lt('delivered_at', new Date(Date.now() - 90 * 86400000).toISOString());
   const ids = Array.isArray(ack) ? ack.map(Number).filter(Number.isInteger).slice(0, 200) : [];
   if (ids.length) await supabase.from('online_registrations').update({ delivered_at: new Date().toISOString() }).eq('license_key', key).in('id', ids);
-  const { data } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
+  const { data, error: pullErr } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
+  if (pullErr) return { status: 500, error: 'db_error', detail: String(pullErr.message || '').slice(0, 140) };
   return { status: 200, ok: true, items: (data || []).map(r => ({ id: r.id, name: r.name, phone: r.phone, email: r.email, birthday: r.birthday, lang: r.lang, consent: !!r.consent, code: r.bonus_code, title: r.bonus_title, percent: r.bonus_percent, expires: String(r.bonus_expires).slice(0, 10), createdAt: r.created_at })) };
 }
 
