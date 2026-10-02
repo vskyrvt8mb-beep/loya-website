@@ -99,3 +99,39 @@ alter table licenses add column if not exists note text;
 alter table licenses add column if not exists free_until date;                      -- для бесплатного доступа «до даты»
 alter table licenses add column if not exists last_seen_at timestamptz;
 alter table licenses add column if not exists app_version text;
+
+-- Apple Wallet: последнее состояние карты (его скачивает iPhone) и устройства, на которых карта сохранена.
+create table if not exists apple_passes (
+  serial text primary key,
+  license_key text not null,
+  card jsonb not null default '{}'::jsonb,
+  brand jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+create table if not exists apple_registrations (
+  device_id text not null,
+  serial text not null,
+  push_token text not null,
+  created_at timestamptz not null default now(),
+  primary key (device_id, serial)
+);
+create index if not exists idx_apple_reg_serial on apple_registrations (serial);
+alter table apple_passes enable row level security;
+alter table apple_registrations enable row level security;
+
+-- Касса бизнеса → Loya через интернет: личный адрес для веб-хука и очередь чеков.
+create table if not exists pos_keys (
+  license_key text primary key,
+  key text unique not null,
+  created_at timestamptz not null default now()
+);
+create table if not exists pos_events (
+  id bigint generated always as identity primary key,
+  license_key text not null,
+  payload jsonb not null,
+  created_at timestamptz not null default now(),
+  delivered_at timestamptz
+);
+create index if not exists idx_pos_events_pending on pos_events (license_key, delivered_at);
+alter table pos_keys enable row level security;
+alter table pos_events enable row level security;

@@ -71,6 +71,30 @@
     {
       "source": "/api/admin-action",
       "destination": "/api/core?action=admin-action"
+    },
+    {
+      "source": "/api/apple-link",
+      "destination": "/api/apple?action=link"
+    },
+    {
+      "source": "/api/apple-pass",
+      "destination": "/api/apple?action=pass"
+    },
+    {
+      "source": "/api/apple-ws/:path*",
+      "destination": "/api/apple?action=ws&p=:path*"
+    },
+    {
+      "source": "/api/pos/:key",
+      "destination": "/api/online?action=pos-in&key=:key"
+    },
+    {
+      "source": "/api/pos-key",
+      "destination": "/api/online?action=pos-key"
+    },
+    {
+      "source": "/api/pos-pull",
+      "destination": "/api/online?action=pos-pull"
     }
   ],
   "functions": {
@@ -78,6 +102,9 @@
       "includeFiles": "api/fonts/**"
     },
     "api/core.js": {
+      "includeFiles": "api/fonts/**"
+    },
+    "api/apple.js": {
       "includeFiles": "api/fonts/**"
     }
   }
