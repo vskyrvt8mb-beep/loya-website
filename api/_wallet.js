@@ -73,7 +73,8 @@ function heroImageUrl(card, brand, lang) {
   if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
   else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); }
   else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
-  return `${SITE_URL}/api/wallet-hero.png?${q.toString()}`;
+  q.set('action', 'hero');
+  return `${SITE_URL}/api/wallet?${q.toString()}`;
 }
 
 // Прогресс карты для строки на пассе.
@@ -135,4 +136,34 @@ async function accessToken(sa) {
   return cachedToken.value;
 }
 
-module.exports = { serviceAccount, signJwt, checkLicense, buildObject, accessToken };
+// ---- Запись карты в Google (REST) ----
+const WALLET_API = 'https://walletobjects.googleapis.com/walletobjects/v1';
+async function gcall(token, method, path, body) {
+  const r = await fetch(`${WALLET_API}/${path}`, { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  let msg = '';
+  if (!r.ok) { try { const j = await r.json(); msg = (j && j.error && j.error.message) || ''; } catch (e) { /* не JSON */ } }
+  return { ok: r.ok, status: r.status, message: String(msg).slice(0, 220) };
+}
+// Создаёт или обновляет карту. Если Google отклоняет карту из-за картинки-баннера (например, она
+// временно недоступна), пробуем без баннера: лучше карта без картинки, чем ошибка у клиента.
+async function putObject(token, object) {
+  async function once(obj) {
+    const r = await gcall(token, 'POST', 'genericObject', obj);
+    if (r.status === 409) return gcall(token, 'PATCH', `genericObject/${encodeURIComponent(obj.id)}`, obj);
+    return r;
+  }
+  let r = await once(object);
+  if (!r.ok && r.status >= 400 && r.status < 500 && object.heroImage) {
+    const bare = { ...object }; delete bare.heroImage;
+    const r2 = await once(bare);
+    if (r2.ok) return { ...r2, heroDropped: true, heroError: r.message };
+    return { ...r2, message: r2.message || r.message };
+  }
+  return r;
+}
+async function putClass(token, classId) {
+  const r = await gcall(token, 'POST', 'genericClass', { id: classId });
+  return r.status === 409 ? { ok: true, status: 200, message: '' } : r;   // класс уже есть — это нормально
+}
+
+module.exports = { putObject, putClass, serviceAccount, signJwt, checkLicense, buildObject, accessToken };
