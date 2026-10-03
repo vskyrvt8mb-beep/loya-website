@@ -261,3 +261,14 @@ Vercel → проект → Settings → Domains → Add `loya-loyalty.com` и `
 
 Что сделать один раз: выполнить весь `schema.sql` в Supabase (таблицы `pos_keys`, `pos_events`).
 Новых функций Vercel не добавлено — всего 9 из 12.
+
+
+## Боевой запуск (оплата и Google Wallet)
+
+Пошаговая инструкция — в файле `GO_LIVE.md`. Состояние запуска всегда видно в админке
+(`loya-loyalty.com/admin` → «🚀 Готовность к запуску»).
+
+Новые переменные Vercel для боевого режима: `STRIPE_PORTAL_URL` (ссылка на кабинет клиента в Stripe),
+`MAIL_FROM` и `SUPPORT_EMAIL` (адрес отправителя на своём домене и адрес для ответов),
+необязательно `STRIPE_COLLECT_TAX_ID=1`. После обновления выполните весь `schema.sql` в Supabase
+(колонка `livemode` и защита от дубликатов ключа).

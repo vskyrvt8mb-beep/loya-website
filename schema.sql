@@ -135,3 +135,11 @@ create table if not exists pos_events (
 create index if not exists idx_pos_events_pending on pos_events (license_key, delivered_at);
 alter table pos_keys enable row level security;
 alter table pos_events enable row level security;
+
+-- Боевой запуск: пометка «тестовая/настоящая оплата» у ключей и защита от дубликатов ключа по одной подписке.
+alter table licenses add column if not exists livemode boolean;      -- true — настоящая оплата, false — тестовая, null — создан раньше
+do $$ begin
+  create unique index if not exists idx_licenses_subscription on licenses (stripe_subscription_id) where stripe_subscription_id is not null;
+exception when others then
+  raise notice 'Уникальный индекс по подписке не создан (в таблице уже есть повторы) — это не страшно, вебхук всё равно проверяет повторы.';
+end $$;

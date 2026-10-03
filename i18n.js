@@ -1,6 +1,7 @@
 // Тексты сайта на 4 языках. Ключи используются в HTML через data-i18n / data-i18n-html.
 window.SITE_I18N = {
 ru: {
+  manageLink: 'Управление подпиской и отмена', lostKey: 'Уже оплатили и потеряли ключ?', lostKeyHint: 'Введите email, указанный при оплате — мы пришлём ключ на него.', lostKeyBtn: 'Прислать ключ', lostKeySent: 'Если на этот адрес оформлена подписка, письмо с ключом уже в пути. Проверьте и папку «Спам».', lostKeyErr: 'Не получилось. Проверьте адрес и попробуйте ещё раз.',
   metaTitle: 'Loya — программа лояльности, которая возвращает клиентов',
   metaDesc: 'Электронные карты лояльности, сканер в телефоне, умные рассылки и аналитика для кафе, салонов и магазинов. 3 дня бесплатно, затем €9.99 в месяц.',
   navFeatures: 'Возможности', navHow: 'Как работает', navTour: 'Программа', navPricing: 'Цена', navFaq: 'Вопросы', navCta: 'Попробовать бесплатно',
@@ -70,6 +71,7 @@ ru: {
   pTitle: 'Оформление подписки'
 },
 uk: {
+  manageLink: 'Керування підпискою та скасування', lostKey: 'Вже оплатили й загубили ключ?', lostKeyHint: 'Введіть email, указаний під час оплати — ми надішлемо ключ на нього.', lostKeyBtn: 'Надіслати ключ', lostKeySent: 'Якщо на цю адресу оформлено підписку, лист із ключем уже в дорозі. Перевірте й папку «Спам».', lostKeyErr: 'Не вийшло. Перевірте адресу й спробуйте ще раз.',
   metaTitle: 'Loya — програма лояльності, яка повертає клієнтів',
   metaDesc: 'Електронні картки лояльності, сканер у телефоні, розумні розсилки й аналітика для кав’ярень, салонів і магазинів. 3 дні безкоштовно, далі €9.99 на місяць.',
   navFeatures: 'Можливості', navHow: 'Як працює', navTour: 'Програма', navPricing: 'Ціна', navFaq: 'Питання', navCta: 'Спробувати безкоштовно',
@@ -139,6 +141,7 @@ uk: {
   pTitle: 'Оформлення підписки'
 },
 sk: {
+  manageLink: 'Správa predplatného a zrušenie', lostKey: 'Už ste zaplatili a stratili kľúč?', lostKeyHint: 'Zadajte e-mail uvedený pri platbe — pošleme kľúč naň.', lostKeyBtn: 'Poslať kľúč', lostKeySent: 'Ak je na túto adresu založené predplatné, e-mail s kľúčom je na ceste. Skontrolujte aj priečinok Spam.', lostKeyErr: 'Nepodarilo sa. Skontrolujte adresu a skúste znova.',
   metaTitle: 'Loya — vernostný program, ktorý vracia zákazníkov',
   metaDesc: 'Elektronické vernostné karty, skener v telefóne, chytré kampane a analytika pre kaviarne, salóny a obchody. 3 dni zadarmo, potom 9,99 € mesačne.',
   navFeatures: 'Funkcie', navHow: 'Ako to funguje', navTour: 'Program', navPricing: 'Cena', navFaq: 'Otázky', navCta: 'Vyskúšať zadarmo',
@@ -208,6 +211,7 @@ sk: {
   pTitle: 'Objednávka predplatného'
 },
 en: {
+  manageLink: 'Manage or cancel your subscription', lostKey: 'Already paid and lost your key?', lostKeyHint: 'Enter the email you paid with — we’ll send the key there.', lostKeyBtn: 'Send my key', lostKeySent: 'If a subscription exists for this address, an email with your key is on its way. Check your Spam folder too.', lostKeyErr: 'Something went wrong. Check the address and try again.',
   metaTitle: 'Loya — the loyalty program that brings customers back',
   metaDesc: 'Digital loyalty cards, a phone scanner, smart campaigns and analytics for cafés, salons and shops. 3 days free, then €9.99 a month.',
   navFeatures: 'Features', navHow: 'How it works', navTour: 'The app', navPricing: 'Pricing', navFaq: 'FAQ', navCta: 'Try it free',

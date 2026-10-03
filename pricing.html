@@ -37,7 +37,13 @@
     <p class="plan-note" data-i18n="priceNote"></p>
     <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
     <ul class="plan-list" style="margin-top:26px;gap:10px"><li data-i18n="pf1"></li><li data-i18n="pf2"></li><li data-i18n="pf3"></li><li data-i18n="pf4"></li><li data-i18n="pf5"></li><li data-i18n="pf6"></li></ul>
-    <p style="margin-top:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><a href="/" class="muted" data-i18n="sBack"></a><a href="/privacy.html" class="muted" data-i18n="footPrivacy"></a></p>
+    <div class="lostkey" style="margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12)">
+      <div style="font-weight:800" data-i18n="lostKey"></div>
+      <p class="muted" style="font-size:13px;margin:4px 0 10px" data-i18n="lostKeyHint"></p>
+      <form id="lostkey-form" novalidate style="display:flex;gap:8px;flex-wrap:wrap"><input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Email" style="flex:1 1 200px;min-width:0"><button type="submit" class="btn btn-ghost btn-sm" data-i18n="lostKeyBtn"></button></form>
+      <div id="lostkey-msg" class="muted" style="font-size:13px;margin-top:8px"></div>
+    </div>
+    <p style="margin-top:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><a href="/" class="muted" data-i18n="sBack"></a><a href="/manage" class="muted" data-i18n="manageLink"></a><a href="/privacy.html" class="muted" data-i18n="footPrivacy"></a></p>
   </div>
 </main>
 <script src="/i18n.js"></script>

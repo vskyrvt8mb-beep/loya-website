@@ -126,6 +126,21 @@
     });
   });
 
+  // «Потеряли ключ?» — письмо с ключом на адрес, указанный при оплате
+  const lk = document.getElementById('lostkey-form');
+  if (lk) lk.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('lostkey-msg'); const input = lk.querySelector('input'); const btn = lk.querySelector('button');
+    const email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = t('errEmail'); input.focus(); return; }
+    btn.disabled = true; msg.textContent = '…';
+    try {
+      const r = await fetch('/api/resend-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang }) });
+      msg.textContent = r.ok ? t('lostKeySent') : t('lostKeyErr');
+    } catch (ex) { msg.textContent = t('lostKeyErr'); }
+    btn.disabled = false;
+  });
+
   // ссылки «Скачать для Windows» — всегда на последний установщик из GitHub Releases
   const dl = document.querySelectorAll('[data-download]');
   if (dl.length) {
