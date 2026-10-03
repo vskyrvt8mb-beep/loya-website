@@ -5,6 +5,9 @@
 // Переменные окружения Vercel:
 //   MAIL_USER  — адрес, с которого уходят письма (например loya.loyalty.send@gmail.com)
 //   MAIL_PASS  — пароль приложения этого ящика
+//   MAIL_FROM  — необязательно: адрес в поле «От кого». Нужен для почтовых сервисов (Brevo, Resend, SES), где
+//                логин SMTP — не адрес почты; адрес должен быть на вашем домене (loya-loyalty.com) с настроенными SPF/DKIM
+//   SUPPORT_EMAIL — необязательно: куда падают ответы клиентов на системные письма (ключ, восстановление)
 //   MAIL_HOST  — необязательно, по умолчанию smtp.gmail.com
 //   MAIL_PORT  — необязательно, по умолчанию 465
 //   MAIL_DAILY_PER_LICENSE — необязательно, писем в сутки на одну подписку (по умолчанию 300)
@@ -29,6 +32,7 @@ function getTransport() {
   return transport;
 }
 
+const fromAddress = () => process.env.MAIL_FROM || process.env.MAIL_USER;
 const EMAIL_RE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]{2,}$/;
 function cleanName(s) { return String(s || '').replace(/[\r\n"<>\\]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60) || 'Loya'; }
 
@@ -66,11 +70,23 @@ async function sendMail(p) {
 
   const replyTo = EMAIL_RE.test(String(p.replyTo || '').trim()) ? String(p.replyTo).trim() : undefined;
   await getTransport().sendMail({
-    from: `"${cleanName(p.fromName)}" <${process.env.MAIL_USER}>`,
+    from: `"${cleanName(p.fromName)}" <${fromAddress()}>`,
     to, replyTo, subject, html, attachments
   });
   await supabase.from('mail_log').insert({ license_key: p.licenseKey.trim() });
   return { status: 200, ok: true };
 }
 
-module.exports = { sendMail, licenseActive, supabase, EMAIL_RE };
+// Системные письма самого Loya (ключ после оплаты, восстановление ключа) — не от имени бизнеса и без
+// проверки подписки: у человека её ещё может не быть в базе в этот момент.
+async function sendSystemMail({ to, subject, html }) {
+  const addr = String(to || '').trim();
+  if (!EMAIL_RE.test(addr) || addr.length > 160) throw new Error('bad_recipient');
+  await getTransport().sendMail({
+    from: `"Loya" <${fromAddress()}>`, to: addr, subject: String(subject || '').replace(/[\r\n]+/g, ' ').slice(0, 200), html: String(html || ''),
+    replyTo: EMAIL_RE.test(String(process.env.SUPPORT_EMAIL || '')) ? process.env.SUPPORT_EMAIL : undefined
+  });
+  try { await supabase.from('mail_log').insert({ license_key: 'system' }); } catch (e) { /* журнал не критичен */ }
+}
+
+module.exports = { sendMail, sendSystemMail, licenseActive, supabase, EMAIL_RE };

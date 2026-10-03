@@ -27,8 +27,9 @@ module.exports = async (req, res) => {
         .from('licenses')
         .select('license_key')
         .eq('stripe_subscription_id', session.subscription)
-        .single();
-      if (data) { license = data; break; }
+        .order('created_at', { ascending: true })
+        .limit(1);
+      if (data && data[0]) { license = data[0]; break; }
       await wait(1000);
     }
 
@@ -37,6 +38,7 @@ module.exports = async (req, res) => {
       email: (session.customer_details && session.customer_details.email) || null
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[license-by-session]', err && err.message);
+    res.status(500).json({ error: 'server_error' });
   }
 };

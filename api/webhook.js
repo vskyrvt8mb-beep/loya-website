@@ -30,6 +30,17 @@ function readRawBody(readable) {
 
 // LOYA-XXXX-XXXX-XXXX — читаемый на глаз (клиент может продиктовать по телефону
 // в поддержку), но с достаточной энтропией, чтобы не подобрать перебором.
+// В новых версиях API Stripe (с 2025 года) у счёта (invoice) пропало поле `subscription`: номер подписки
+// теперь лежит в `parent.subscription_details.subscription`. У новых аккаунтов вебхуки приходят именно
+// в новом виде — без этой функции события «оплачено» и «платёж не прошёл» молча ничего бы не меняли.
+function subscriptionIdOf(invoice) {
+  const pick = (v) => (v && typeof v === 'object' ? v.id : v) || null;
+  return pick(invoice.subscription)
+    || pick(invoice.parent && invoice.parent.subscription_details && invoice.parent.subscription_details.subscription)
+    || pick(invoice.lines && invoice.lines.data && invoice.lines.data[0] && invoice.lines.data[0].parent && invoice.lines.data[0].parent.subscription_item_details && invoice.lines.data[0].parent.subscription_item_details.subscription)
+    || null;
+}
+
 function generateLicenseKey() {
   const part = () => crypto.randomBytes(2).toString('hex').toUpperCase();
   return `LOYA-${part()}-${part()}-${part()}`;
@@ -58,16 +69,38 @@ module.exports = async (req, res) => {
       // Успешная первая оплата — создаём новый лицензионный ключ.
       case 'checkout.session.completed': {
         const session = event.data.object;
+        if (session.mode !== 'subscription' || !session.subscription) break;   // нас интересуют только подписки
+        // Stripe может прислать одно событие дважды (повтор после сбоя) — второй ключ создавать нельзя:
+        // иначе у клиента окажется два ключа, а страница успеха не сможет выбрать нужный.
+        const { data: existing } = await supabase.from('licenses').select('license_key').eq('stripe_subscription_id', session.subscription).limit(1);
+        if (existing && existing.length) break;
         const licenseKey = generateLicenseKey();
         const email = (session.customer_details && session.customer_details.email) || session.customer_email || '';
-        const { error } = await supabase.from('licenses').insert({
-          license_key: licenseKey,
-          email,
-          stripe_customer_id: session.customer,
-          stripe_subscription_id: session.subscription,
-          status: 'active'
-        });
-        if (error) console.error('[webhook] Ошибка записи в базу:', error.message);
+        const row = { license_key: licenseKey, email, stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, status: 'active' };
+        // livemode: ключ создан по настоящей оплате (true) или по тестовой (false) — в админке тестовые видно и можно удалить.
+        let { error } = await supabase.from('licenses').insert({ ...row, livemode: !!event.livemode });
+        if (error && /livemode/i.test(String(error.message))) ({ error } = await supabase.from('licenses').insert(row));   // колонку ещё не добавили в базе
+        if (error) {
+          if (error.code === '23505') break;   // параллельная копия этого же события уже создала ключ
+          console.error('[webhook] Ошибка записи в базу:', error.message);
+          throw new Error('db_insert_failed');    // 500 → Stripe повторит доставку позже
+        }
+        // Ключ — на почту: страницу успеха клиент может закрыть, не скопировав ключ.
+        const lang = (session.metadata && session.metadata.lang) || (session.locale && String(session.locale).slice(0, 2)) || 'en';
+        if (email) {
+          try { await require('./_billing').sendKeyEmail({ email, key: licenseKey, lang }); }
+          catch (e) { console.error('[webhook] Письмо с ключом не отправилось:', e.message); }
+        }
+        break;
+      }
+
+      // Любое изменение подписки: приводим статус ключа к статусу в Stripe. Это страхует от настройки
+      // «если все попытки списания не удались — пометить как неоплаченную» (тогда «удалена» не приходит).
+      case 'customer.subscription.updated': {
+        const sub = event.data.object;
+        const map = { active: 'active', trialing: 'active', past_due: 'past_due', unpaid: 'canceled', canceled: 'canceled', incomplete_expired: 'canceled' };
+        const status = map[sub.status];
+        if (status) await supabase.from('licenses').update({ status, updated_at: new Date().toISOString() }).eq('stripe_subscription_id', sub.id);
         break;
       }
 
@@ -75,10 +108,11 @@ module.exports = async (req, res) => {
       // была помечена как просроченная после предыдущей неудачной попытки.
       case 'invoice.paid': {
         const invoice = event.data.object;
-        if (invoice.subscription) {
+        const subId = subscriptionIdOf(invoice);
+        if (subId) {
           await supabase.from('licenses')
             .update({ status: 'active', updated_at: new Date().toISOString() })
-            .eq('stripe_subscription_id', invoice.subscription);
+            .eq('stripe_subscription_id', subId);
         }
         break;
       }
@@ -89,10 +123,11 @@ module.exports = async (req, res) => {
       // не удались — подписка отменяется сама (см. customer.subscription.deleted ниже).
       case 'invoice.payment_failed': {
         const invoice = event.data.object;
-        if (invoice.subscription) {
+        const subId = subscriptionIdOf(invoice);
+        if (subId) {
           await supabase.from('licenses')
             .update({ status: 'past_due', updated_at: new Date().toISOString() })
-            .eq('stripe_subscription_id', invoice.subscription);
+            .eq('stripe_subscription_id', subId);
         }
         break;
       }
@@ -115,6 +150,6 @@ module.exports = async (req, res) => {
     res.status(200).json({ received: true });
   } catch (err) {
     console.error('[webhook] Ошибка обработки:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'webhook_failed' });
   }
 };

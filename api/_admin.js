@@ -41,7 +41,9 @@ async function data({ session }) {
     return { key: r.license_key, email: r.email || '', state, status: r.status || '', plan: r.plan || 'stripe', banned: !!r.banned, note: r.note || '',
       freeUntil: r.free_until ? String(r.free_until).slice(0, 10) : '', created: r.created_at || '', lastSeen: r.last_seen_at || '', version: r.app_version || '',
       // есть ли у ключа подписка Stripe (сами id наружу не отдаём) — чтобы предупредить при удалении
-      hasStripe: Object.keys(r).some(k => /^stripe_/.test(k) && r[k]) };
+      hasStripe: Object.keys(r).some(k => /^stripe_/.test(k) && r[k]),
+      // true — настоящая оплата, false — тестовая, null — создан до учёта режима
+      livemode: r.livemode === true ? true : r.livemode === false ? false : null };
   });
   const recent = (x) => x.lastSeen && now - new Date(x.lastSeen).getTime() < 7 * 86400e3;
   const stats = {
@@ -52,9 +54,14 @@ async function data({ session }) {
     banned: list.filter(x => x.banned).length,
     pastDue: list.filter(x => x.state === 'past_due').length,
     canceled: list.filter(x => x.state === 'canceled' || x.state === 'free_expired').length,
-    online7: list.filter(recent).length
+    online7: list.filter(recent).length,
+    test: list.filter(x => x.livemode === false).length
   };
-  return { status: 200, ok: true, stats, list };
+  const key = process.env.STRIPE_SECRET_KEY || '';
+  const stripeMode = /^(sk|rk)_live_/.test(key) ? 'live' : /^(sk|rk)_test_/.test(key) ? 'test' : (key ? 'unknown' : 'none');
+  let ready = null;
+  try { ready = await require('./_ready').readiness(); } catch (e) { ready = null; }
+  return { status: 200, ok: true, stats, list, stripeMode, ready };
 }
 
 // Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
