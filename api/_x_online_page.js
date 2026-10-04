@@ -4,22 +4,22 @@ const { loadProfileBySlug, esc, DEFAULT_BONUS } = require('./_online');
 const { dictJs } = require('./_dict');
 
 const TX = {
-  ru: { gift: 'Подарок за регистрацию', free: 'Бесплатно', valid: (d) => `Действует ${d} дн. после регистрации`, how: 'Заполните форму — QR-купон появится сразу. Покажите его в заведении и получите подарок и постоянную карту лояльности.',
+  ru: { jHow: 'Заполните форму — карта лояльности появится сразу. Покажите её QR-код на кассе.', jBtn: 'Получить карту', jOk: 'Готово! Это ваша карта', jShow: 'Покажите этот QR-код на кассе — на карту копятся штампы и бонусы.', jTitle: 'Карта лояльности', gift: 'Подарок за регистрацию', free: 'Бесплатно', valid: (d) => `Действует ${d} дн. после регистрации`, how: 'Заполните форму — QR-купон появится сразу. Покажите его в заведении и получите подарок и постоянную карту лояльности.',
     lName: 'Ваше имя', pName: 'Например, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Пришлём копию купона', opt: 'необязательно', lBday: 'День рождения', bdayHint: 'Иногда дарим подарки ко дню рождения',
     consent: 'Хочу получать новости и акции', btn: 'Получить подарок', wait: 'Секунду…', agree: 'Нажимая кнопку, вы соглашаетесь с', privacy: 'политикой конфиденциальности',
     errName: 'Введите имя', errPhone: 'Введите номер телефона', errEmail: 'Проверьте email', errGen: 'Не получилось. Попробуйте ещё раз.', errMany: 'Слишком много попыток — попробуйте позже.', closed: 'Регистрация сейчас закрыта.',
     okTitle: 'Готово! Ваш подарок', again: 'Вы уже регистрировались — вот ваш подарок', until: 'Действует до', show: 'Покажите этот QR-код в заведении — там вы получите подарок и постоянную карту лояльности.', shot: 'Совет: сделайте скриншот, чтобы купон был под рукой.', mailed: 'Копия отправлена на ваш email.' },
-  uk: { gift: 'Подарунок за реєстрацію', free: 'Безкоштовно', valid: (d) => `Діє ${d} дн. після реєстрації`, how: 'Заповніть форму — QR-купон з’явиться одразу. Покажіть його в закладі й отримайте подарунок і постійну картку лояльності.',
+  uk: { jHow: 'Заповніть форму — картка лояльності з’явиться одразу. Покажіть її QR-код на касі.', jBtn: 'Отримати картку', jOk: 'Готово! Це ваша картка', jShow: 'Покажіть цей QR-код на касі — на картку накопичуються штампи й бонуси.', jTitle: 'Картка лояльності', gift: 'Подарунок за реєстрацію', free: 'Безкоштовно', valid: (d) => `Діє ${d} дн. після реєстрації`, how: 'Заповніть форму — QR-купон з’явиться одразу. Покажіть його в закладі й отримайте подарунок і постійну картку лояльності.',
     lName: 'Ваше ім’я', pName: 'Наприклад, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Надішлемо копію купона', opt: 'необов’язково', lBday: 'День народження', bdayHint: 'Іноді даруємо подарунки до дня народження',
     consent: 'Хочу отримувати новини й акції', btn: 'Отримати подарунок', wait: 'Секунду…', agree: 'Натискаючи кнопку, ви погоджуєтеся з', privacy: 'політикою конфіденційності',
     errName: 'Введіть ім’я', errPhone: 'Введіть номер телефону', errEmail: 'Перевірте email', errGen: 'Не вийшло. Спробуйте ще раз.', errMany: 'Забагато спроб — спробуйте пізніше.', closed: 'Реєстрація зараз закрита.',
     okTitle: 'Готово! Ваш подарунок', again: 'Ви вже реєструвалися — ось ваш подарунок', until: 'Діє до', show: 'Покажіть цей QR-код у закладі — там ви отримаєте подарунок і постійну картку лояльності.', shot: 'Порада: зробіть скриншот, щоб купон був під рукою.', mailed: 'Копію надіслано на ваш email.' },
-  sk: { gift: 'Darček za registráciu', free: 'Zadarmo', valid: (d) => `Platí ${d} dní od registrácie`, how: 'Vyplňte formulár — QR kupón sa zobrazí hneď. Ukážte ho v prevádzke a získate darček aj stálu vernostnú kartu.',
+  sk: { jHow: 'Vyplňte formulár — vernostná karta sa zobrazí hneď. QR kód ukážte pri pokladnici.', jBtn: 'Získať kartu', jOk: 'Hotovo! Toto je vaša karta', jShow: 'Ukážte tento QR kód pri pokladnici — na kartu sa zbierajú pečiatky a bonusy.', jTitle: 'Vernostná karta', gift: 'Darček za registráciu', free: 'Zadarmo', valid: (d) => `Platí ${d} dní od registrácie`, how: 'Vyplňte formulár — QR kupón sa zobrazí hneď. Ukážte ho v prevádzke a získate darček aj stálu vernostnú kartu.',
     lName: 'Vaše meno', pName: 'Napríklad Anna', lPhone: 'Telefón', pPhone: '+421 900 000 000', lEmail: 'E-mail', pEmail: 'Pošleme kópiu kupónu', opt: 'nepovinné', lBday: 'Dátum narodenia', bdayHint: 'Občas dávame darčeky k narodeninám',
     consent: 'Chcem dostávať novinky a akcie', btn: 'Získať darček', wait: 'Moment…', agree: 'Kliknutím súhlasíte so', privacy: 'zásadami ochrany osobných údajov',
     errName: 'Zadajte meno', errPhone: 'Zadajte telefónne číslo', errEmail: 'Skontrolujte e-mail', errGen: 'Nepodarilo sa. Skúste znova.', errMany: 'Príliš veľa pokusov — skúste neskôr.', closed: 'Registrácia je momentálne zatvorená.',
     okTitle: 'Hotovo! Váš darček', again: 'Už ste sa registrovali — tu je váš darček', until: 'Platí do', show: 'Ukážte tento QR kód v prevádzke — dostanete darček aj stálu vernostnú kartu.', shot: 'Tip: urobte si snímku obrazovky, aby ste mali kupón po ruke.', mailed: 'Kópia bola odoslaná na váš e-mail.' },
-  en: { gift: 'Sign-up gift', free: 'Free', valid: (d) => `Valid for ${d} days after sign-up`, how: 'Fill in the form — your QR coupon appears right away. Show it at the venue to get your gift and a permanent loyalty card.',
+  en: { jHow: 'Fill in the form — your loyalty card appears right away. Show its QR code at the till.', jBtn: 'Get my card', jOk: 'Done! This is your card', jShow: 'Show this QR code at the till — stamps and bonuses are collected on the card.', jTitle: 'Loyalty card', gift: 'Sign-up gift', free: 'Free', valid: (d) => `Valid for ${d} days after sign-up`, how: 'Fill in the form — your QR coupon appears right away. Show it at the venue to get your gift and a permanent loyalty card.',
     lName: 'Your name', pName: 'e.g. Anna', lPhone: 'Phone', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'We’ll send a copy of the coupon', opt: 'optional', lBday: 'Birthday', bdayHint: 'We sometimes give birthday treats',
     consent: 'I’d like news and offers', btn: 'Get my gift', wait: 'One moment…', agree: 'By tapping the button you agree to the', privacy: 'privacy policy',
     errName: 'Enter your name', errPhone: 'Enter your phone number', errEmail: 'Check the email', errGen: 'Something went wrong. Please try again.', errMany: 'Too many attempts — please try later.', closed: 'Registration is closed right now.',
@@ -61,9 +61,9 @@ function palette(color, niche) {
   return { a, b, on, onbg: on === '#ffffff' ? 'rgba(10,8,20,.34)' : 'rgba(255,255,255,.62)' };
 }
 
-function html(slug, p) {
+function html(slug, p, mode) {
   const pal = palette(p.color, p.niche);
-  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled };
+  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo' };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#0d0f14"><title>${esc(ctx.name)}</title>
 <style>
@@ -163,14 +163,17 @@ function render(){const T=TX[lang];document.documentElement.lang=lang;
 $('lang').innerHTML=Object.keys(TX).map(k=>'<button type="button" data-l="'+k+'" class="'+(k===lang?'on':'')+'">'+k.toUpperCase()+'</button>').join('');
 $('lang').querySelectorAll('button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;try{localStorage.setItem('loya_reg_lang',lang)}catch(e){}render()});
 const title=CTX.title||CTX.defaults[lang];
-$('o-k').textContent='🎁 '+T.gift;$('o-t').textContent=title;$('o-b').textContent=pct(CTX.percent);$('o-v').textContent=T.valid(CTX.days);
-$('how').textContent=T.how;
+const J=CTX.mode==='join';
+if(J){$('o-k').closest('.offer').style.display='none'}else{$('o-k').textContent='🎁 '+T.gift;$('o-t').textContent=title;$('o-b').textContent=pct(CTX.percent);$('o-v').textContent=T.valid(CTX.days)}
+$('how').textContent=J?T.jHow:T.how;
 $('l-n').textContent=T.lName;$('n').placeholder=T.pName;$('l-p').textContent=T.lPhone;$('p').placeholder=T.pPhone;
 $('l-e').textContent=T.lEmail;$('o-e').textContent='· '+T.opt;$('e').placeholder=T.pEmail;$('l-b').textContent=T.lBday;$('o-b2').textContent='· '+T.opt;$('h-b').textContent=T.bdayHint;
-$('cl').textContent=T.consent;$('go-t').textContent=T.btn;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
+$('cl').textContent=T.consent;$('go-t').textContent=J?T.jBtn:T.btn;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
 if(!CTX.enabled){$('f').style.display='none';$('closed').style.display='block';$('closed').textContent=T.closed}
 if(coupon){$('form-box').style.display='none';const d=$('done');d.style.display='block';
-d.innerHTML='<div class="ticket"><div class="h"><b>🎁 '+esc(repeat?T.again:T.okTitle)+'</b><div>'+esc(coupon.title||CTX.defaults[lang])+'</div><span class="badge">'+esc(pct(coupon.percent))+'</span></div>'+
+d.innerHTML=J?'<div class="ticket"><div class="h"><b>💳 '+esc(T.jOk)+'</b><div>'+esc(CTX.name)+' · '+esc(T.jTitle)+'</div></div>'+
+'<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="small">'+esc(T.jShow)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'
+:'<div class="ticket"><div class="h"><b>🎁 '+esc(repeat?T.again:T.okTitle)+'</b><div>'+esc(coupon.title||CTX.defaults[lang])+'</div><span class="badge">'+esc(pct(coupon.percent))+'</span></div>'+
 '<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="until">'+esc(T.until)+' '+esc(fmt(coupon.expires))+'</div><div class="small">'+esc(T.show)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'}}
 function burst(){try{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const cols=[getComputedStyle(document.documentElement).getPropertyValue('--a').trim(),getComputedStyle(document.documentElement).getPropertyValue('--b').trim(),'#fbbf24','#34d399','#60a5fa','#f472b6'];
 const box=document.createElement('div');box.className='confetti';for(let i=0;i<46;i++){const e=document.createElement('i');e.style.left=(Math.random()*100)+'%';e.style.background=cols[i%cols.length];e.style.setProperty('--dx',((Math.random()-.5)*160)+'px');e.style.setProperty('--rot',(Math.random()*720-360)+'deg');e.style.animationDelay=(Math.random()*.5)+'s';e.style.animationDuration=(2+Math.random()*1.6)+'s';box.appendChild(e)}document.body.appendChild(box);setTimeout(()=>box.remove(),4600)}catch(e){}}
@@ -179,7 +182,7 @@ const name=$('n').value.trim(),phone=$('p').value.trim(),email=$('e').value.trim
 if(!name){$('err').textContent=T.errName;$('n').focus();return}if(phone.replace(/\\D/g,'').length<7){$('err').textContent=T.errPhone;$('p').focus();return}
 if(email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){$('err').textContent=T.errEmail;$('e').focus();return}
 $('go').disabled=true;$('go-t').textContent=T.wait;
-try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value})});
+try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,mode:CTX.mode,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value})});
 const j=await r.json();if(j.ok&&j.code){coupon=j;repeat=!!j.repeat;mailed=!!j.emailSent;render();window.scrollTo(0,0);if(!repeat)burst();return}
 $('err').textContent=j.error==='too_many'||j.error==='daily_limit'?T.errMany:j.error==='closed'?T.closed:j.error==='email'?T.errEmail:j.error==='phone'?T.errPhone:j.error==='name'?T.errName:T.errGen}catch(e){$('err').textContent=T.errGen}
 $('go').disabled=false;$('go-t').textContent=T.btn});
@@ -193,7 +196,7 @@ module.exports = async (req, res) => {
     if (!row) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
-    res.status(200).send(html(row.slug, row.profile || {}));
+    res.status(200).send(html(row.slug, row.profile || {}, req.query && req.query.mode));
   } catch (e) { res.status(500).send('Error'); }
 };
 module.exports.html = html;
