@@ -150,3 +150,92 @@ alter table licenses add column if not exists trial_until timestamptz;          
 alter table licenses add column if not exists machine_hash text;                        -- хеш компьютера: один пробный период на компьютер
 create index if not exists idx_licenses_machine on licenses (machine_hash);
 create index if not exists idx_licenses_email_lower on licenses (lower(email));
+
+-- ===================== Pro: общая база между компьютерами (синхронизация) =====================
+-- Устройства организации (организация = ключ Pro). Токен устройства хранится только хешем.
+create table if not exists sync_devices (
+  id text primary key,
+  license_key text not null,
+  name text,
+  token_hash text not null,
+  created_at timestamptz default now(),
+  last_seen_at timestamptz,
+  revoked boolean default false
+);
+create index if not exists idx_sync_devices_license on sync_devices (license_key);
+-- Последнее состояние каждой записи (клиент, карта, визит) с версией. seq — общий порядковый номер изменения:
+-- по нему устройства забирают «всё новое с момента N».
+create sequence if not exists sync_seq;
+create table if not exists sync_entities (
+  license_key text not null,
+  entity text not null,
+  uid text not null,
+  ver integer not null,
+  data jsonb not null,
+  last_op text,
+  device_id text,
+  seq bigint not null,
+  updated_at timestamptz default now(),
+  primary key (license_key, entity, uid)
+);
+create index if not exists idx_sync_entities_seq on sync_entities (license_key, seq);
+-- Номера применённых операций: повтор отправки после обрыва связи узнаётся даже если запись уже изменил другой компьютер.
+create table if not exists sync_applied (
+  license_key text not null,
+  op text not null,
+  ver integer not null,
+  created_at timestamptz default now(),
+  primary key (license_key, op)
+);
+alter table sync_devices enable row level security;
+alter table sync_entities enable row level security;
+alter table sync_applied enable row level security;
+-- Атомарная запись с проверкой версии: устройство присылает версию, от которой оно отталкивалось (p_base).
+-- Совпала — запись принимается (версия +1). Не совпала — конфликт, сервер возвращает актуальное состояние.
+-- Повтор той же отправки (тот же p_op после обрыва связи) не применяется второй раз.
+create or replace function sync_apply(p_license text, p_entity text, p_uid text, p_base integer, p_data jsonb, p_op text, p_device text)
+returns jsonb language plpgsql as $$
+declare cur record; nseq bigint; prev integer;
+begin
+  select ver into prev from sync_applied where license_key = p_license and op = p_op;
+  if found then return jsonb_build_object('status', 'ok', 'ver', prev, 'dup', true); end if;
+  select ver, data, last_op into cur from sync_entities where license_key = p_license and entity = p_entity and uid = p_uid for update;
+  if not found then
+    if p_base <> 0 then return jsonb_build_object('status', 'conflict', 'ver', 0, 'data', null); end if;
+    nseq := nextval('sync_seq');
+    begin
+      insert into sync_entities (license_key, entity, uid, ver, data, last_op, device_id, seq, updated_at) values (p_license, p_entity, p_uid, 1, p_data, p_op, p_device, nseq, now());
+      insert into sync_applied (license_key, op, ver) values (p_license, p_op, 1) on conflict do nothing;
+    exception when unique_violation then
+      select ver, data, last_op into cur from sync_entities where license_key = p_license and entity = p_entity and uid = p_uid;
+      if cur.last_op = p_op then return jsonb_build_object('status', 'ok', 'ver', cur.ver, 'dup', true); end if;
+      return jsonb_build_object('status', 'conflict', 'ver', cur.ver, 'data', cur.data);
+    end;
+    return jsonb_build_object('status', 'ok', 'ver', 1, 'seq', nseq);
+  end if;
+  if cur.last_op = p_op then return jsonb_build_object('status', 'ok', 'ver', cur.ver, 'dup', true); end if;
+  if cur.ver <> p_base then return jsonb_build_object('status', 'conflict', 'ver', cur.ver, 'data', cur.data); end if;
+  nseq := nextval('sync_seq');
+  update sync_entities set ver = cur.ver + 1, data = p_data, last_op = p_op, device_id = p_device, seq = nseq, updated_at = now()
+    where license_key = p_license and entity = p_entity and uid = p_uid;
+  insert into sync_applied (license_key, op, ver) values (p_license, p_op, cur.ver + 1) on conflict do nothing;
+  return jsonb_build_object('status', 'ok', 'ver', cur.ver + 1, 'seq', nseq);
+end $$;
+
+-- Доступ из дома: выход со всех устройств (поколение сеансов), срок ссылки, вход по email + коду + паролю, журнал входов.
+alter table owner_access add column if not exists session_gen integer default 0;
+alter table owner_access add column if not exists token_expires_at timestamptz;
+alter table owner_access add column if not exists login_code_hash text;
+alter table owner_access add column if not exists login_code_exp timestamptz;
+alter table owner_access add column if not exists login_code_tries integer default 0;
+create table if not exists owner_logins (
+  id bigserial primary key,
+  license_key text not null,
+  at timestamptz default now(),
+  method text,          -- link | code
+  ok boolean,
+  ip text,              -- сокращённый адрес (первые две части)
+  ua text
+);
+create index if not exists idx_owner_logins_key on owner_logins (license_key, at desc);
+alter table owner_logins enable row level security;

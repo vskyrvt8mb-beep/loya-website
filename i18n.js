@@ -3,7 +3,7 @@ window.SITE_I18N = {
 ru: {
   payNote: 'Оплата сразу, отмена в любой момент. Если у вас пробный ключ — укажите тот же email, и он станет платным.',
   planProCta: 'Выбрать Pro',
-  planProF4: 'Общая база между компьютерами — в разработке',
+  planProF4: 'Общая база между компьютерами — обмен каждые 2 минуты',
   planProF3: 'Сотрудники и роли для всех точек',
   planProF2: 'Аналитика по каждой точке и общая',
   planProF1: 'Несколько точек (от 3) в одной программе',
@@ -95,7 +95,7 @@ ru: {
 uk: {
   payNote: 'Оплата одразу, скасування будь-коли. Якщо у вас пробний ключ — вкажіть той самий email, і він стане платним.',
   planProCta: 'Обрати Pro',
-  planProF4: 'Спільна база між комп’ютерами — у розробці',
+  planProF4: 'Спільна база між комп’ютерами — обмін кожні 2 хвилини',
   planProF3: 'Співробітники й ролі для всіх точок',
   planProF2: 'Аналітика по кожній точці й загальна',
   planProF1: 'Кілька точок (від 3) в одній програмі',
@@ -187,7 +187,7 @@ uk: {
 sk: {
   payNote: 'Platba hneď, zrušenie kedykoľvek. Ak máte skúšobný kľúč, zadajte ten istý e-mail a kľúč sa stane plateným.',
   planProCta: 'Vybrať Pro',
-  planProF4: 'Spoločná databáza medzi počítačmi — vo vývoji',
+  planProF4: 'Spoločná databáza medzi počítačmi — výmena každé 2 minúty',
   planProF3: 'Zamestnanci a roly pre všetky prevádzky',
   planProF2: 'Analytika za každú prevádzku aj spolu',
   planProF1: 'Viac prevádzok (od 3) v jednom programe',
@@ -279,7 +279,7 @@ sk: {
 en: {
   payNote: 'You pay now and can cancel anytime. If you have a trial key, use the same email and it becomes paid.',
   planProCta: 'Choose Pro',
-  planProF4: 'Shared database across computers — in development',
+  planProF4: 'Shared database across computers — synced every 2 minutes',
   planProF3: 'Staff and roles for all locations',
   planProF2: 'Analytics per location and overall',
   planProF1: 'Several locations (3+) in one app',

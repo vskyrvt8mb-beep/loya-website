@@ -107,6 +107,26 @@
     {
       "source": "/api/trial-start",
       "destination": "/api/core?action=trial-start"
+    },
+    {
+      "source": "/api/sync/:op",
+      "destination": "/api/core?action=sync&op=:op"
+    },
+    {
+      "source": "/api/owner-code",
+      "destination": "/api/owner?action=auth&op=code"
+    },
+    {
+      "source": "/api/owner-code-login",
+      "destination": "/api/owner?action=auth&op=code-login"
+    },
+    {
+      "source": "/api/owner-logout-all",
+      "destination": "/api/owner?action=auth&op=logout-all"
+    },
+    {
+      "source": "/owner",
+      "destination": "/api/owner?action=page"
     }
   ],
   "functions": {
