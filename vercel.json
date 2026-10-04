@@ -127,6 +127,10 @@
     {
       "source": "/owner",
       "destination": "/api/owner?action=page"
+    },
+    {
+      "source": "/j/:slug",
+      "destination": "/api/online?action=page&slug=:slug&mode=join"
     }
   ],
   "functions": {

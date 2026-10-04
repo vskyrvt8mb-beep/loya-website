@@ -239,3 +239,6 @@ create table if not exists owner_logins (
 );
 create index if not exists idx_owner_logins_key on owner_logins (license_key, at desc);
 alter table owner_logins enable row level security;
+
+-- Онлайн-саморегистрация (без купона): заявка помечается kind = 'join' (купон по ссылке-акции — 'promo').
+alter table online_registrations add column if not exists kind text default 'promo';
