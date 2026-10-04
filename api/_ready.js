@@ -44,6 +44,13 @@ async function readiness() {
   else add('mail', 'ok', 'ok');
   add('wallet', out.wallet && out.walletKeyValid ? 'info' : 'bad', out.wallet && out.walletKeyValid ? 'mode' : 'off');
   add('apple', out.apple ? 'ok' : 'info');
+  // Самопроверка функции синхронизации Pro (sync_apply из schema.sql): пробная запись в служебную «организацию».
+  try {
+    const { supabase } = require('./_license');
+    const op = require('crypto').randomBytes(16).toString('hex');
+    const { data, error } = await supabase.rpc('sync_apply', { p_license: 'SELFTEST', p_entity: 'selftest', p_uid: '0'.repeat(32), p_base: 0, p_data: { t: Date.now() }, p_op: op, p_device: 'selftest' });
+    add('sync', error ? 'bad' : (data && (data.status === 'ok' || data.status === 'conflict')) ? 'ok' : 'bad', error ? 'missing' : 'ok');
+  } catch (e) { add('sync', 'bad', 'missing'); }
   add('db', out.db && !out.tablesMissing.length ? 'ok' : 'bad', out.db ? out.tablesMissing.join(', ') : 'no db');
   let testKeys = 0;
   try { const { data } = await supabase.from('licenses').select('livemode').eq('livemode', false).limit(500); testKeys = (data || []).length; } catch (e) { /* колонки ещё нет */ }

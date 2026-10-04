@@ -69,7 +69,7 @@ async function data({ session }) {
 
 // Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
 // Подписку в Stripe это НЕ отменяет — её отменяют в кабинете Stripe (в окне удаления это написано).
-const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log'];
+const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins'];
 async function deleteKeys(keys) {
   const deleted = [], failed = [];
   for (const k of keys) {
