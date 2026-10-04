@@ -101,6 +101,16 @@
   }
   ['calc-visitors', 'calc-check', 'calc-rate'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', updateCalc); });
 
+  // выбор тарифа: кнопки на карточках и ?plan=pro в ссылке (её открывает программа)
+  const pickTier = (tier, scroll) => {
+    document.querySelectorAll('.plans-checkout input[name=tier]').forEach(r => { r.checked = r.value === tier; });
+    const f = document.querySelector('.plans-checkout');
+    if (f && scroll) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); const em = f.querySelector('input[type=email]'); if (em) setTimeout(() => em.focus(), 400); }
+  };
+  document.querySelectorAll('.pick-tier').forEach(b => b.addEventListener('click', () => pickTier(b.dataset.tier, true)));
+  const planParam = new URLSearchParams(location.search).get('plan');
+  if (planParam === 'pro' || planParam === 'starter') pickTier(planParam, false);
+
   // оформление подписки (Stripe Checkout через /api/create-checkout-session)
   document.querySelectorAll('form.checkout').forEach(form => {
     form.addEventListener('submit', async (e) => {
@@ -115,7 +125,9 @@
       const label = btn.querySelector('span');
       label.textContent = t('loading');
       try {
-        const res = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang }) });
+        const tierEl = form.querySelector('input[name=tier]:checked');
+        const tier = tierEl ? tierEl.value : 'starter';
+        const res = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang, tier }) });
         const data = await res.json();
         if (data.url) { location.href = data.url; return; }
         throw new Error(data.error || 'error');

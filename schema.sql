@@ -143,3 +143,10 @@ do $$ begin
 exception when others then
   raise notice 'Уникальный индекс по подписке не создан (в таблице уже есть повторы) — это не страшно, вебхук всё равно проверяет повторы.';
 end $$;
+
+-- Тарифы и пробный период (14 дней без карты): тариф ключа, срок пробного периода, хеш компьютера.
+alter table licenses add column if not exists tier text not null default 'starter';   -- starter | pro
+alter table licenses add column if not exists trial_until timestamptz;                  -- для plan = 'trial'
+alter table licenses add column if not exists machine_hash text;                        -- хеш компьютера: один пробный период на компьютер
+create index if not exists idx_licenses_machine on licenses (machine_hash);
+create index if not exists idx_licenses_email_lower on licenses (lower(email));

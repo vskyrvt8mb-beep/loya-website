@@ -103,6 +103,10 @@
     {
       "source": "/api/resend-key",
       "destination": "/api/core?action=resend-key"
+    },
+    {
+      "source": "/api/trial-start",
+      "destination": "/api/core?action=trial-start"
     }
   ],
   "functions": {

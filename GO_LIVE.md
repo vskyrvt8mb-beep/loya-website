@@ -23,8 +23,10 @@
 1. **Активируйте аккаунт.** Stripe → «Activate account»: данные бизнеса или самозанятого, банковский счёт для выплат,
    адрес, документы. Без этого боевой режим не включится. Какой статус указывать (ИП/самозанятый/s.r.o.) и нужен ли НДС
    (DPH) — вопрос к бухгалтеру.
-2. **Боевая цена.** Переключите Stripe в **боевой режим** (переключатель вверху) → Product catalog → Add product:
-   название «Loya», цена **9,99 EUR**, *Recurring → Monthly*. Скопируйте `price_…` (Price ID).
+2. **Боевые цены (два тарифа).** Боевой режим → Product catalog → Add product:
+   - «Loya Starter» — **9,99 EUR**, *Recurring → Monthly* → `price_…` в `STRIPE_PRICE_ID`;
+   - «Loya Pro» — **19,99 EUR**, *Recurring → Monthly* → `price_…` в `STRIPE_PRICE_ID_PRO`.
+   Пробных дней на ценах не ставьте: 14 дней без карты выдаёт сама программа.
 3. **Вебхук.** Developers → Webhooks («Add destination» / «Add endpoint»). Тип payload — **Snapshot** (обычный, не «Thin»):
    - адрес: `https://loya-loyalty.com/api/webhook`
    - события: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`,
@@ -33,6 +35,7 @@
 4. **Попытки списания.** Settings → Billing → Subscriptions and emails → *Manage failed payments*: включите Smart Retries,
    а в «If all retries for a payment fail» выберите **Cancel the subscription**.
 5. **Управление подпиской клиентом.** Settings → Billing → **Customer portal**: включите отмену подписки и смену карты,
+   а в разделе *Subscriptions → Customers can switch plans* добавьте оба продукта (Starter и Pro) — тогда клиент сам переходит между тарифами, а тариф ключа меняется автоматически;
    затем скопируйте **ссылку на портал** (Customer portal link, начинается с `https://billing.stripe.com/…`).
    Эта ссылка стоит за кнопкой «Управление подпиской» и страницей `loya-loyalty.com/manage`.
 6. **Ключ API.** Developers → API keys → Secret key (`sk_live_…`).
@@ -43,7 +46,8 @@
    | Имя | Значение |
    |---|---|
    | `STRIPE_SECRET_KEY` | `sk_live_…` |
-   | `STRIPE_PRICE_ID` | `price_…` из боевого режима |
+   | `STRIPE_PRICE_ID` | `price_…` Starter из боевого режима |
+   | `STRIPE_PRICE_ID_PRO` | `price_…` Pro из боевого режима |
    | `STRIPE_WEBHOOK_SECRET` | `whsec_…` боевого вебхука |
    | `STRIPE_PORTAL_URL` | ссылка на портал (`https://billing.stripe.com/…`) |
    | `PUBLIC_URL` | `https://loya-loyalty.com` |

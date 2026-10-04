@@ -24,19 +24,40 @@
   </div>
 </header>
 <main>
-  <div class="panel plan" style="max-width:520px">
-    <div class="plan-badge" data-i18n="trialBadge"></div>
-    <div class="plan-name" data-i18n="pTitle"></div>
-    <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
-    <div class="plan-compare" data-i18n="priceCompare"></div>
-    <form class="checkout" novalidate>
-      <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Ваш email" required autofocus>
-      <button type="submit" class="btn btn-primary">🎁 <span data-i18n="priceCta"></span></button>
-      <div class="checkout-err"></div>
-    </form>
-    <p class="plan-note" data-i18n="priceNote"></p>
-    <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
-    <ul class="plan-list" style="margin-top:26px;gap:10px"><li data-i18n="pf1"></li><li data-i18n="pf2"></li><li data-i18n="pf3"></li><li data-i18n="pf4"></li><li data-i18n="pf5"></li><li data-i18n="pf6"></li></ul>
+  <div class="pricing-page">
+      <h1 class="h2" data-i18n="priceTitle" style="text-align:center"></h1>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial"></b><span data-i18n="plansTrialSub"></span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName"></div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
+          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta"></a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge"></div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1"></li><li data-i18n="planStarterF2"></li><li data-i18n="planStarterF3"></li><li data-i18n="planStarterF4"></li><li data-i18n="planStarterF5"></li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta"></button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge"></div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planProF0"></li><li data-i18n="planProF1"></li><li data-i18n="planProF2"></li><li data-i18n="planProF3"></li><li data-i18n="planProF4"></li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta"></button>
+        </div>
+      </div>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Email" required>
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote"></p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+      </form>
+    <div class="panel" style="max-width:640px;margin:26px auto 0">
     <div class="lostkey" style="margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12)">
       <div style="font-weight:800" data-i18n="lostKey"></div>
       <p class="muted" style="font-size:13px;margin:4px 0 10px" data-i18n="lostKeyHint"></p>
@@ -44,6 +65,7 @@
       <div id="lostkey-msg" class="muted" style="font-size:13px;margin-top:8px"></div>
     </div>
     <p style="margin-top:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><a href="/" class="muted" data-i18n="sBack"></a><a href="/manage" class="muted" data-i18n="manageLink"></a><a href="/privacy.html" class="muted" data-i18n="footPrivacy"></a></p>
+  </div>
   </div>
 </main>
 <script src="/i18n.js"></script>
