@@ -90,6 +90,7 @@ ru: {
   sStep2: 'Вставьте ключ', sStep2D: 'Откройте Настройки → Подписка и вставьте этот ключ:', sCopy: 'Копировать', sCopied: 'Скопировано ✓', sKeySent: 'Ключ также отправлен на вашу почту.',
   sStep3: 'Готово!', sStep3D: 'Программа сама покажет короткую презентацию и поможет всё настроить.', sError: 'Не удалось найти ключ автоматически. Не переживайте — напишите нам, и мы вышлем его вручную.', sBack: '← На главную',
   footPrivacy: 'Политика конфиденциальности',
+  navContact: 'Контакты', contactTitle: 'Остались вопросы? Напишите нам', contactSub: 'Поможем с настройкой, подпиской и ключом. Отвечаем на русском, украинском, словацком и английском.', contactNote: 'Обычно отвечаем в течение одного рабочего дня.', errTooMany: 'Слишком много попыток. Подождите несколько минут и попробуйте снова.',
   pTitle: 'Оформление подписки'
 },
 uk: {
@@ -182,6 +183,7 @@ uk: {
   sStep2: 'Вставте ключ', sStep2D: 'Відкрийте Налаштування → Підписка та вставте цей ключ:', sCopy: 'Копіювати', sCopied: 'Скопійовано ✓', sKeySent: 'Ключ також надіслано на вашу пошту.',
   sStep3: 'Готово!', sStep3D: 'Програма сама покаже коротку презентацію й допоможе все налаштувати.', sError: 'Не вдалося знайти ключ автоматично. Не хвилюйтеся — напишіть нам, і ми надішлемо його вручну.', sBack: '← На головну',
   footPrivacy: 'Політика конфіденційності',
+  navContact: 'Контакти', contactTitle: 'Залишилися запитання? Напишіть нам', contactSub: 'Допоможемо з налаштуванням, підпискою та ключем. Відповідаємо українською, російською, словацькою та англійською.', contactNote: 'Зазвичай відповідаємо протягом одного робочого дня.', errTooMany: 'Забагато спроб. Зачекайте кілька хвилин і спробуйте знову.',
   pTitle: 'Оформлення підписки'
 },
 sk: {
@@ -274,6 +276,7 @@ sk: {
   sStep2: 'Vložte kľúč', sStep2D: 'Otvorte Nastavenia → Predplatné a vložte tento kľúč:', sCopy: 'Kopírovať', sCopied: 'Skopírované ✓', sKeySent: 'Kľúč sme poslali aj na váš e-mail.',
   sStep3: 'Hotovo!', sStep3D: 'Program sám ukáže krátku prezentáciu a pomôže so všetkým nastavením.', sError: 'Kľúč sa nepodarilo nájsť automaticky. Nebojte sa — napíšte nám a pošleme ho ručne.', sBack: '← Na úvod',
   footPrivacy: 'Ochrana osobných údajov',
+  navContact: 'Kontakt', contactTitle: 'Máte otázky? Napíšte nám', contactSub: 'Pomôžeme s nastavením, predplatným aj kľúčom. Odpovedáme po slovensky, rusky, ukrajinsky a anglicky.', contactNote: 'Zvyčajne odpovedáme do jedného pracovného dňa.', errTooMany: 'Príliš veľa pokusov. Počkajte niekoľko minút a skúste to znova.',
   pTitle: 'Objednávka predplatného'
 },
 en: {
@@ -366,6 +369,7 @@ en: {
   sStep2: 'Paste your key', sStep2D: 'Open Settings → Subscription and paste this key:', sCopy: 'Copy', sCopied: 'Copied ✓', sKeySent: 'We’ve also emailed the key to you.',
   sStep3: 'Done!', sStep3D: 'The app will show a short intro and help you set everything up.', sError: 'We couldn’t find your key automatically. Don’t worry — contact us and we’ll send it manually.', sBack: '← Back to home',
   footPrivacy: 'Privacy policy',
+  navContact: 'Contact', contactTitle: 'Questions? Write to us', contactSub: 'We’ll help with setup, your subscription and your license key. We reply in English, Slovak, Russian and Ukrainian.', contactNote: 'We usually reply within one business day.', errTooMany: 'Too many attempts. Please wait a few minutes and try again.',
   pTitle: 'Start your subscription'
 }
 };

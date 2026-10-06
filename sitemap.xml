@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://loya-loyalty.com/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://loya-loyalty.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://loya-loyalty.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://loya-loyalty.com/uk/"/>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://loya-loyalty.com/sk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://loya-loyalty.com/"/>
+  </url>
+  <url>
+    <loc>https://loya-loyalty.com/ru/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://loya-loyalty.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://loya-loyalty.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://loya-loyalty.com/uk/"/>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://loya-loyalty.com/sk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://loya-loyalty.com/"/>
+  </url>
+  <url>
+    <loc>https://loya-loyalty.com/uk/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://loya-loyalty.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://loya-loyalty.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://loya-loyalty.com/uk/"/>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://loya-loyalty.com/sk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://loya-loyalty.com/"/>
+  </url>
+  <url>
+    <loc>https://loya-loyalty.com/sk/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://loya-loyalty.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://loya-loyalty.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://loya-loyalty.com/uk/"/>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://loya-loyalty.com/sk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://loya-loyalty.com/"/>
+  </url>
+  <url>
+    <loc>https://loya-loyalty.com/privacy.html</loc>
+    <lastmod>2026-10-06</lastmod>
+  </url>
+</urlset>

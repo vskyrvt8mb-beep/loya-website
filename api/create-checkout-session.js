@@ -6,19 +6,60 @@
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Защита от злоупотреблений: лимиты по IP и по email (в памяти функции — это частичная защита:
+// у каждого экземпляра Vercel свой счётчик), проверка формата email и источника запроса.
+const EMAIL_RE = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.[A-Za-z]{2,}$/;
+const hits = new Map();
+function limited(key, max, ms) {
+  const now = Date.now();
+  const arr = (hits.get(key) || []).filter((t) => now - t < ms);
+  if (arr.length >= max) { hits.set(key, arr); return true; }
+  arr.push(now); hits.set(key, arr);
+  if (hits.size > 5000) for (const [k, v] of hits) if (!v.length || now - v[v.length - 1] > ms) hits.delete(k);
+  return false;
+}
+// Запрос должен идти с нашего сайта: заголовок Origin (его ставит браузер) совпадает с хостом
+// или с адресом из PUBLIC_URL. Запросы без Origin (curl и т.п.) не пропускаем.
+function sameOrigin(req) {
+  const origin = String((req.headers && req.headers.origin) || '');
+  if (!origin) return false;
+  try {
+    const host = new URL(origin).host;
+    const allowed = new Set([String(req.headers.host || ''), 'loya-loyalty.com', 'www.loya-loyalty.com']);
+    if (process.env.PUBLIC_URL) allowed.add(new URL(process.env.PUBLIC_URL).host);
+    return allowed.has(host);
+  } catch (e) { return false; }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method_not_allowed' });
     return;
   }
 
+  if (!sameOrigin(req)) {
+    res.status(403).json({ error: 'forbidden' });
+    return;
+  }
+  const ip = String(((req.headers && req.headers['x-forwarded-for']) || '').split(',')[0] || '').trim() || 'unknown';
+  if (limited('ip:' + ip, 10, 3600e3)) {
+    res.status(429).json({ error: 'too_many' });
+    return;
+  }
+
   try {
-    const { email, lang, tier: rawTier } = req.body || {};
+    const { lang, tier: rawTier } = req.body || {};
+    const email = typeof (req.body || {}).email === 'string' ? req.body.email.trim().toLowerCase() : '';
     const tier = rawTier === 'pro' ? 'pro' : 'starter';
     // Язык сайта — чтобы после оплаты (или отмены) человек вернулся на свой язык.
     const safeLang = ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'en';
-    if (!email) {
-      res.status(400).json({ error: 'email обязателен' });
+    if (!email || email.length > 254 || !EMAIL_RE.test(email)) {
+      res.status(400).json({ error: 'bad_email' });
+      return;
+    }
+    // Один адрес — не больше 3 сессий за 10 минут.
+    if (limited('em:' + email, 3, 600e3)) {
+      res.status(429).json({ error: 'too_many' });
       return;
     }
 
