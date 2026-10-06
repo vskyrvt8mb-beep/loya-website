@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--SEO-->
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<!--PRELOAD-->
+</head>
+<body data-page="home" data-page-lang="{{LANG}}">
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="{{HOME}}" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
+    <nav class="nav-links">
+      <a href="#features" data-i18n="navFeatures">Возможности</a>
+      <a href="#how" data-i18n="navHow">Как работает</a>
+      <a href="#tour" data-i18n="navTour">Программа</a>
+      <a href="#pricing" data-i18n="navPricing">Цена</a>
+      <a href="#faq" data-i18n="navFaq">Вопросы</a>
+      <a href="#contact" data-i18n="navContact">Контакты</a>
+    </nav>
+    <div class="nav-right">
+      <select class="lang-select" aria-label="Language">
+        <option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option>
+      </select>
+      <a href="#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Попробовать бесплатно</a>
+      <button class="nav-burger" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="grid-bg"></div>
+    <div class="container hero-grid">
+      <div>
+        <div class="badge"><b>NEW</b><span data-i18n="heroBadge"></span></div>
+        <h1 class="hero-title"><span data-i18n="heroTitle1"></span><span class="gold" data-i18n="heroTitle2"></span></h1>
+        <p class="hero-sub" data-i18n="heroSub"></p>
+        <div class="hero-ctas">
+          <a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a>
+          <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2"></span></a>
+        </div>
+        <div class="hero-note" data-i18n="heroNote"></div>
+        <div class="trust"><span data-i18n="trust1"></span><span data-i18n="trust2"></span><span data-i18n="trust3"></span><span data-i18n="trust4"></span></div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="laptop"><img id="hero-shot" src="/img/dashboard_{{LANG}}.webp" alt="{{ALT_DASH}}" fetchpriority="high" width="1600" height="1000"></div>
+        <div class="phone"><div class="phone-scr">
+          <div class="ph-head"><span>☕ Café Aurora</span><span class="ph-live">● LIVE</span></div>
+          <div class="ph-cam"><div class="ph-qr"><i></i></div><div class="ph-ret"><b></b><b></b><b></b><b></b></div></div>
+          <div class="ph-verdict"><i>✓</i><span data-i18n="phVerdict"></span></div>
+          <div class="ph-name" data-i18n="phName"></div>
+          <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
+            <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft"></div></div>
+        </div></div>
+        <div class="chip c1" data-i18n="chip1"></div>
+        <div class="chip c2" data-i18n="chip2"></div>
+        <div class="chip c3" data-i18n="chip3"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="niches">
+    <div class="container">
+      <div class="niches-title" data-i18n="nichesTitle"></div>
+      <div class="niches-row"><span data-i18n="n1"></span><span data-i18n="n2"></span><span data-i18n="n3"></span><span data-i18n="n4"></span><span data-i18n="n5"></span><span data-i18n="n6"></span><span data-i18n="n7"></span><span data-i18n="n8"></span></div>
+    </div>
+  </div>
+
+  <section class="section prob">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="probTitle"></h2>
+      <p class="lead reveal" data-i18n="probSub"></p>
+      <div class="cards3" style="text-align:left">
+        <div class="card reveal"><div class="icon">🗂️</div><h3 data-i18n="prob1T"></h3><p data-i18n="prob1D"></p></div>
+        <div class="card reveal"><div class="icon">👻</div><h3 data-i18n="prob2T"></h3><p data-i18n="prob2D"></p></div>
+        <div class="card reveal"><div class="icon">💸</div><h3 data-i18n="prob3T"></h3><p data-i18n="prob3D"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="howTitle"></h2>
+      <p class="lead reveal" data-i18n="howSub"></p>
+      <div class="steps" style="text-align:left">
+        <div class="step reveal"><h3 data-i18n="step1T"></h3><p data-i18n="step1D"></p></div>
+        <div class="step reveal"><h3 data-i18n="step2T"></h3><p data-i18n="step2D"></p></div>
+        <div class="step reveal"><h3 data-i18n="step3T"></h3><p data-i18n="step3D"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tour" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="tourTitle"></h2>
+      <p class="lead reveal" data-i18n="tourSub"></p>
+      <div class="tour-tabs">
+        <button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash"></button>
+        <button class="tour-tab" data-tab="scan" data-i18n="tabScan"></button>
+        <button class="tour-tab" data-tab="marketing" data-i18n="tabMkt"></button>
+        <button class="tour-tab" data-tab="clients" data-i18n="tabClients"></button>
+        <button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics"></button>
+      </div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_{{LANG}}.webp" alt="{{ALT_DASH}}" loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap"></p>
+    </div>
+  </section>
+
+  <section class="section" id="features" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="featTitle"></h2>
+      <p class="lead reveal" data-i18n="featSub"></p>
+      <div class="features" style="text-align:left">
+        <div class="card reveal"><div class="icon">🃏</div><h3 data-i18n="f1T"></h3><p data-i18n="f1D"></p></div>
+        <div class="card reveal"><div class="icon">📱</div><h3 data-i18n="f2T"></h3><p data-i18n="f2D"></p></div>
+        <div class="card reveal"><div class="icon">🤖</div><h3 data-i18n="f3T"></h3><p data-i18n="f3D"></p></div>
+        <div class="card reveal"><div class="icon">🎯</div><h3 data-i18n="f4T"></h3><p data-i18n="f4D"></p></div>
+        <div class="card reveal"><div class="icon">📊</div><h3 data-i18n="f5T"></h3><p data-i18n="f5D"></p></div>
+        <div class="card reveal"><div class="icon">⚡</div><h3 data-i18n="f6T"></h3><p data-i18n="f6D"></p></div>
+        <div class="card reveal"><div class="icon">👥</div><h3 data-i18n="f7T"></h3><p data-i18n="f7D"></p></div>
+        <div class="card reveal"><div class="icon">🎟️</div><h3 data-i18n="f8T"></h3><p data-i18n="f8D"></p></div>
+        <div class="card reveal"><div class="icon">🔒</div><h3 data-i18n="f9T"></h3><p data-i18n="f9D"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="calc" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="calcTitle"></h2>
+      <p class="lead reveal" data-i18n="calcSub"></p>
+      <div class="calc reveal" style="text-align:left">
+        <div>
+          <div class="calc-row"><label><span data-i18n="calcVisitors"></span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
+          <div class="calc-row"><label><span data-i18n="calcCheck"></span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
+          <div class="calc-row"><label><span data-i18n="calcRate"></span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
+        </div>
+        <div class="calc-result">
+          <div class="lbl" data-i18n="calcResult"></div>
+          <div class="calc-big gold" id="calc-out"></div>
+          <div class="calc-roi" id="calc-roi"></div>
+          <div class="calc-note" data-i18n="calcNote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing" style="padding-top:40px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle"></h2>
+      <p class="lead reveal" data-i18n="priceSub"></p>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial"></b><span data-i18n="plansTrialSub"></span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName"></div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
+          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta"></a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge"></div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1"></li><li data-i18n="planStarterF2"></li><li data-i18n="planStarterF3"></li><li data-i18n="planStarterF4"></li><li data-i18n="planStarterF5"></li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta"></button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge"></div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planProF0"></li><li data-i18n="planProF1"></li><li data-i18n="planProF2"></li><li data-i18n="planProF3"></li><li data-i18n="planProF4"></li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta"></button>
+        </div>
+      </div>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Email" required>
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote"></p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="section" id="faq" style="padding-top:30px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="faqTitle"></h2>
+      <div class="faq" style="text-align:left">
+        <details class="reveal"><summary data-i18n="q1"></summary><p data-i18n="a1"></p></details>
+        <details class="reveal"><summary data-i18n="q2"></summary><p data-i18n="a2"></p></details>
+        <details class="reveal"><summary data-i18n="q3"></summary><p data-i18n="a3"></p></details>
+        <details class="reveal"><summary data-i18n="q4"></summary><p data-i18n="a4"></p></details>
+        <details class="reveal"><summary data-i18n="q5"></summary><p data-i18n="a5"></p></details>
+        <details class="reveal"><summary data-i18n="q6"></summary><p data-i18n="a6"></p></details>
+        <details class="reveal"><summary data-i18n="q7"></summary><p data-i18n="a7"></p></details>
+        <details class="reveal"><summary data-i18n="q8"></summary><p data-i18n="a8"></p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact" style="padding-top:30px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="contactTitle"></h2>
+      <p class="lead reveal" data-i18n="contactSub"></p>
+      <div class="contact-box reveal">
+        <a class="btn btn-primary" href="mailto:loya.loyalty.send@gmail.com">✉️ <span>loya.loyalty.send@gmail.com</span></a>
+        <p class="muted" data-i18n="contactNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="final reveal">
+      <h2 class="h2" data-i18n="finalTitle"></h2>
+      <p data-i18n="finalSub"></p>
+      <a href="#pricing" class="btn btn-primary">🎁 <span data-i18n="finalCta"></span></a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div><a href="{{HOME}}" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a><p class="foot-tag" data-i18n="footTag"></p></div>
+      <div><h4 data-i18n="footProduct"></h4><a href="#features" data-i18n="navFeatures"></a><a href="#pricing" data-i18n="navPricing"></a><a href="#" data-download data-i18n="footDownload"></a></div>
+      <div><h4 data-i18n="footSupport"></h4><a href="#faq" data-i18n="navFaq"></a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact"></a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html?lang={{LANG}}" data-i18n="footPrivacy"></a></div>
+    </div>
+    <div class="foot-bottom"><span>© <span data-year></span> Loya. <span data-i18n="footRights"></span></span><span class="foot-langs">{{LANGLINKS}}</span><span>Windows 10 · 11</span></div>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a></div>
+
+<script src="/i18n.js"></script>
+<script src="/site.js"></script>
+</body>
+</html>

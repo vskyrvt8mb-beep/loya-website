@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /owner
+Disallow: /manage
+Disallow: /success.html
+Disallow: /pricing.html
+Disallow: /r/
+Disallow: /j/
+Disallow: /scripts/
+
+Sitemap: https://loya-loyalty.com/sitemap.xml

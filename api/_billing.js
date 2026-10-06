@@ -103,7 +103,7 @@ function manage(req, res) {
   const url = String(process.env.STRIPE_PORTAL_URL || '');
   if (/^https:\/\/billing\.stripe\.com\//.test(url)) { res.statusCode = 302; res.setHeader('Location', url); res.setHeader('Cache-Control', 'no-store'); res.end(); return; }
   const [h, p] = MANAGE_OFF[langOf(req)];
-  const mail = EMAIL_RE.test(String(process.env.SUPPORT_EMAIL || '')) ? process.env.SUPPORT_EMAIL : 'vladnaruto12@gmail.com';
+  const mail = EMAIL_RE.test(String(process.env.SUPPORT_EMAIL || '')) ? process.env.SUPPORT_EMAIL : 'loya.loyalty.send@gmail.com';
   res.statusCode = 503; res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.setHeader('Cache-Control', 'no-store');
   res.end(`<!doctype html><html lang="${langOf(req)}"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loya</title><body style="font-family:Arial,sans-serif;background:#0c0e13;color:#f3efe6;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:20px"><div style="max-width:460px;text-align:center"><h2>${esc(h)}</h2><p style="color:#c9c3b6">${esc(p)}</p><p><a style="color:#f5b83d" href="mailto:${esc(mail)}">${esc(mail)}</a></p><p><a style="color:#c9c3b6" href="${SITE_URL}/">loya-loyalty.com</a></p></div></body></html>`);
 }

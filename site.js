@@ -4,16 +4,38 @@
   const LANGS = ['ru', 'uk', 'sk', 'en'];
   const REPO = 'vskyrvt8mb-beep/loya-website';
 
-  function detectLang() {
-    const url = new URLSearchParams(location.search).get('lang');
-    if (LANGS.includes(url)) { try { localStorage.setItem('loya_lang', url); } catch (e) {} return url; }
-    const saved = localStorage.getItem('loya_lang');
-    if (LANGS.includes(saved)) return saved;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  // Главные страницы по языкам: / (en), /ru/, /uk/, /sk/ — язык задан адресом (для поисковиков).
+  const pagePath = (l) => (l === 'en' ? '/' : '/' + l + '/');
+  const pageLang = document.body.dataset.pageLang;
+  function browserLang() {
     const nav = (navigator.languages || [navigator.language || 'en']).map(l => String(l).slice(0, 2).toLowerCase());
     for (const l of nav) { if (l === 'cs') return 'sk'; if (LANGS.includes(l)) return l; }
     return 'en';
   }
-  let lang = detectLang();
+  function detectLang() {
+    const url = new URLSearchParams(location.search).get('lang');
+    if (LANGS.includes(url)) { store.set('loya_lang', url); return url; }
+    const saved = store.get('loya_lang');
+    if (LANGS.includes(saved)) return saved;
+    return browserLang();
+  }
+  let lang;
+  if (pageLang) {
+    lang = pageLang;
+    // Англоязычный корень "/": посетителя с другим языком (выбор или язык браузера) один раз переводим на его версию.
+    // Поисковый бот приходит с английским языком, поэтому остаётся на "/".
+    if (location.pathname === '/' && pageLang === 'en') {
+      const want = detectLang();
+      if (want !== 'en') { location.replace(pagePath(want) + location.hash); return; }
+    } else if (new URLSearchParams(location.search).get('lang') === pageLang) {
+      store.set('loya_lang', pageLang);
+    }
+  }
+  if (!lang) lang = detectLang();
   const t = (k) => (T[lang] && T[lang][k] !== undefined) ? T[lang][k] : (T.en[k] || k);
   window.loyaT = t;
   window.loyaLang = () => lang;
@@ -34,8 +56,14 @@
     updateTour(); updateCalc();
   }
   document.querySelectorAll('.lang-select').forEach(sel => sel.addEventListener('change', () => {
-    lang = sel.value; localStorage.setItem('loya_lang', lang); apply();
+    const next = sel.value;
+    store.set('loya_lang', next);
+    if (pageLang) { location.href = pagePath(next) + location.hash; return; }
+    lang = next; apply();
   }));
+
+  // ссылки на языковые версии в подвале запоминают выбор, чтобы корень "/" не вернул обратно
+  document.querySelectorAll('.foot-langs a[hreflang]').forEach(a => a.addEventListener('click', () => store.set('loya_lang', a.getAttribute('hreflang'))));
 
   // шапка и мобильное меню
   const nav = document.querySelector('.nav');
@@ -69,7 +97,7 @@
     const img = document.getElementById('tour-img');
     if (!img) return;
     img.style.opacity = '0.25';
-    const src = `img/${tourTab}_${lang}.webp`;
+    const src = `/img/${tourTab}_${lang}.webp`;
     const pre = new Image();
     pre.onload = () => { img.src = src; img.style.opacity = '1'; };
     pre.src = src;
@@ -77,7 +105,7 @@
     document.getElementById('tour-cap').textContent = t(TOUR[tourTab]);
     document.querySelectorAll('.tour-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tourTab));
     const hero = document.getElementById('hero-shot');
-    if (hero) hero.src = `img/dashboard_${lang}.webp`;
+    if (hero) hero.src = `/img/dashboard_${lang}.webp`;
   }
   document.querySelectorAll('.tour-tab').forEach(b => b.addEventListener('click', () => { tourTab = b.dataset.tab; updateTour(); }));
 
@@ -128,8 +156,9 @@
         const tierEl = form.querySelector('input[name=tier]:checked');
         const tier = tierEl ? tierEl.value : 'starter';
         const res = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang, tier }) });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (data.url) { location.href = data.url; return; }
+        if (res.status === 429) { err.textContent = t('errTooMany'); err.style.display = 'block'; btn.disabled = false; label.textContent = t('priceCta'); return; }
         throw new Error(data.error || 'error');
       } catch (ex) {
         err.textContent = t('errGeneric'); err.style.display = 'block';
