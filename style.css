@@ -364,3 +364,11 @@ footer { border-top: 1px solid var(--border); padding: 50px 0 36px; }
   .nav.menu-open { background: #07080b; border-bottom-color: var(--border); }
   .nav-links.open { background: #07080b; box-shadow: 0 24px 40px rgba(0,0,0,.6); z-index: 60; }
 }
+
+/* фото «как это выглядит в кофейне» */
+.photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 44px; text-align: left; }
+.photo { margin: 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+.photo img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.photo figcaption { padding: 16px 20px 18px; color: var(--muted); font-size: 15.5px; }
+.niche-photos { margin-top: 40px; }
+@media (max-width: 760px) { .photo-grid { grid-template-columns: 1fr; } }
