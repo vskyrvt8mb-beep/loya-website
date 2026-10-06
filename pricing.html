@@ -10,16 +10,17 @@
 <link rel="canonical" href="https://loya-loyalty.com/#pricing">
 <meta property="og:title" content="Loya — Starter €9.99 · Pro €19.99">
 <meta property="og:image" content="https://loya-loyalty.com/og-image.png">
-<link rel="icon" type="image/png" href="/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body class="page" data-page="pricing">
 <header class="nav scrolled">
   <div class="container nav-inner">
-    <a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
+    <a href="/" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <div class="nav-right">
       <select class="lang-select" aria-label="Language"><option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option></select>
     </div>
@@ -34,7 +35,7 @@
           <div class="plan-name" data-i18n="planFreeName"></div>
           <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
           <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
-          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta"></a>
+          <a class="btn btn-ghost" data-download href="/download" data-i18n="planFreeCta"></a>
         </div>
         <div class="plan pcard featured reveal">
           <div class="plan-badge" data-i18n="planStarterBadge"></div>
@@ -58,6 +59,7 @@
         <div class="checkout-err"></div>
         <p class="plan-note" data-i18n="payNote"></p>
         <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+        <p class="plan-note"><a href="/terms.html" class="muted" data-i18n="footTerms"></a></p>
       </form>
     <div class="panel" style="max-width:640px;margin:26px auto 0">
     <div class="lostkey" style="margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12)">

@@ -36,3 +36,30 @@
 скрипт и закоммитьте результат. На страницах: title/description на своём языке, canonical, hreflang,
 Open Graph, JSON-LD (Organization, SoftwareApplication, FAQPage). Есть `robots.txt` и `sitemap.xml`.
 Контакт поддержки: loya.loyalty.send@gmail.com (секция «Контакты» на главной и подвал).
+
+Страницы под ниши: `/cafe/`, `/beauty-salon/`, `/shop/` (и `/ru/…`, `/uk/…`, `/sk/…`) — тексты в
+`scripts/niches.js`, собираются тем же `node scripts/build-seo.js`.
+Картинки для соцсетей на каждом языке — `og-image_<lang>.png`, пересобрать: `npm i --no-save playwright-core && node scripts/build-og.js`.
+
+## Скачивание
+Секция «Скачайте Loya» (`#download`) даёт выбор: установщик `.exe` (адрес `/download`, сервер сам
+находит последний релиз — `api/_x_download.js`) или Microsoft Store (ID `9NDD15Q4KTPQ`).
+Необязательно: переменная `GITHUB_TOKEN` в Vercel снимает лимит запросов к GitHub API.
+
+## Калькулятор
+Валюта на выбор (EUR, USD, GBP, CZK, PLN, UAH). Курсы — `/api/fx` (`api/_x_fx.js`, источник open.er-api.com,
+кэш 6 ч на сервере); если курс недоступен — примерный курс из `site.js` (`FX_FALLBACK`).
+
+## Юридические страницы
+`terms.html` — условия использования, подписка, отмена и возвраты (4 языка). **Добавьте реквизиты
+продавца** (полное имя или название компании, IČO/ИНН, адрес) в раздел «Кто предоставляет услугу» —
+и в `privacy.html` («Кто мы»), и проверьте тексты с юристом.
+
+## Шрифты
+Manrope хранится локально (`fonts/`, подключение в начале `style.css`) — без Google Fonts.
+
+## Лимиты запросов
+`api/_ratelimit.js` — общий счётчик в Supabase. **Один раз выполните в Supabase SQL Editor блок
+`rate_limits` / `rate_hit` из конца `schema.sql`.** Пока он не выполнен, работает запасной счётчик в памяти.
+Лимиты: оформление подписки (10/час на IP, 3/10 мин на email), пробный период, «потеряли ключ»,
+онлайн-регистрация и неудачные проверки ключа в `verify-license` (20/час на IP; рабочие ключи не ограничиваются).

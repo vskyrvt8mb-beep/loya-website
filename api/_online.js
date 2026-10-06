@@ -4,17 +4,8 @@ const { supabase, licenseActive, sendMail, EMAIL_RE } = (() => { const m = requi
 
 const SITE_URL = process.env.PUBLIC_URL || 'https://loya-loyalty.com';
 
-// Простейшая защита от накруток (в памяти функции — достаточно против одиночных ботов;
-// общий суточный лимит на бизнес считается по базе).
-const hits = new Map();
-function rateLimited(key, max, windowMs) {
-  const now = Date.now();
-  const arr = (hits.get(key) || []).filter(t => now - t < windowMs);
-  if (arr.length >= max) { hits.set(key, arr); return true; }
-  arr.push(now); hits.set(key, arr);
-  if (hits.size > 5000) for (const [k, v] of hits) if (!v.length || now - v[v.length - 1] > windowMs) hits.delete(k);
-  return false;
-}
+// Защита от накруток: общий счётчик в Supabase (см. _ratelimit.js); общий суточный лимит на бизнес — по базе.
+const RL = require('./_ratelimit');
 
 const TRANSLIT = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya',і:'i',ї:'yi',є:'ye',ґ:'g' };
 function slugify(name) {
@@ -96,7 +87,7 @@ const JOIN_MAIL = {
 };
 async function register(body, ip) {
   if (str(body.hp, 50)) return { status: 200, ok: true, fake: true }; // ловушка для ботов: поле не должен заполнять человек
-  if (rateLimited('ip:' + ip, 12, 3600 * 1000)) return { status: 429, error: 'too_many' };
+  if (await RL.limited('online-ip:' + ip, 12, 3600 * 1000)) return { status: 429, error: 'too_many' };
   const row = await loadProfileBySlug(body.slug);
   if (!row) return { status: 404, error: 'not_found' };
   const prof = row.profile || {};

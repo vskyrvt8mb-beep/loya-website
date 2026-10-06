@@ -8,6 +8,10 @@
 // подписки, чтобы нельзя было перебором отличить одно от другого.
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const RL = require('./_ratelimit');
+// Защита от перебора ключей: считаем только НЕУДАЧНЫЕ попытки с одного IP (не больше 20 в час).
+// Действующий ключ лимит не трогает, поэтому программа с правильным ключом никогда не блокируется.
+const FAIL_MAX = 20, FAIL_WINDOW = 3600e3;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -15,6 +19,7 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const ip = RL.clientIp(req);
   try {
     const { licenseKey } = req.body || {};
     if (!licenseKey || typeof licenseKey !== 'string') {
@@ -25,6 +30,10 @@ module.exports = async (req, res) => {
     const L = require('./_license');
     const data = await L.getLicense(licenseKey);
     if (!data) {
+      if (await RL.limited('verify-fail:' + ip, FAIL_MAX, FAIL_WINDOW)) {
+        res.status(429).json({ active: false, status: 'rate_limited', message: 'Слишком много попыток. Попробуйте через час.' });
+        return;
+      }
       res.status(200).json({ active: false, message: 'Ключ не найден. Проверьте, что скопировали его полностью.' });
       return;
     }
