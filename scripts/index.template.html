@@ -9,18 +9,17 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 <!--PRELOAD-->
 </head>
 <body data-page="home" data-page-lang="{{LANG}}">
+<a class="skip-link" href="#main" data-i18n="skipToContent"></a>
 
 <header class="nav">
   <div class="container nav-inner">
     <a href="{{HOME}}" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-links">
       <a href="#features" data-i18n="navFeatures">Возможности</a>
       <a href="#how" data-i18n="navHow">Как работает</a>
       <a href="#tour" data-i18n="navTour">Программа</a>
@@ -33,12 +32,12 @@
         <option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option>
       </select>
       <a href="#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Попробовать бесплатно</a>
-      <button class="nav-burger" aria-label="Menu">☰</button>
+      <button class="nav-burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">☰</button>
     </div>
   </div>
 </header>
 
-<main>
+<main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
     <div class="container hero-grid">
@@ -47,7 +46,7 @@
         <h1 class="hero-title"><span data-i18n="heroTitle1"></span><span class="gold" data-i18n="heroTitle2"></span></h1>
         <p class="hero-sub" data-i18n="heroSub"></p>
         <div class="hero-ctas">
-          <a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a>
+          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2"></span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote"></div>
@@ -73,7 +72,7 @@
   <div class="niches">
     <div class="container">
       <div class="niches-title" data-i18n="nichesTitle"></div>
-      <div class="niches-row"><span data-i18n="n1"></span><span data-i18n="n2"></span><span data-i18n="n3"></span><span data-i18n="n4"></span><span data-i18n="n5"></span><span data-i18n="n6"></span><span data-i18n="n7"></span><span data-i18n="n8"></span></div>
+      <div class="niches-row"><a href="{{NICHE_cafe}}" data-i18n="n1"></a><a href="{{NICHE_cafe}}" data-i18n="n2"></a><a href="{{NICHE_beauty}}" data-i18n="n3"></a><a href="{{NICHE_beauty}}" data-i18n="n4"></a><a href="{{NICHE_beauty}}" data-i18n="n5"></a><span data-i18n="n6"></span><span data-i18n="n7"></span><a href="{{NICHE_shop}}" data-i18n="n8"></a></div>
     </div>
   </div>
 
@@ -141,15 +140,17 @@
       <p class="lead reveal" data-i18n="calcSub"></p>
       <div class="calc reveal" style="text-align:left">
         <div>
-          <div class="calc-row"><label><span data-i18n="calcVisitors"></span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
-          <div class="calc-row"><label><span data-i18n="calcCheck"></span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
-          <div class="calc-row"><label><span data-i18n="calcRate"></span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
+          <div class="calc-row calc-cur"><label for="calc-currency"><span data-i18n="calcCurrency"></span></label><select id="calc-currency" class="cur-select"><option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option><option value="CZK">Kč CZK</option><option value="PLN">zł PLN</option><option value="UAH">₴ UAH</option></select></div>
+          <div class="calc-row"><label for="calc-visitors"><span data-i18n="calcVisitors"></span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
+          <div class="calc-row"><label for="calc-check"><span data-i18n="calcCheck"></span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
+          <div class="calc-row"><label for="calc-rate"><span data-i18n="calcRate"></span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
         </div>
         <div class="calc-result">
           <div class="lbl" data-i18n="calcResult"></div>
           <div class="calc-big gold" id="calc-out"></div>
           <div class="calc-roi" id="calc-roi"></div>
           <div class="calc-note" data-i18n="calcNote"></div>
+          <div class="calc-fx" id="calc-fx"></div>
         </div>
       </div>
     </div>
@@ -165,7 +166,7 @@
           <div class="plan-name" data-i18n="planFreeName"></div>
           <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
           <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
-          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta"></a>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta"></a>
         </div>
         <div class="plan pcard featured reveal">
           <div class="plan-badge" data-i18n="planStarterBadge"></div>
@@ -184,12 +185,36 @@
       </div>
       <form class="checkout plans-checkout reveal" novalidate>
         <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Email" required>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" placeholder="Email" aria-label="Email" required>
         <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
         <div class="checkout-err"></div>
         <p class="plan-note" data-i18n="payNote"></p>
         <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+        <p class="plan-note"><a href="/terms.html?lang={{LANG}}" class="muted" data-i18n="footTerms"></a></p>
       </form>
+    </div>
+  </section>
+
+  <section class="section" id="download" style="padding-top:30px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="dlTitle"></h2>
+      <p class="lead reveal" data-i18n="dlSub"></p>
+      <div class="dl-grid">
+        <div class="dl-card pcard reveal">
+          <div class="dl-icon" aria-hidden="true">⬇️</div>
+          <h3 data-i18n="dlExeT"></h3>
+          <p data-i18n="dlExeD"></p>
+          <a class="btn btn-primary" data-download href="/download"><span data-i18n="dlExeBtn"></span></a>
+        </div>
+        <div class="dl-card pcard reveal">
+          <div class="dl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path fill="#f25022" d="M2 2h9.5v9.5H2z"/><path fill="#7fba00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00a4ef" d="M2 12.5h9.5V22H2z"/><path fill="#ffb900" d="M12.5 12.5H22V22h-9.5z"/></svg></div>
+          <h3 data-i18n="dlStoreT"></h3>
+          <p data-i18n="dlStoreD"></p>
+          <a class="btn btn-ghost" href="{{STORE_URL}}" target="_blank" rel="noopener"><span data-i18n="dlStoreBtn"></span></a>
+        </div>
+      </div>
+      <p class="dl-req muted reveal" data-i18n="dlReq"></p>
+      <div class="dl-mobile reveal"><p data-i18n="dlMobile"></p><a class="btn btn-ghost btn-sm" id="dl-mail" href="mailto:?subject=Loya&amp;body={{HOME_URL}}%23download" data-i18n="dlMobileBtn"></a></div>
     </div>
   </section>
 
@@ -233,14 +258,15 @@
   <div class="container">
     <div class="foot">
       <div><a href="{{HOME}}" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a><p class="foot-tag" data-i18n="footTag"></p></div>
-      <div><h4 data-i18n="footProduct"></h4><a href="#features" data-i18n="navFeatures"></a><a href="#pricing" data-i18n="navPricing"></a><a href="#" data-download data-i18n="footDownload"></a></div>
-      <div><h4 data-i18n="footSupport"></h4><a href="#faq" data-i18n="navFaq"></a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact"></a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html?lang={{LANG}}" data-i18n="footPrivacy"></a></div>
+      <div><h4 data-i18n="footProduct"></h4><a href="#features" data-i18n="navFeatures"></a><a href="#pricing" data-i18n="navPricing"></a><a href="#download" data-i18n="footDownload"></a></div>
+      <div><h4 data-i18n="footSupport"></h4><a href="#faq" data-i18n="navFaq"></a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact"></a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html?lang={{LANG}}" data-i18n="footPrivacy"></a><a href="/terms.html?lang={{LANG}}" data-i18n="footTerms"></a></div>
+      <div><h4 data-i18n="footSolutions"></h4><a href="{{NICHE_cafe}}">{{NICHE_cafe_NAME}}</a><a href="{{NICHE_beauty}}">{{NICHE_beauty_NAME}}</a><a href="{{NICHE_shop}}">{{NICHE_shop_NAME}}</a></div>
     </div>
     <div class="foot-bottom"><span>© <span data-year></span> Loya. <span data-i18n="footRights"></span></span><span class="foot-langs">{{LANGLINKS}}</span><span>Windows 10 · 11</span></div>
   </div>
 </footer>
 
-<div class="sticky-cta"><a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a></div>
+<div class="sticky-cta"><a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a></div>
 
 <script src="/i18n.js"></script>
 <script src="/site.js"></script>

@@ -21,35 +21,35 @@
 <meta property="og:locale:alternate" content="ru_RU">
 <meta property="og:locale:alternate" content="uk_UA">
 <meta property="og:locale:alternate" content="sk_SK">
-<meta property="og:image" content="https://loya-loyalty.com/og-image.png">
+<meta property="og:image" content="https://loya-loyalty.com/og-image_en.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Loya — the loyalty program that brings customers back">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Loya — the loyalty program that brings customers back">
 <meta name="twitter:description" content="Digital loyalty cards, a phone scanner, smart campaigns and analytics for cafés, salons and shops. 14 days free without a card, then from €9.99 a month.">
-<meta name="twitter:image" content="https://loya-loyalty.com/og-image.png">
+<meta name="twitter:image" content="https://loya-loyalty.com/og-image_en.png">
 <meta name="theme-color" content="#07080b">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Loya","url":"https://loya-loyalty.com/","logo":"https://loya-loyalty.com/logo.png","contactPoint":{"@type":"ContactPoint","contactType":"customer support","email":"loya.loyalty.send@gmail.com","availableLanguage":["English","Slovak","Russian","Ukrainian"]}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Loya","url":"https://loya-loyalty.com/","inLanguage":"en"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Loya","applicationCategory":"BusinessApplication","operatingSystem":"Windows 10, Windows 11","description":"Digital loyalty cards, a phone scanner, smart campaigns and analytics for cafés, salons and shops. 14 days free without a card, then from €9.99 a month.","url":"https://loya-loyalty.com/","image":"https://loya-loyalty.com/og-image.png","inLanguage":"en","offers":[{"@type":"Offer","name":"Free","price":"0.00","priceCurrency":"EUR","url":"https://loya-loyalty.com/"},{"@type":"Offer","name":"Starter","price":"9.99","priceCurrency":"EUR","url":"https://loya-loyalty.com/"},{"@type":"Offer","name":"Pro","price":"19.99","priceCurrency":"EUR","url":"https://loya-loyalty.com/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Loya","applicationCategory":"BusinessApplication","operatingSystem":"Windows 10, Windows 11","description":"Digital loyalty cards, a phone scanner, smart campaigns and analytics for cafés, salons and shops. 14 days free without a card, then from €9.99 a month.","url":"https://loya-loyalty.com/","image":"https://loya-loyalty.com/og-image_en.png","inLanguage":"en","downloadUrl":"https://loya-loyalty.com/download","installUrl":"https://apps.microsoft.com/detail/9NDD15Q4KTPQ","offers":[{"@type":"Offer","name":"Free","price":"0.00","priceCurrency":"EUR","url":"https://loya-loyalty.com/"},{"@type":"Offer","name":"Starter","price":"9.99","priceCurrency":"EUR","url":"https://loya-loyalty.com/"},{"@type":"Offer","name":"Pro","price":"19.99","priceCurrency":"EUR","url":"https://loya-loyalty.com/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"How does the free trial work?","acceptedAnswer":{"@type":"Answer","text":"Download the app and click “Try 14 days free” — just an email, no card. Every feature works for 14 days. Afterwards subscribe on the website or stay on the free version (up to 10 customers) — your data stays."}},{"@type":"Question","name":"Do I need to buy a scanner?","acceptedAnswer":{"@type":"Answer","text":"No. You can scan with the laptop camera or a staff member’s phone. A regular USB barcode scanner works too."}},{"@type":"Question","name":"Do customers need to install an app?","acceptedAnswer":{"@type":"Answer","text":"No. The card arrives by email, in Telegram or in Google Wallet — the customer just shows the QR on their phone."}},{"@type":"Question","name":"Where is customer data stored?","acceptedAnswer":{"@type":"Answer","text":"On your computer, not on someone else’s server. The app backs up automatically every day and works offline."}},{"@type":"Question","name":"Which computers does it run on?","acceptedAnswer":{"@type":"Answer","text":"Windows 10 and 11. One-click installation, automatic updates."}},{"@type":"Question","name":"How do I cancel?","acceptedAnswer":{"@type":"Answer","text":"Anytime, in one click from the link in your confirmation email — no calls, no explanations."}},{"@type":"Question","name":"Can I import customers from another app?","acceptedAnswer":{"@type":"Answer","text":"Yes — upload a CSV table (for example from Excel) and your customers appear in Loya."}},{"@type":"Question","name":"Which languages does the app support?","acceptedAnswer":{"@type":"Answer","text":"English, Slovak, Russian and Ukrainian. Customer emails go out in each customer’s own language."}}]}</script>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 <link rel="preload" as="image" href="/img/dashboard_en.webp">
 </head>
 <body data-page="home" data-page-lang="en">
+<a class="skip-link" href="#main" data-i18n="skipToContent">Skip to content</a>
 
 <header class="nav">
   <div class="container nav-inner">
     <a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-links">
       <a href="#features" data-i18n="navFeatures">Features</a>
       <a href="#how" data-i18n="navHow">How it works</a>
       <a href="#tour" data-i18n="navTour">The app</a>
@@ -62,12 +62,12 @@
         <option value="ru">RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en" selected>EN</option>
       </select>
       <a href="#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Try it free</a>
-      <button class="nav-burger" aria-label="Menu">☰</button>
+      <button class="nav-burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">☰</button>
     </div>
   </div>
 </header>
 
-<main>
+<main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
     <div class="container hero-grid">
@@ -76,7 +76,7 @@
         <h1 class="hero-title"><span data-i18n="heroTitle1">Customers come back.</span><span class="gold" data-i18n="heroTitle2">Again and again.</span></h1>
         <p class="hero-sub" data-i18n="heroSub">Loya is a loyalty program for cafés, salons and shops. Digital cards instead of paper ones, a scanner right in your phone, smart campaigns and clear analytics — all in one app.</p>
         <div class="hero-ctas">
-          <a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta">Try 14 days free</span></a>
+          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Try 14 days free</span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2">See how it works</span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote">No card needed · then from €9.99 a month · free version up to 10 customers</div>
@@ -102,7 +102,7 @@
   <div class="niches">
     <div class="container">
       <div class="niches-title" data-i18n="nichesTitle">Built for small businesses</div>
-      <div class="niches-row"><span data-i18n="n1">☕ Cafés</span><span data-i18n="n2">🥐 Bakeries</span><span data-i18n="n3">💈 Barbershops</span><span data-i18n="n4">💅 Beauty salons</span><span data-i18n="n5">🧖 Spas</span><span data-i18n="n6">🏋️ Fitness</span><span data-i18n="n7">🐾 Pet grooming</span><span data-i18n="n8">👗 Shops</span></div>
+      <div class="niches-row"><a href="/cafe/" data-i18n="n1">☕ Cafés</a><a href="/cafe/" data-i18n="n2">🥐 Bakeries</a><a href="/beauty-salon/" data-i18n="n3">💈 Barbershops</a><a href="/beauty-salon/" data-i18n="n4">💅 Beauty salons</a><a href="/beauty-salon/" data-i18n="n5">🧖 Spas</a><span data-i18n="n6">🏋️ Fitness</span><span data-i18n="n7">🐾 Pet grooming</span><a href="/shop/" data-i18n="n8">👗 Shops</a></div>
     </div>
   </div>
 
@@ -170,15 +170,17 @@
       <p class="lead reveal" data-i18n="calcSub">Move the sliders — an estimate for your business.</p>
       <div class="calc reveal" style="text-align:left">
         <div>
-          <div class="calc-row"><label><span data-i18n="calcVisitors">Customers per month</span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
-          <div class="calc-row"><label><span data-i18n="calcCheck">Average purchase</span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
-          <div class="calc-row"><label><span data-i18n="calcRate">Extra repeat visits</span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
+          <div class="calc-row calc-cur"><label for="calc-currency"><span data-i18n="calcCurrency">Currency</span></label><select id="calc-currency" class="cur-select"><option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option><option value="CZK">Kč CZK</option><option value="PLN">zł PLN</option><option value="UAH">₴ UAH</option></select></div>
+          <div class="calc-row"><label for="calc-visitors"><span data-i18n="calcVisitors">Customers per month</span><b id="calc-visitors-v"></b></label><input type="range" id="calc-visitors" min="100" max="5000" step="50" value="800"></div>
+          <div class="calc-row"><label for="calc-check"><span data-i18n="calcCheck">Average purchase</span><b id="calc-check-v"></b></label><input type="range" id="calc-check" min="3" max="80" step="1" value="9"></div>
+          <div class="calc-row"><label for="calc-rate"><span data-i18n="calcRate">Extra repeat visits</span><b id="calc-rate-v"></b></label><input type="range" id="calc-rate" min="3" max="30" step="1" value="10"></div>
         </div>
         <div class="calc-result">
           <div class="lbl" data-i18n="calcResult">Extra revenue per month</div>
           <div class="calc-big gold" id="calc-out"></div>
           <div class="calc-roi" id="calc-roi"></div>
           <div class="calc-note" data-i18n="calcNote">Estimate: extra visits × average purchase. Actual results depend on your business.</div>
+          <div class="calc-fx" id="calc-fx"></div>
         </div>
       </div>
     </div>
@@ -194,7 +196,7 @@
           <div class="plan-name" data-i18n="planFreeName">Free</div>
           <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ month</span></div>
           <ul class="plan-list"><li data-i18n="planFreeF1">Up to 10 customers</li><li data-i18n="planFreeF2">Cards, QR sign-up and scanning</li><li data-i18n="planFreeF3">One location</li></ul>
-          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta">Download the app</a>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Download the app</a>
         </div>
         <div class="plan pcard featured reveal">
           <div class="plan-badge" data-i18n="planStarterBadge">For one venue</div>
@@ -213,12 +215,36 @@
       </div>
       <form class="checkout plans-checkout reveal" novalidate>
         <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" required placeholder="Your email">
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Your email" aria-label="Your email">
         <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Subscribe</span></button>
         <div class="checkout-err"></div>
         <p class="plan-note" data-i18n="payNote">You pay now and can cancel anytime. If you have a trial key, use the same email and it becomes paid.</p>
         <div class="plan-secure">🔒 <span data-i18n="priceSecure">Secure payment via Stripe — your card details never reach us</span></div>
+        <p class="plan-note"><a href="/terms.html?lang=en" class="muted" data-i18n="footTerms">Terms &amp; refunds</a></p>
       </form>
+    </div>
+  </section>
+
+  <section class="section" id="download" style="padding-top:30px">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="dlTitle">Download Loya</h2>
+      <p class="lead reveal" data-i18n="dlSub">Pick whichever way suits you — it’s the same app, and the 14-day trial starts after installation.</p>
+      <div class="dl-grid">
+        <div class="dl-card pcard reveal">
+          <div class="dl-icon" aria-hidden="true">⬇️</div>
+          <h3 data-i18n="dlExeT">Windows installer</h3>
+          <p data-i18n="dlExeD">Direct download of the .exe file. Always the latest version.</p>
+          <a class="btn btn-primary" data-download href="/download"><span data-i18n="dlExeBtn">Download installer</span></a>
+        </div>
+        <div class="dl-card pcard reveal">
+          <div class="dl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path fill="#f25022" d="M2 2h9.5v9.5H2z"/><path fill="#7fba00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00a4ef" d="M2 12.5h9.5V22H2z"/><path fill="#ffb900" d="M12.5 12.5H22V22h-9.5z"/></svg></div>
+          <h3 data-i18n="dlStoreT">Microsoft Store</h3>
+          <p data-i18n="dlStoreD">Install and get automatic updates through the Windows store.</p>
+          <a class="btn btn-ghost" href="https://apps.microsoft.com/detail/9NDD15Q4KTPQ?hl=en-us" target="_blank" rel="noopener"><span data-i18n="dlStoreBtn">Open in Microsoft Store</span></a>
+        </div>
+      </div>
+      <p class="dl-req muted reveal" data-i18n="dlReq">Windows 10 or 11 · free for up to 10 customers</p>
+      <div class="dl-mobile reveal"><p data-i18n="dlMobile">On your phone? Loya runs on a computer — email yourself the link and download it later.</p><a class="btn btn-ghost btn-sm" id="dl-mail" href="mailto:?subject=Loya&amp;body=https%3A%2F%2Floya-loyalty.com%2F%23download" data-i18n="dlMobileBtn">Email me the link</a></div>
     </div>
   </section>
 
@@ -262,14 +288,15 @@
   <div class="container">
     <div class="foot">
       <div><a href="/" class="brand"><img src="/logo.png" alt="Loya" width="40" height="40"><span>Loya</span></a><p class="foot-tag" data-i18n="footTag">The loyalty program for small businesses.</p></div>
-      <div><h4 data-i18n="footProduct">Product</h4><a href="#features" data-i18n="navFeatures">Features</a><a href="#pricing" data-i18n="navPricing">Pricing</a><a href="#" data-download data-i18n="footDownload">Download for Windows</a></div>
-      <div><h4 data-i18n="footSupport">Support</h4><a href="#faq" data-i18n="navFaq">FAQ</a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact">Contact us</a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html?lang=en" data-i18n="footPrivacy">Privacy policy</a></div>
+      <div><h4 data-i18n="footProduct">Product</h4><a href="#features" data-i18n="navFeatures">Features</a><a href="#pricing" data-i18n="navPricing">Pricing</a><a href="#download" data-i18n="footDownload">Download for Windows</a></div>
+      <div><h4 data-i18n="footSupport">Support</h4><a href="#faq" data-i18n="navFaq">FAQ</a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact">Contact us</a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html?lang=en" data-i18n="footPrivacy">Privacy policy</a><a href="/terms.html?lang=en" data-i18n="footTerms">Terms &amp; refunds</a></div>
+      <div><h4 data-i18n="footSolutions">Solutions</h4><a href="/cafe/">For cafés &amp; coffee shops</a><a href="/beauty-salon/">For beauty salons &amp; barbershops</a><a href="/shop/">For shops</a></div>
     </div>
     <div class="foot-bottom"><span>© <span data-year></span> Loya. <span data-i18n="footRights">All rights reserved.</span></span><span class="foot-langs"><a href="/" hreflang="en" lang="en" aria-current="true">English</a> · <a href="/ru/" hreflang="ru" lang="ru">Русский</a> · <a href="/uk/" hreflang="uk" lang="uk">Українська</a> · <a href="/sk/" hreflang="sk" lang="sk">Slovenčina</a></span><span>Windows 10 · 11</span></div>
   </div>
 </footer>
 
-<div class="sticky-cta"><a href="#download" data-download class="btn btn-primary">🎁 <span data-i18n="heroCta">Try 14 days free</span></a></div>
+<div class="sticky-cta"><a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Try 14 days free</span></a></div>
 
 <script src="/i18n.js"></script>
 <script src="/site.js"></script>

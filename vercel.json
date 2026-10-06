@@ -131,6 +131,14 @@
     {
       "source": "/j/:slug",
       "destination": "/api/online?action=page&slug=:slug&mode=join"
+    },
+    {
+      "source": "/download",
+      "destination": "/api/core?action=download"
+    },
+    {
+      "source": "/api/fx",
+      "destination": "/api/core?action=fx"
     }
   ],
   "functions": {
@@ -231,6 +239,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }

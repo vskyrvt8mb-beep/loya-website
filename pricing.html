@@ -14,9 +14,7 @@
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body class="page" data-page="pricing">
@@ -37,7 +35,7 @@
           <div class="plan-name" data-i18n="planFreeName"></div>
           <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
           <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
-          <a class="btn btn-ghost" data-download href="#download" data-i18n="planFreeCta"></a>
+          <a class="btn btn-ghost" data-download href="/download" data-i18n="planFreeCta"></a>
         </div>
         <div class="plan pcard featured reveal">
           <div class="plan-badge" data-i18n="planStarterBadge"></div>
@@ -61,6 +59,7 @@
         <div class="checkout-err"></div>
         <p class="plan-note" data-i18n="payNote"></p>
         <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+        <p class="plan-note"><a href="/terms.html" class="muted" data-i18n="footTerms"></a></p>
       </form>
     <div class="panel" style="max-width:640px;margin:26px auto 0">
     <div class="lostkey" style="margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12)">

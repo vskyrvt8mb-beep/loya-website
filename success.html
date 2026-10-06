@@ -12,9 +12,7 @@
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body class="page" data-page="success">
@@ -33,7 +31,7 @@
     <div id="s-ok" style="display:none">
       <div class="s-steps">
         <div class="s-step"><div class="s-num">1</div><div><h3 data-i18n="sStep1"></h3><p data-i18n="sStep1D"></p>
-          <a href="#" data-download class="btn btn-primary btn-sm" style="margin-top:12px">⬇ <span data-i18n="sDownload"></span></a></div></div>
+          <a href="/download" data-download class="btn btn-primary btn-sm" style="margin-top:12px">⬇ <span data-i18n="sDownload"></span></a></div></div>
         <div class="s-step"><div class="s-num">2</div><div style="flex:1;min-width:0"><h3 data-i18n="sStep2"></h3><p data-i18n="sStep2D"></p>
           <div class="key-box"><code id="license-key"></code><button class="btn btn-ghost btn-sm" id="btn-copy" type="button"><span data-i18n="sCopy"></span></button></div>
           <p class="muted" style="font-size:13px;margin-top:8px" data-i18n="sKeySent"></p></div></div>

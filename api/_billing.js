@@ -1,5 +1,6 @@
 // Оплата в боевом режиме: письмо с ключом после оплаты, «потеряли ключ?», переход в кабинет управления подпиской.
 const { sendSystemMail, supabase, EMAIL_RE } = require('./_mail');
+const RL = require('./_ratelimit');
 const SITE_URL = process.env.PUBLIC_URL || 'https://loya-loyalty.com';
 
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -44,7 +45,7 @@ async function startTrial({ email, machineHash, lang }, ip) {
   const mh = String(machineHash || '');
   if (!EMAIL_RE.test(addr) || addr.length > 160) return { status: 400, error: 'email' };
   if (!/^[a-f0-9]{64}$/.test(mh)) return { status: 400, error: 'machine' };
-  if (limited('trial-ip:' + ip, 5, 3600e3)) return { status: 429, error: 'too_many' };
+  if (await RL.limited('trial-ip:' + ip, 5, 3600e3)) return { status: 429, error: 'too_many' };
   const pattern = addr.replace(/[\\%_]/g, '\\$&');
   const { data: byEmail, error: e1 } = await supabase.from('licenses').select('license_key').ilike('email', pattern).limit(1);
   if (e1) return { status: 500, error: 'db_error' };
@@ -64,13 +65,11 @@ async function startTrial({ email, machineHash, lang }, ip) {
 
 // «Потеряли ключ?» — всегда отвечаем одинаково (чтобы нельзя было проверять, какие адреса есть в базе),
 // письмо уходит только на адрес из базы, и не чаще нескольких раз в час.
-const hits = new Map();
-function limited(key, max, ms) { const now = Date.now(); const a = (hits.get(key) || []).filter(t => now - t < ms); if (a.length >= max) { hits.set(key, a); return true; } a.push(now); hits.set(key, a); if (hits.size > 5000) for (const [k, v] of hits) if (!v.length || now - v[v.length - 1] > ms) hits.delete(k); return false; }
 async function resendKeys({ email, lang }, ip) {
   const addr = String(email || '').trim().toLowerCase();
   if (!EMAIL_RE.test(addr) || addr.length > 160) return { status: 400, error: 'email' };
-  if (limited('ip:' + ip, 10, 3600e3)) return { status: 429, error: 'too_many' };
-  if (limited('em:' + addr, 3, 3600e3)) return { status: 200, ok: true };   // тихо: письмо уже недавно отправляли
+  if (await RL.limited('resend-ip:' + ip, 10, 3600e3)) return { status: 429, error: 'too_many' };
+  if (await RL.limited('resend-em:' + addr, 3, 3600e3)) return { status: 200, ok: true };   // тихо: письмо уже недавно отправляли
   // ilike — без учёта регистра, но % и _ в SQL означают «любые символы»: экранируем, иначе адрес «j_hn@…»
   // совпал бы с «john@…», и чужой ключ ушёл бы не тому человеку.
   const pattern = addr.replace(/[\\%_]/g, '\\$&');

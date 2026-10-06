@@ -9,7 +9,9 @@ const h_admin_action = require('./_x_admin_action');
 const h_admin_page = require('./_x_admin_page');
 const h_billing = require('./_x_billing');
 const h_sync = require('./_x_sync');
-const ACTIONS = { 'send-mail': h_send_mail, 'health': h_health, 'admin-login': h_admin_login, 'admin-data': h_admin_data, 'admin-action': h_admin_action, 'admin-page': h_admin_page, 'manage': h_billing, 'resend-key': h_billing, 'trial-start': h_billing, 'sync': h_sync };
+const h_download = require('./_x_download');
+const h_fx = require('./_x_fx');
+const ACTIONS = { 'send-mail': h_send_mail, 'health': h_health, 'admin-login': h_admin_login, 'admin-data': h_admin_data, 'admin-action': h_admin_action, 'admin-page': h_admin_page, 'manage': h_billing, 'resend-key': h_billing, 'trial-start': h_billing, 'sync': h_sync, 'download': h_download, 'fx': h_fx };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }

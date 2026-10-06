@@ -2,15 +2,15 @@
 (function () {
   const T = window.SITE_I18N;
   const LANGS = ['ru', 'uk', 'sk', 'en'];
-  const REPO = 'vskyrvt8mb-beep/loya-website';
 
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   };
   // Главные страницы по языкам: / (en), /ru/, /uk/, /sk/ — язык задан адресом (для поисковиков).
-  const pagePath = (l) => (l === 'en' ? '/' : '/' + l + '/');
   const pageLang = document.body.dataset.pageLang;
+  const pageSub = document.body.dataset.pageSub ? document.body.dataset.pageSub + '/' : '';   // страница ниши: cafe/ и т.п.
+  const pagePath = (l) => (l === 'en' ? '/' : '/' + l + '/') + pageSub;
   function browserLang() {
     const nav = (navigator.languages || [navigator.language || 'en']).map(l => String(l).slice(0, 2).toLowerCase());
     for (const l of nav) { if (l === 'cs') return 'sk'; if (LANGS.includes(l)) return l; }
@@ -26,9 +26,9 @@
   let lang;
   if (pageLang) {
     lang = pageLang;
-    // Англоязычный корень "/": посетителя с другим языком (выбор или язык браузера) один раз переводим на его версию.
-    // Поисковый бот приходит с английским языком, поэтому остаётся на "/".
-    if (location.pathname === '/' && pageLang === 'en') {
+    // Англоязычные страницы (/, /cafe/ …): посетителя с другим языком (выбор или язык браузера) один раз
+    // переводим на его версию. Поисковый бот приходит с английским языком, поэтому остаётся на месте.
+    if (pageLang === 'en' && location.pathname === pagePath('en')) {
       const want = detectLang();
       if (want !== 'en') { location.replace(pagePath(want) + location.hash); return; }
     } else if (new URLSearchParams(location.search).get('lang') === pageLang) {
@@ -46,6 +46,7 @@
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     if (document.body.dataset.page === 'privacy') document.title = `Loya — ${t('footPrivacy')}`;
+    if (document.body.dataset.page === 'terms') document.title = `Loya — ${t('footTerms')}`;
     if (document.body.dataset.page === 'pricing') document.title = `Loya — ${t('pTitle')} · €9.99`;
     if (document.body.dataset.page === 'success') document.title = `Loya — ${t('sTitle').replace(/\s*🎉/, '')}`;
     if (document.body.dataset.page === 'home') {
@@ -71,17 +72,19 @@
   const onScroll = () => {
     if (nav) nav.classList.toggle('scrolled', window.scrollY > 10);
     if (sticky) {
-      const pricing = document.getElementById('pricing');
-      const inPricing = pricing && pricing.getBoundingClientRect().top < window.innerHeight && pricing.getBoundingClientRect().bottom > 0;
-      sticky.classList.toggle('show', window.scrollY > 600 && !inPricing);
+      // кнопка внизу не нужна, когда на экране цены или блок скачивания (она ведёт туда же)
+      const inView = (id) => { const el = document.getElementById(id); if (!el) return false; const r = el.getBoundingClientRect(); return r.top < window.innerHeight && r.bottom > 0; };
+      sticky.classList.toggle('show', window.scrollY > 600 && !inView('pricing') && !inView('download'));
     }
   };
   window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
   const burger = document.querySelector('.nav-burger');
   const links = document.querySelector('.nav-links');
   if (burger && links) {
-    burger.addEventListener('click', () => links.classList.toggle('open'));
-    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); };
+    burger.addEventListener('click', () => setOpen(!links.classList.contains('open')));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); burger.focus(); } });
   }
 
   // появление блоков при прокрутке
@@ -109,23 +112,85 @@
   }
   document.querySelectorAll('.tour-tab').forEach(b => b.addEventListener('click', () => { tourTab = b.dataset.tab; updateTour(); }));
 
-  // калькулятор
-  function fmtEur(v) {
-    const n = Math.round(v);
-    const s = n.toLocaleString(lang === 'en' ? 'en-US' : lang === 'sk' ? 'sk-SK' : lang === 'uk' ? 'uk-UA' : 'ru-RU');
-    return lang === 'en' ? `€${s}` : `${s} €`;
+  // калькулятор: выручка в выбранной валюте по реальному курсу (/api/fx, кэш 12 ч).
+  // Средний чек хранится в евро, поэтому при смене валюты сумма пересчитывается, а не просто меняется значок.
+  const PRICE_EUR = 9.99;
+  const FX_FALLBACK = { EUR: 1, USD: 1.08, GBP: 0.85, CZK: 25.0, PLN: 4.3, UAH: 45.0 };
+  const CURRENCIES = Object.keys(FX_FALLBACK);
+  let fx = { rates: FX_FALLBACK, date: null };
+  let checkEur = 9;
+  const savedCur = store.get('loya_currency');
+  let currency = CURRENCIES.includes(savedCur) ? savedCur : (lang === 'uk' ? 'UAH' : 'EUR');
+  const locale = () => (lang === 'en' ? 'en-IE' : lang === 'sk' ? 'sk-SK' : lang === 'uk' ? 'uk-UA' : 'ru-RU');
+  const rate = () => fx.rates[currency] || FX_FALLBACK[currency] || 1;
+  function fmtMoney(v) {
+    try { return new Intl.NumberFormat(locale(), { style: 'currency', currency, maximumFractionDigits: 0 }).format(Math.round(v)); }
+    catch (e) { return Math.round(v) + ' ' + currency; }
+  }
+  function niceStep(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x)));
+    const m = x / p;
+    return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
+  }
+  // Диапазон ползунка «Средний чек»: от 3 до 80 евро в пересчёте на выбранную валюту, с «круглым» шагом.
+  function setupCheckSlider() {
+    const el = document.getElementById('calc-check');
+    if (!el) return;
+    const r = rate(), step = niceStep(80 * r / 100);
+    const min = Math.max(step, Math.round(3 * r / step) * step), max = Math.round(80 * r / step) * step;
+    el.min = min; el.max = max; el.step = step;
+    el.value = Math.min(max, Math.max(min, Math.round(checkEur * r / step) * step));
   }
   function updateCalc() {
     const v = document.getElementById('calc-visitors');
     if (!v) return;
-    const visitors = Number(v.value), check = Number(document.getElementById('calc-check').value), rate = Number(document.getElementById('calc-rate').value);
-    document.getElementById('calc-visitors-v').textContent = visitors.toLocaleString();
-    document.getElementById('calc-check-v').textContent = fmtEur(check).replace(/\.\d+/, '');
-    document.getElementById('calc-rate-v').textContent = rate + '%';
-    const extra = visitors * (rate / 100) * check;
-    document.getElementById('calc-out').textContent = '+' + fmtEur(extra);
-    const roi = Math.max(1, Math.floor(extra / 9.99));
-    document.getElementById('calc-roi').textContent = `${t('calcRoi')} ${roi} ${t('calcTimes')}`;
+    const visitors = Number(v.value), check = Number(document.getElementById('calc-check').value), rt = Number(document.getElementById('calc-rate').value);
+    document.getElementById('calc-visitors-v').textContent = visitors.toLocaleString(locale());
+    document.getElementById('calc-check-v').textContent = fmtMoney(check);
+    document.getElementById('calc-rate-v').textContent = rt + '%';
+    const extra = visitors * (rt / 100) * check;
+    const price = PRICE_EUR * rate();
+    document.getElementById('calc-out').textContent = '+' + fmtMoney(extra);
+    const roi = Math.max(1, Math.floor(extra / price));
+    let times = t('calcTimes');
+    if (lang === 'ru' || lang === 'uk') {
+      const pr = new Intl.PluralRules(lang).select(roi);
+      if (pr === 'few' && T[lang].calcTimesFew) times = T[lang].calcTimesFew;
+      if (pr === 'one' && T[lang].calcTimesOne) times = T[lang].calcTimesOne;
+    }
+    document.getElementById('calc-roi').textContent = `${t('calcRoi')} ${roi}${times.startsWith('-') ? '' : ' '}${times}`;
+    const fxEl = document.getElementById('calc-fx');
+    if (fxEl) {
+      let line = `${t('calcPriceIn')} ${new Intl.NumberFormat(locale(), { style: 'currency', currency, maximumFractionDigits: rate() < 5 ? 2 : 0 }).format(price)} ${t('calcPerMonth')}`;
+      if (currency !== 'EUR') line += ' · ' + (fx.date ? `${t('calcRateLive')} ${fx.date.toLocaleDateString(locale())}` : t('calcRateApprox')) + `: 1 € = ${rate().toLocaleString(locale(), { maximumFractionDigits: 2 })} ${currency}`;
+      fxEl.textContent = line;
+    }
+    const sel = document.getElementById('calc-currency');
+    if (sel && sel.value !== currency) sel.value = currency;
+  }
+  const checkEl = document.getElementById('calc-check');
+  if (checkEl) checkEl.addEventListener('input', () => { checkEur = Number(checkEl.value) / rate(); });
+  const curSel = document.getElementById('calc-currency');
+  if (curSel) {
+    curSel.value = currency;
+    curSel.addEventListener('change', () => { currency = curSel.value; store.set('loya_currency', currency); setupCheckSlider(); updateCalc(); });
+    setupCheckSlider();
+    let cached = null;
+    try { cached = JSON.parse(store.get('loya_fx') || 'null'); } catch (e) {}
+    const useRates = (d) => {
+      const r = {};
+      CURRENCIES.forEach(c => { r[c] = c === 'EUR' ? 1 : Number(d.rates && d.rates[c]) || FX_FALLBACK[c]; });
+      fx = { rates: r, date: d.time ? new Date(d.time * 1000) : null };
+      setupCheckSlider(); updateCalc();
+    };
+    if (cached && cached.saved && Date.now() - cached.saved < 12 * 3600e3) useRates(cached);
+    else fetch('/api/fx').then(r => r.json()).then(d => {
+      if (d && d.rates) {
+        const keep = { rates: d.rates, time: d.time, saved: Date.now() };
+        store.set('loya_fx', JSON.stringify(keep));
+        useRates(keep);
+      }
+    }).catch(() => {});
   }
   ['calc-visitors', 'calc-check', 'calc-rate'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', updateCalc); });
 
@@ -182,16 +247,12 @@
     btn.disabled = false;
   });
 
-  // ссылки «Скачать для Windows» — всегда на последний установщик из GitHub Releases
-  const dl = document.querySelectorAll('[data-download]');
-  if (dl.length) {
-    const fallback = `https://github.com/${REPO}/releases/latest`;
-    dl.forEach(a => { a.href = fallback; });
-    fetch(`https://api.github.com/repos/${REPO}/releases/latest`).then(r => r.json()).then(rel => {
-      const asset = (rel.assets || []).find(a => /\.exe$/i.test(a.name) && !/blockmap/i.test(a.name));
-      if (asset) dl.forEach(a => { a.href = asset.browser_download_url; });
-    }).catch(() => {});
-  }
+  // «Скачать установщик» — /download сам ведёт на последний .exe (api/_x_download.js)
+  document.querySelectorAll('[data-download]').forEach(a => { a.href = '/download'; });
+
+  // «Отправить ссылку на почту» — письмо самому себе со ссылкой на страницу скачивания
+  const dlMail = document.getElementById('dl-mail');
+  if (dlMail) dlMail.href = 'mailto:?subject=' + encodeURIComponent(t('dlMailSubject')) + '&body=' + encodeURIComponent(location.origin + location.pathname + '#download');
 
   document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
   apply();
