@@ -49,8 +49,9 @@
   <div class="container nav-inner">
     <a href="/sk/" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <nav class="nav-links" id="nav-links">
+      <div class="nav-drop"><button type="button" class="nav-drop-btn" aria-expanded="false" aria-controls="nav-for"><span data-i18n="navFor">Pre koho</span> <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <div class="nav-drop-menu" id="nav-for"><a href="/sk/cafe/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c-1 1.2 1 2 0 3.2M12 2.5c-1 1.2 1 2 0 3.2"/></svg></span><span><b>Kaviarne a kafé</b><small>Pečiatková karta</small></span></a><a href="/sk/beauty-salon/" aria-current="page"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></svg></span><span><b>Salóny a barbershopy</b><small>Zľavová karta · 10 %</small></span></a><a href="/sk/shop/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span><b>Obchody</b><small>Bodová karta</small></span></a></div></div>
       <a href="/sk/#features" data-i18n="navFeatures">Funkcie</a>
-      <a href="/sk/#how" data-i18n="navHow">Ako to funguje</a>
       <a href="/sk/#tour" data-i18n="navTour">Program</a>
       <a href="/sk/#pricing" data-i18n="navPricing">Cena</a>
       <a href="/sk/#faq" data-i18n="navFaq">Otázky</a>
@@ -69,31 +70,55 @@
 <main id="main">
   <section class="hero niche-hero">
     <div class="grid-bg"></div>
-    <div class="container center">
-      <nav class="crumbs" aria-label="breadcrumb"><a href="/sk/">Loya</a> <span aria-hidden="true">›</span> <span>Pre kozmetické salóny a barbershopy</span></nav>
-      <h1 class="hero-title"><span>Vernostný program </span><span class="gold">pre salóny krásy a barbershopy</span></h1>
-      <p class="hero-sub niche-lead">Zákazník sa k svojmu majstrovi vracia nie náhodou, ale preto, že včas dostal pripomienku a vie, že ho čaká bonus.</p>
-      <div class="hero-ctas niche-ctas">
-        <a href="/sk/#download" class="btn btn-primary">🎁 <span>Vyskúšať 14 dní zadarmo</span></a>
-        <a href="/sk/#pricing" class="btn btn-ghost"><span>Cena</span></a>
+    <div class="container hero-grid">
+      <div>
+        <nav class="crumbs" aria-label="breadcrumb"><a href="/sk/">Loya</a> <span aria-hidden="true">›</span> <span>Pre kozmetické salóny a barbershopy</span></nav>
+        <h1 class="hero-title"><span>Vernostný program</span><span class="gold">pre salóny krásy a barbershopy</span></h1>
+        <p class="hero-sub">Zákazník sa k svojmu majstrovi vracia nie náhodou, ale preto, že včas dostal pripomienku a vie, že ho čaká bonus.</p>
+        <div class="hero-ctas">
+          <a href="/sk/#download" class="btn btn-primary">🎁 <span>Vyskúšať 14 dní zadarmo</span></a>
+          <a href="#tour" class="btn btn-ghost">▶ <span>Program</span></a>
+        </div>
+        <div class="hero-note">Bez platobnej karty · potom od 9,99 € mesačne · bezplatná verzia do 10 zákazníkov</div>
       </div>
-      <div class="hero-note">Bez platobnej karty · potom od 9,99 € mesačne · bezplatná verzia do 10 zákazníkov</div>
+      <div class="niche-visual nv-beauty" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="nv-phone"><div class="nv-scr">
+        <div class="nv-top"><span class="nv-logo">💅</span><b>Velvet Studio</b><em>Zľavová karta · 10 %</em></div>
+        <div class="nv-reward">Úprava vlasov zadarmo</div>
+        <div class="nv-client">Mária</div>
+        <div class="nv-qr"><i></i></div>
+        <div class="nv-stamps nv-visits"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class=" next"></s><s class=""></s><s class=" gift">🎁</s></div>
+        <div class="nv-left">Ešte 3 návštevy do darčeka</div>
+        <div class="nv-toast">✓ Návšteva zaznamenaná</div>
+      </div></div>
+      <div class="chip nv-chip nv-c1">💌 „Mária, nie je čas na farbenie?“ — odoslané</div><div class="chip nv-chip nv-c2">🎁 +1 návšteva zadarmo za kamarátku</div><div class="chip nv-chip nv-c3">⭐ Prosba o recenziu po návšteve</div>
+    </div>
     </div>
   </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal">Poznáte to?</h2>
-      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon">📅</div><h3>Zákazníci sa medzi návštevami strácajú</h3><p>Človek bol u vás pred dvoma mesiacmi a možno už chodí k inému majstrovi.</p></div><div class="card reveal"><div class="icon">📒</div><h3>Zákazníci v zošite alebo v messengeri</h3><p>Žiadna história návštev — nevidíte, kto je váš najlepší zákazník a kto dlho neprišiel.</p></div><div class="card reveal"><div class="icon">📣</div><h3>Odporúčania fungujú samy od seba</h3><p>Zákazníci vás odporúčajú priateľom, no nič ich k tomu nemotivuje a nikto to nepočíta.</p></div></div>
+      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13h3v3H8z"/></svg></div><h3>Zákazníci sa medzi návštevami strácajú</h3><p>Človek bol u vás pred dvoma mesiacmi a možno už chodí k inému majstrovi.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h12a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2z"/><path d="M5 17a2 2 0 0 1 2-2h12"/><path d="M9 7h6"/></svg></div><h3>Zákazníci v zošite alebo v messengeri</h3><p>Žiadna história návštev — nevidíte, kto je váš najlepší zákazník a kto dlho neprišiel.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg></div><h3>Odporúčania fungujú samy od seba</h3><p>Zákazníci vás odporúčajú priateľom, no nič ich k tomu nemotivuje a nikto to nepočíta.</p></div></div>
     </div>
   </section>
 
   <section class="section" style="padding-top:20px">
     <div class="container center">
       <h2 class="h2 reveal">Ako Loya pomáha salónom</h2>
-      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon">💳</div><h3>Zľavová alebo bodová karta</h3><p>Percento zľavy alebo bonus po dosiahnutí sumy — vyberte, čo sa hodí k vašim službám.</p></div><div class="card reveal"><div class="icon">🔁</div><h3>Návrat stratených zákazníkov</h3><p>Tým, ktorí dlho neprišli, odíde e-mail sám — s dôvodom znova sa objednať.</p></div><div class="card reveal"><div class="icon">🎁</div><h3>„Priveď kamarátku“ a narodeniny</h3><p>Bonus za odporúčanie a blahoželanie k narodeninám — automaticky, bez ručného pripomínania.</p></div><div class="card reveal"><div class="icon">👩‍🎨</div><h3>Majstri a prístupové práva</h3><p>Každý majster má vlastný PIN. Vidíte, kto koľko zákazníkov obslúžil.</p></div></div>
+      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></div><h3>Zľavová alebo bodová karta</h3><p>Percento zľavy alebo bonus po dosiahnutí sumy — vyberte, čo sa hodí k vašim službám.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg></div><h3>Návrat stratených zákazníkov</h3><p>Tým, ktorí dlho neprišli, odíde e-mail sám — s dôvodom znova sa objednať.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-2-4-6-4-6-1.5S10 9 12 9zm0 0c2-4 6-4 6-1.5S14 9 12 9z"/></svg></div><h3>„Priveď kamarátku“ a narodeniny</h3><p>Bonus za odporúčanie a blahoželanie k narodeninám — automaticky, bez ručného pripomínania.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l8 8M10 3l-4 4"/><path d="M14 11l-3 3a3 3 0 1 0 4 4l3-3"/><circle cx="18" cy="18" r="1"/></svg></div><h3>Majstri a prístupové práva</h3><p>Každý majster má vlastný PIN. Vidíte, kto koľko zákazníkov obslúžil.</p></div></div>
       
-      <div class="niche-shot tour-frame reveal"><img src="/img/dashboard_sk.webp" alt="Celý deň na jednej obrazovke: klient mesiaca, narodeniny, posledné nákupy a kľúčové čísla." loading="lazy" width="1600" height="1000"></div>
+    </div>
+  </section>
+
+  <section class="section" id="tour" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal">Pozrite sa dovnútra</h2>
+      <p class="lead reveal">Skutočné obrazovky programu — pekne, prehľadne a vo vašom jazyku.</p>
+      <div class="tour-tabs"><button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash">Hlavná</button><button class="tour-tab" data-tab="scan" data-i18n="tabScan">Skenovanie</button><button class="tour-tab" data-tab="marketing" data-i18n="tabMkt">Marketing</button><button class="tour-tab" data-tab="clients" data-i18n="tabClients">Klienti</button><button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics">Analytika</button></div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_sk.webp" alt="Celý deň na jednej obrazovke: klient mesiaca, narodeniny, posledné nákupy a kľúčové čísla." loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap">Celý deň na jednej obrazovke: klient mesiaca, narodeniny, posledné nákupy a kľúčové čísla.</p>
     </div>
   </section>
 

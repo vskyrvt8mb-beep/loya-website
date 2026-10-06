@@ -49,8 +49,9 @@
   <div class="container nav-inner">
     <a href="/ru/" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <nav class="nav-links" id="nav-links">
+      <div class="nav-drop"><button type="button" class="nav-drop-btn" aria-expanded="false" aria-controls="nav-for"><span data-i18n="navFor">Для кого</span> <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <div class="nav-drop-menu" id="nav-for"><a href="/ru/cafe/" aria-current="page"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c-1 1.2 1 2 0 3.2M12 2.5c-1 1.2 1 2 0 3.2"/></svg></span><span><b>Кафе и кофейни</b><small>Штамп-карта</small></span></a><a href="/ru/beauty-salon/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></svg></span><span><b>Салоны и барбершопы</b><small>Скидочная карта · 10%</small></span></a><a href="/ru/shop/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span><b>Магазины</b><small>Накопительная карта</small></span></a></div></div>
       <a href="/ru/#features" data-i18n="navFeatures">Возможности</a>
-      <a href="/ru/#how" data-i18n="navHow">Как работает</a>
       <a href="/ru/#tour" data-i18n="navTour">Программа</a>
       <a href="/ru/#pricing" data-i18n="navPricing">Цена</a>
       <a href="/ru/#faq" data-i18n="navFaq">Вопросы</a>
@@ -69,29 +70,44 @@
 <main id="main">
   <section class="hero niche-hero">
     <div class="grid-bg"></div>
-    <div class="container center">
-      <nav class="crumbs" aria-label="breadcrumb"><a href="/ru/">Loya</a> <span aria-hidden="true">›</span> <span>Для кафе и кофеен</span></nav>
-      <h1 class="hero-title"><span>Программа лояльности </span><span class="gold">для кафе и кофеен</span></h1>
-      <p class="hero-sub niche-lead">Электронная штамп-карта вместо бумажной: гость показывает QR, бариста сканирует его телефоном — и через неделю гость возвращается за следующей чашкой.</p>
-      <div class="hero-ctas niche-ctas">
-        <a href="/ru/#download" class="btn btn-primary">🎁 <span>Попробовать 14 дней бесплатно</span></a>
-        <a href="/ru/#pricing" class="btn btn-ghost"><span>Цена</span></a>
+    <div class="container hero-grid">
+      <div>
+        <nav class="crumbs" aria-label="breadcrumb"><a href="/ru/">Loya</a> <span aria-hidden="true">›</span> <span>Для кафе и кофеен</span></nav>
+        <h1 class="hero-title"><span>Программа лояльности</span><span class="gold">для кафе и кофеен</span></h1>
+        <p class="hero-sub">Электронная штамп-карта вместо бумажной: гость показывает QR, бариста сканирует его телефоном — и через неделю гость возвращается за следующей чашкой.</p>
+        <div class="hero-ctas">
+          <a href="/ru/#download" class="btn btn-primary">🎁 <span>Попробовать 14 дней бесплатно</span></a>
+          <a href="#tour" class="btn btn-ghost">▶ <span>Программа</span></a>
+        </div>
+        <div class="hero-note">Без банковской карты · затем от €9.99 в месяц · бесплатная версия до 10 клиентов</div>
       </div>
-      <div class="hero-note">Без банковской карты · затем от €9.99 в месяц · бесплатная версия до 10 клиентов</div>
+      <div class="niche-visual nv-cafe" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="nv-phone"><div class="nv-scr">
+        <div class="nv-top"><span class="nv-logo">☕</span><b>Black Rich</b><em>Штамп-карта</em></div>
+        <div class="nv-reward">Бесплатный кофе</div>
+        <div class="nv-client">Анна</div>
+        <div class="nv-qr"><i></i></div>
+        <div class="nv-stamps nv-stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class=" next"></s><s class=""></s><s class=" gift">🎁</s></div>
+        <div class="nv-left">Ещё 3 до подарка</div>
+        <div class="nv-toast">✓ Штамп отмечен</div>
+      </div></div>
+      <div class="chip nv-chip nv-c1">⚡ Двойные штампы 14:00–17:00</div><div class="chip nv-chip nv-c2">💌 «Остался 1 кофе до подарка» — отправлено</div><div class="chip nv-chip nv-c3">🎂 Поздравление с днём рождения</div>
+    </div>
     </div>
   </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal">Знакомо?</h2>
-      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon">🧾</div><h3>Бумажные карточки теряются</h3><p>Гости забывают карточки дома, а штампы легко подделать. Вы не знаете, кто ваш постоянный клиент.</p></div><div class="card reveal"><div class="icon">🕒</div><h3>Пустые утренние и дневные часы</h3><p>В час пик очередь, а после обеда пусто. Нечем позвать гостей в тихое время.</p></div><div class="card reveal"><div class="icon">👋</div><h3>Новые гости не возвращаются</h3><p>Человек зашёл один раз — и пропал. Связаться с ним уже нельзя.</p></div></div>
+      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div><h3>Бумажные карточки теряются</h3><p>Гости забывают карточки дома, а штампы легко подделать. Вы не знаете, кто ваш постоянный клиент.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Пустые утренние и дневные часы</h3><p>В час пик очередь, а после обеда пусто. Нечем позвать гостей в тихое время.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6 2 0 3.6.6 4.8 1.6"/><path d="M16 15h6M19 12l3 3-3 3"/></svg></div><h3>Новые гости не возвращаются</h3><p>Человек зашёл один раз — и пропал. Связаться с ним уже нельзя.</p></div></div>
     </div>
   </section>
 
   <section class="section" style="padding-top:20px">
     <div class="container center">
       <h2 class="h2 reveal">Как Loya помогает кафе</h2>
-      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon">☕</div><h3>Штамп-карта «10-й кофе бесплатно»</h3><p>Настраивается за минуту: сколько штампов, какой подарок. Подарок система отмечает сама.</p></div><div class="card reveal"><div class="icon">📱</div><h3>Телефон бариста — сканер</h3><p>Откройте QR на экране кассы — телефон становится беспроводным сканером. Отметка за 2 секунды, очередь не растёт.</p></div><div class="card reveal"><div class="icon">⏰</div><h3>Двойные штампы в тихие часы</h3><p>Включите акцию на 14:00–17:00 — и гости сами начнут приходить в пустое время.</p></div><div class="card reveal"><div class="icon">💌</div><h3>Автоматические письма</h3><p>Гостю, который в шаге от подарка, пропал на месяц или празднует день рождения, письмо уходит само.</p></div></div>
+      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c-1 1.2 1 2 0 3.2M12 2.5c-1 1.2 1 2 0 3.2"/></svg></div><h3>Штамп-карта «10-й кофе бесплатно»</h3><p>Настраивается за минуту: сколько штампов, какой подарок. Подарок система отмечает сама.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M9 7h2v2H9zM13 7h2v2h-2zM9 11h2v2H9z"/><path d="M11 18h2"/></svg></div><h3>Телефон бариста — сканер</h3><p>Откройте QR на экране кассы — телефон становится беспроводным сканером. Отметка за 2 секунды, очередь не растёт.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M5 3L2 6M19 3l3 3"/></svg></div><h3>Двойные штампы в тихие часы</h3><p>Включите акцию на 14:00–17:00 — и гости сами начнут приходить в пустое время.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="M3 7l9 6 9-6"/></svg></div><h3>Автоматические письма</h3><p>Гостю, который в шаге от подарка, пропал на месяц или празднует день рождения, письмо уходит само.</p></div></div>
       <div class="photo-grid niche-photos">
         <figure class="photo reveal">
           <img src="/img/photo-barista-ru-768.webp" srcset="/img/photo-barista-ru-768.webp 768w, /img/photo-barista-ru-1536.webp 1536w" sizes="(max-width: 760px) 100vw, 560px" width="1536" height="1024" loading="lazy" decoding="async" alt="Карта гостя в телефоне: QR для отметки на кассе и штампы до подарка — без бумажных карточек.">
@@ -102,7 +118,16 @@
           <figcaption>QR на столике: гость вступает в программу за 10 секунд, карта сохраняется в телефоне.</figcaption>
         </figure>
       </div>
-      <div class="niche-shot tour-frame reveal"><img src="/img/dashboard_ru.webp" alt="Вся картина дня: клиент месяца, дни рождения, последние покупки и ключевые цифры." loading="lazy" width="1600" height="1000"></div>
+    </div>
+  </section>
+
+  <section class="section" id="tour" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal">Загляните внутрь</h2>
+      <p class="lead reveal">Настоящие экраны программы — красиво, понятно и на вашем языке.</p>
+      <div class="tour-tabs"><button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash">Главная</button><button class="tour-tab" data-tab="scan" data-i18n="tabScan">Сканирование</button><button class="tour-tab" data-tab="marketing" data-i18n="tabMkt">Маркетинг</button><button class="tour-tab" data-tab="clients" data-i18n="tabClients">Клиенты</button><button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics">Аналитика</button></div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_ru.webp" alt="Вся картина дня: клиент месяца, дни рождения, последние покупки и ключевые цифры." loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap">Вся картина дня: клиент месяца, дни рождения, последние покупки и ключевые цифры.</p>
     </div>
   </section>
 

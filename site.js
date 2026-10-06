@@ -63,6 +63,15 @@
     lang = next; apply();
   }));
 
+  // меню «Для кого»: открывается по нажатию (и наведению на компьютере), закрывается по Esc и клику мимо
+  document.querySelectorAll('.nav-drop').forEach(drop => {
+    const btn = drop.querySelector('.nav-drop-btn');
+    const set = (open) => { drop.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); };
+    btn.addEventListener('click', (e) => { e.stopPropagation(); set(!drop.classList.contains('open')); });
+    document.addEventListener('click', (e) => { if (!drop.contains(e.target)) set(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drop.classList.contains('open')) { set(false); btn.focus(); } });
+  });
+
   // ссылки на языковые версии в подвале запоминают выбор, чтобы корень "/" не вернул обратно
   document.querySelectorAll('.foot-langs a[hreflang]').forEach(a => a.addEventListener('click', () => store.set('loya_lang', a.getAttribute('hreflang'))));
 
