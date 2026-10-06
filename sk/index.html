@@ -83,6 +83,7 @@
         <div class="trust"><span data-i18n="trust1">Bez poplatkov od zákazníkov</span><span data-i18n="trust2">Dáta na vašom počítači</span><span data-i18n="trust3">Funguje bez internetu</span><span data-i18n="trust4">4 jazyky</span></div>
       </div>
       <div class="hero-visual" aria-hidden="true">
+        <div class="hero-glow"></div>
         <div class="laptop"><img id="hero-shot" src="/img/dashboard_sk.webp" alt="Celý deň na jednej obrazovke: klient mesiaca, narodeniny, posledné nákupy a kľúčové čísla." fetchpriority="high" width="1600" height="1000"></div>
         <div class="phone"><div class="phone-scr">
           <div class="ph-head"><span>☕ Café Aurora</span><span class="ph-live">● LIVE</span></div>
@@ -102,18 +103,27 @@
   <div class="niches">
     <div class="container">
       <div class="niches-title" data-i18n="nichesTitle">Vytvorené pre malé podniky</div>
-      <div class="niches-row"><a href="/sk/cafe/" data-i18n="n1">☕ Kaviarne</a><a href="/sk/cafe/" data-i18n="n2">🥐 Pekárne</a><a href="/sk/beauty-salon/" data-i18n="n3">💈 Barbershopy</a><a href="/sk/beauty-salon/" data-i18n="n4">💅 Kozmetické salóny</a><a href="/sk/beauty-salon/" data-i18n="n5">🧖 SPA</a><span data-i18n="n6">🏋️ Fitness</span><span data-i18n="n7">🐾 Starostlivosť o zvieratá</span><a href="/sk/shop/" data-i18n="n8">👗 Obchody</a></div>
+      <div class="niches-marquee"><div class="niches-track"><div class="niches-row"><a href="/sk/cafe/" data-i18n="n1">☕ Kaviarne</a><a href="/sk/cafe/" data-i18n="n2">🥐 Pekárne</a><a href="/sk/beauty-salon/" data-i18n="n3">💈 Barbershopy</a><a href="/sk/beauty-salon/" data-i18n="n4">💅 Kozmetické salóny</a><a href="/sk/beauty-salon/" data-i18n="n5">🧖 SPA</a><span data-i18n="n6">🏋️ Fitness</span><span data-i18n="n7">🐾 Starostlivosť o zvieratá</span><a href="/sk/shop/" data-i18n="n8">👗 Obchody</a></div><div class="niches-row" aria-hidden="true"><a tabindex="-1" href="/sk/cafe/" data-i18n="n1">☕ Kaviarne</a><a tabindex="-1" href="/sk/cafe/" data-i18n="n2">🥐 Pekárne</a><a tabindex="-1" href="/sk/beauty-salon/" data-i18n="n3">💈 Barbershopy</a><a tabindex="-1" href="/sk/beauty-salon/" data-i18n="n4">💅 Kozmetické salóny</a><a tabindex="-1" href="/sk/beauty-salon/" data-i18n="n5">🧖 SPA</a><span data-i18n="n6">🏋️ Fitness</span><span data-i18n="n7">🐾 Starostlivosť o zvieratá</span><a tabindex="-1" href="/sk/shop/" data-i18n="n8">👗 Obchody</a></div></div></div>
     </div>
   </div>
+
+  <section class="stats" aria-label="Loya">
+    <div class="container stats-grid">
+      <div class="stat reveal"><b><span data-count="10">10</span></b><span data-i18n="stat1">minút do prvej karty</span></div>
+      <div class="stat reveal"><b>€<span data-count="0">0</span></b><span data-i18n="stat2">na vybavenie — stačí telefón</span></div>
+      <div class="stat reveal"><b><span data-count="14">14</span></b><span data-i18n="stat3">dní všetkých funkcií zadarmo</span></div>
+      <div class="stat reveal"><b><span data-count="4">4</span></b><span data-i18n="stat4">jazyky: RU · UK · SK · EN</span></div>
+    </div>
+  </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal" data-i18n="probTitle">Papierové karty už nefungujú</h2>
       <p class="lead reveal" data-i18n="probSub">Strácajú sa, zabúdajú sa a dajú sa sfalšovať. A vy neviete, kto sú vaši najlepší zákazníci a kto odišiel ku konkurencii.</p>
       <div class="cards3" style="text-align:left">
-        <div class="card reveal"><div class="icon">🗂️</div><h3 data-i18n="prob1T">Zákazníci strácajú karty</h3><p data-i18n="prob1D">Elektronická karta je vždy v telefóne — v e-maile, v Telegrame alebo v Google Wallet.</p></div>
-        <div class="card reveal"><div class="icon">👻</div><h3 data-i18n="prob2T">Nevidíte, kto odišiel</h3><p data-i18n="prob2D">Loya sama zistí, kto chýba dlhšie než zvyčajne, a poradí, ako ho vrátiť.</p></div>
-        <div class="card reveal"><div class="icon">💸</div><h3 data-i18n="prob3T">Reklama je drahá</h3><p data-i18n="prob3D">Udržať zákazníka je lacnejšie ako nájsť nového. Loya píše správnym ľuďom v správnej chvíli.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="14" height="10" rx="2"/><path d="M7 20h12a2 2 0 0 0 2-2V9"/><path d="M3 10h14"/><path d="M4 3l16 18"/></svg></div><h3 data-i18n="prob1T">Zákazníci strácajú karty</h3><p data-i18n="prob1D">Elektronická karta je vždy v telefóne — v e-maile, v Telegrame alebo v Google Wallet.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7"/><path d="M16 17l5 5M21 17l-5 5"/></svg></div><h3 data-i18n="prob2T">Nevidíte, kto odišiel</h3><p data-i18n="prob2D">Loya sama zistí, kto chýba dlhšie než zvyčajne, a poradí, ako ho vrátiť.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg></div><h3 data-i18n="prob3T">Reklama je drahá</h3><p data-i18n="prob3D">Udržať zákazníka je lacnejšie ako nájsť nového. Loya píše správnym ľuďom v správnej chvíli.</p></div>
       </div>
     </div>
   </section>
@@ -168,15 +178,15 @@
       <h2 class="h2 reveal" data-i18n="featTitle">Všetko potrebné v jednom programe</h2>
       <p class="lead reveal" data-i18n="featSub">Bez predplatného piatich rôznych služieb a bez technických znalostí.</p>
       <div class="features" style="text-align:left">
-        <div class="card reveal"><div class="icon">🃏</div><h3 data-i18n="f1T">Tri typy kariet</h3><p data-i18n="f1D">Pečiatková karta („10. káva zdarma&quot;), zľavová a vernostná na nákupy — s bonusom po dosiahnutí sumy.</p></div>
-        <div class="card reveal"><div class="icon">📱</div><h3 data-i18n="f2T">Telefón namiesto skenera</h3><p data-i18n="f2D">Otvorte QR na obrazovke — a telefón zamestnanca sa stane bezdrôtovým skenerom. Karta hosťa sa zobrazí hneď.</p></div>
-        <div class="card reveal"><div class="icon">🤖</div><h3 data-i18n="f3T">Automatické kampane</h3><p data-i18n="f3D">E-maily strateným zákazníkom, tým, ktorým chýba krok do darčeka, nováčikom a oslávencom — samy, raz denne.</p></div>
-        <div class="card reveal"><div class="icon">🎯</div><h3 data-i18n="f4T">„Čo urobiť dnes&quot;</h3><p data-i18n="f4D">Chytré tipy: komu pripomenúť darček, koho vrátiť, kto má narodeniny. Jedno tlačidlo — a kampaň je pripravená.</p></div>
-        <div class="card reveal"><div class="icon">📊</div><h3 data-i18n="f5T">Prehľadná analytika</h3><p data-i18n="f5D">Tržby, priemerný nákup, lievik vernosti a teplotná mapa: kedy chodia zákazníci a kedy spustiť akciu.</p></div>
-        <div class="card reveal"><div class="icon">⚡</div><h3 data-i18n="f6T">Akcie a ochrana</h3><p data-i18n="f6D">Dvojité pečiatky v tichých hodinách, „Priveď priateľa&quot;, prosba o recenziu — a ochrana pred opakovaným skenovaním.</p></div>
-        <div class="card reveal"><div class="icon">👥</div><h3 data-i18n="f7T">Zamestnanci a prevádzky</h3><p data-i18n="f7D">Každý pokladník má vlastný PIN a práva. Vidíte, kto koľko označil a ktorá prevádzka prináša viac.</p></div>
-        <div class="card reveal"><div class="icon">🎟️</div><h3 data-i18n="f8T">Karty vo Wallet a tlač</h3><p data-i18n="f8D">Google Wallet a Telegram pre zákazníkov, a pre milovníkov plastu — tlač kariet a nálepiek s QR.</p></div>
-        <div class="card reveal"><div class="icon">🔒</div><h3 data-i18n="f9T">Vaše dáta sú vaše</h3><p data-i18n="f9D">Databáza je uložená na vašom počítači, každý deň sa zálohuje. Funguje aj bez internetu.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="7" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="17" cy="12" r="1.6"/></svg></div><h3 data-i18n="f1T">Tri typy kariet</h3><p data-i18n="f1D">Pečiatková karta („10. káva zdarma&quot;), zľavová a vernostná na nákupy — s bonusom po dosiahnutí sumy.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M9 7h2v2H9zM13 7h2v2h-2zM9 11h2v2H9z"/><path d="M11 18h2"/></svg></div><h3 data-i18n="f2T">Telefón namiesto skenera</h3><p data-i18n="f2D">Otvorte QR na obrazovke — a telefón zamestnanca sa stane bezdrôtovým skenerom. Karta hosťa sa zobrazí hneď.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/><path d="M18 2v3M20.5 3.5l-2 2"/></svg></div><h3 data-i18n="f3T">Automatické kampane</h3><p data-i18n="f3D">E-maily strateným zákazníkom, tým, ktorým chýba krok do darčeka, nováčikom a oslávencom — samy, raz denne.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></div><h3 data-i18n="f4T">„Čo urobiť dnes&quot;</h3><p data-i18n="f4D">Chytré tipy: komu pripomenúť darček, koho vrátiť, kto má narodeniny. Jedno tlačidlo — a kampaň je pripravená.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3 data-i18n="f5T">Prehľadná analytika</h3><p data-i18n="f5D">Tržby, priemerný nákup, lievik vernosti a teplotná mapa: kedy chodia zákazníci a kedy spustiť akciu.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div><h3 data-i18n="f6T">Akcie a ochrana</h3><p data-i18n="f6D">Dvojité pečiatky v tichých hodinách, „Priveď priateľa&quot;, prosba o recenziu — a ochrana pred opakovaným skenovaním.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="17.5" cy="8.5" r="2.5"/><path d="M17 14c3 0 5 2 5 5"/></svg></div><h3 data-i18n="f7T">Zamestnanci a prevádzky</h3><p data-i18n="f7D">Každý pokladník má vlastný PIN a práva. Vidíte, kto koľko označil a ktorá prevádzka prináša viac.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 7h6M9 11h6"/><rect x="9" y="14" width="6" height="4" rx="1"/></svg></div><h3 data-i18n="f8T">Karty vo Wallet a tlač</h3><p data-i18n="f8D">Google Wallet a Telegram pre zákazníkov, a pre milovníkov plastu — tlač kariet a nálepiek s QR.</p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></svg></div><h3 data-i18n="f9T">Vaše dáta sú vaše</h3><p data-i18n="f9D">Databáza je uložená na vašom počítači, každý deň sa zálohuje. Funguje aj bez internetu.</p></div>
       </div>
     </div>
   </section>
