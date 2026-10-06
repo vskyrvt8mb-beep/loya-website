@@ -49,8 +49,9 @@
   <div class="container nav-inner">
     <a href="/" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <nav class="nav-links" id="nav-links">
+      <div class="nav-drop"><button type="button" class="nav-drop-btn" aria-expanded="false" aria-controls="nav-for"><span data-i18n="navFor">Who it’s for</span> <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <div class="nav-drop-menu" id="nav-for"><a href="/cafe/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c-1 1.2 1 2 0 3.2M12 2.5c-1 1.2 1 2 0 3.2"/></svg></span><span><b>Cafés &amp; coffee shops</b><small>Stamp card</small></span></a><a href="/beauty-salon/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></svg></span><span><b>Salons &amp; barbershops</b><small>Discount card · 10%</small></span></a><a href="/shop/" aria-current="page"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span><b>Retail shops</b><small>Points card</small></span></a></div></div>
       <a href="/#features" data-i18n="navFeatures">Features</a>
-      <a href="/#how" data-i18n="navHow">How it works</a>
       <a href="/#tour" data-i18n="navTour">The app</a>
       <a href="/#pricing" data-i18n="navPricing">Pricing</a>
       <a href="/#faq" data-i18n="navFaq">FAQ</a>
@@ -69,31 +70,56 @@
 <main id="main">
   <section class="hero niche-hero">
     <div class="grid-bg"></div>
-    <div class="container center">
-      <nav class="crumbs" aria-label="breadcrumb"><a href="/">Loya</a> <span aria-hidden="true">›</span> <span>For shops</span></nav>
-      <h1 class="hero-title"><span>Loyalty program </span><span class="gold">for retail shops</span></h1>
-      <p class="hero-sub niche-lead">Customers see their rewards on their phone, get an email about new arrivals and come back — to you, not to the shop next door or a marketplace.</p>
-      <div class="hero-ctas niche-ctas">
-        <a href="/#download" class="btn btn-primary">🎁 <span>Try 14 days free</span></a>
-        <a href="/#pricing" class="btn btn-ghost"><span>Pricing</span></a>
+    <div class="container hero-grid">
+      <div>
+        <nav class="crumbs" aria-label="breadcrumb"><a href="/">Loya</a> <span aria-hidden="true">›</span> <span>For shops</span></nav>
+        <h1 class="hero-title"><span>Loyalty program</span><span class="gold">for retail shops</span></h1>
+        <p class="hero-sub">Customers see their rewards on their phone, get an email about new arrivals and come back — to you, not to the shop next door or a marketplace.</p>
+        <div class="hero-ctas">
+          <a href="/#download" class="btn btn-primary">🎁 <span>Try 14 days free</span></a>
+          <a href="#tour" class="btn btn-ghost">▶ <span>The app</span></a>
+        </div>
+        <div class="hero-note">No card needed · then from €9.99 a month · free version up to 10 customers</div>
       </div>
-      <div class="hero-note">No card needed · then from €9.99 a month · free version up to 10 customers</div>
+      <div class="niche-visual nv-shop" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="nv-phone"><div class="nv-scr">
+        <div class="nv-top"><span class="nv-logo">🛍️</span><b>Nord Store</b><em>Points card</em></div>
+        <div class="nv-reward">Gift after €250 spent</div>
+        <div class="nv-client">Oleg</div>
+        <div class="nv-qr"><i></i></div>
+        <div class="nv-points"><b class="nv-num">€<span data-count="184">184</span></b><span>/ €250</span></div>
+          <div class="nv-bar"><i style="--to:74%"></i></div>
+        <div class="nv-left">€66 to your gift</div>
+        <div class="nv-toast">✓ €64 purchase added</div>
+      </div></div>
+      <div class="chip nv-chip nv-c1">🧾 Till receipt linked to the card</div><div class="chip nv-chip nv-c2">💌 New-arrivals email sent</div><div class="chip nv-chip nv-c3">🏷️ −15% on your birthday</div>
+    </div>
     </div>
   </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal">Sound familiar?</h2>
-      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon">🛒</div><h3>Customers drift to marketplaces</h3><p>Prices are similar everywhere — so there’s no reason to come back to you in particular.</p></div><div class="card reveal"><div class="icon">🤷</div><h3>You don’t know your customers</h3><p>Who buys most often, how much, and when they last visited — it’s all a guess.</p></div><div class="card reveal"><div class="icon">📦</div><h3>Nobody sees your promos and new arrivals</h3><p>Your social media post reached people other than the ones who actually buy from you.</p></div></div>
+      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.5 11h11L21 7H7"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg></div><h3>Customers drift to marketplaces</h3><p>Prices are similar everywhere — so there’s no reason to come back to you in particular.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/><path d="M11 6.5a1.5 1.5 0 1 1 1.5 1.5v1"/></svg></div><h3>You don’t know your customers</h3><p>Who buys most often, how much, and when they last visited — it’s all a guess.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg></div><h3>Nobody sees your promos and new arrivals</h3><p>Your social media post reached people other than the ones who actually buy from you.</p></div></div>
     </div>
   </section>
 
   <section class="section" style="padding-top:20px">
     <div class="container center">
       <h2 class="h2 reveal">How Loya helps shops</h2>
-      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon">💰</div><h3>Points card with a reward</h3><p>A bonus or gift after a set amount spent — customers see how much is left.</p></div><div class="card reveal"><div class="icon">🧾</div><h3>Products, stock and receipts</h3><p>The Starter plan includes products, stock levels and till receipts linked to the customer’s card.</p></div><div class="card reveal"><div class="icon">💌</div><h3>Campaigns to your own customers</h3><p>Email and Telegram with ready-made texts: new arrivals, sales, “we haven’t seen you in a while”.</p></div><div class="card reveal"><div class="icon">📊</div><h3>Purchase analytics</h3><p>Revenue, average purchase, loyalty funnel and a heatmap — when customers come and when to run promotions.</p></div></div>
+      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2s1.3 1.7 3 2 3 .9 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v12"/></svg></div><h3>Points card with a reward</h3><p>A bonus or gift after a set amount spent — customers see how much is left.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div><h3>Products, stock and receipts</h3><p>The Starter plan includes products, stock levels and till receipts linked to the customer’s card.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="M3 7l9 6 9-6"/></svg></div><h3>Campaigns to your own customers</h3><p>Email and Telegram with ready-made texts: new arrivals, sales, “we haven’t seen you in a while”.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Purchase analytics</h3><p>Revenue, average purchase, loyalty funnel and a heatmap — when customers come and when to run promotions.</p></div></div>
       
-      <div class="niche-shot tour-frame reveal"><img src="/img/dashboard_en.webp" alt="Your whole day at a glance: client of the month, birthdays, recent purchases and key numbers." loading="lazy" width="1600" height="1000"></div>
+    </div>
+  </section>
+
+  <section class="section" id="tour" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal">Take a look inside</h2>
+      <p class="lead reveal">Real screens from the app — beautiful, clear and in your language.</p>
+      <div class="tour-tabs"><button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash">Home</button><button class="tour-tab" data-tab="scan" data-i18n="tabScan">Scanning</button><button class="tour-tab" data-tab="marketing" data-i18n="tabMkt">Marketing</button><button class="tour-tab" data-tab="clients" data-i18n="tabClients">Clients</button><button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics">Analytics</button></div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_en.webp" alt="Your whole day at a glance: client of the month, birthdays, recent purchases and key numbers." loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap">Your whole day at a glance: client of the month, birthdays, recent purchases and key numbers.</p>
     </div>
   </section>
 

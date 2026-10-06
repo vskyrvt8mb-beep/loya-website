@@ -49,8 +49,9 @@
   <div class="container nav-inner">
     <a href="/uk/" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <nav class="nav-links" id="nav-links">
+      <div class="nav-drop"><button type="button" class="nav-drop-btn" aria-expanded="false" aria-controls="nav-for"><span data-i18n="navFor">Для кого</span> <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <div class="nav-drop-menu" id="nav-for"><a href="/uk/cafe/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c-1 1.2 1 2 0 3.2M12 2.5c-1 1.2 1 2 0 3.2"/></svg></span><span><b>Кафе та кав’ярні</b><small>Штамп-картка</small></span></a><a href="/uk/beauty-salon/" aria-current="page"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/></svg></span><span><b>Салони та барбершопи</b><small>Знижкова картка · 10%</small></span></a><a href="/uk/shop/"><span class="nd-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span><b>Магазини</b><small>Накопичувальна картка</small></span></a></div></div>
       <a href="/uk/#features" data-i18n="navFeatures">Можливості</a>
-      <a href="/uk/#how" data-i18n="navHow">Як працює</a>
       <a href="/uk/#tour" data-i18n="navTour">Програма</a>
       <a href="/uk/#pricing" data-i18n="navPricing">Ціна</a>
       <a href="/uk/#faq" data-i18n="navFaq">Питання</a>
@@ -69,31 +70,55 @@
 <main id="main">
   <section class="hero niche-hero">
     <div class="grid-bg"></div>
-    <div class="container center">
-      <nav class="crumbs" aria-label="breadcrumb"><a href="/uk/">Loya</a> <span aria-hidden="true">›</span> <span>Для салонів краси та барбершопів</span></nav>
-      <h1 class="hero-title"><span>Програма лояльності </span><span class="gold">для салонів краси та барбершопів</span></h1>
-      <p class="hero-sub niche-lead">Клієнт повертається до свого майстра не з пам’яті, а тому що вчасно отримав нагадування й знає, що на нього чекає бонус.</p>
-      <div class="hero-ctas niche-ctas">
-        <a href="/uk/#download" class="btn btn-primary">🎁 <span>Спробувати 14 днів безкоштовно</span></a>
-        <a href="/uk/#pricing" class="btn btn-ghost"><span>Ціна</span></a>
+    <div class="container hero-grid">
+      <div>
+        <nav class="crumbs" aria-label="breadcrumb"><a href="/uk/">Loya</a> <span aria-hidden="true">›</span> <span>Для салонів краси та барбершопів</span></nav>
+        <h1 class="hero-title"><span>Програма лояльності</span><span class="gold">для салонів краси та барбершопів</span></h1>
+        <p class="hero-sub">Клієнт повертається до свого майстра не з пам’яті, а тому що вчасно отримав нагадування й знає, що на нього чекає бонус.</p>
+        <div class="hero-ctas">
+          <a href="/uk/#download" class="btn btn-primary">🎁 <span>Спробувати 14 днів безкоштовно</span></a>
+          <a href="#tour" class="btn btn-ghost">▶ <span>Програма</span></a>
+        </div>
+        <div class="hero-note">Без банківської картки · далі від €9.99 на місяць · безкоштовна версія до 10 клієнтів</div>
       </div>
-      <div class="hero-note">Без банківської картки · далі від €9.99 на місяць · безкоштовна версія до 10 клієнтів</div>
+      <div class="niche-visual nv-beauty" aria-hidden="true">
+      <div class="hero-glow"></div>
+      <div class="nv-phone"><div class="nv-scr">
+        <div class="nv-top"><span class="nv-logo">💅</span><b>Velvet Studio</b><em>Знижкова картка · 10%</em></div>
+        <div class="nv-reward">Безкоштовна укладка</div>
+        <div class="nv-client">Марія</div>
+        <div class="nv-qr"><i></i></div>
+        <div class="nv-stamps nv-visits"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class=" next"></s><s class=""></s><s class=" gift">🎁</s></div>
+        <div class="nv-left">Ще 3 візити до подарунка</div>
+        <div class="nv-toast">✓ Візит відмічено</div>
+      </div></div>
+      <div class="chip nv-chip nv-c1">💌 «Маріє, час на фарбування?» — надіслано</div><div class="chip nv-chip nv-c2">🎁 +1 візит у подарунок за подругу</div><div class="chip nv-chip nv-c3">⭐ Прохання про відгук після візиту</div>
+    </div>
     </div>
   </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal">Знайомо?</h2>
-      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon">📅</div><h3>Клієнти зникають між візитами</h3><p>Людина стриглася у вас два місяці тому і, можливо, вже ходить до іншого майстра.</p></div><div class="card reveal"><div class="icon">📒</div><h3>База клієнтів у блокноті чи месенджері</h3><p>Немає історії візитів, не видно, хто ваш найкращий клієнт і хто давно не приходив.</p></div><div class="card reveal"><div class="icon">📣</div><h3>Сарафанне радіо працює саме по собі</h3><p>Клієнти радять вас друзям, але це ніяк не заохочується й не рахується.</p></div></div>
+      <div class="cards3" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13h3v3H8z"/></svg></div><h3>Клієнти зникають між візитами</h3><p>Людина стриглася у вас два місяці тому і, можливо, вже ходить до іншого майстра.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h12a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2z"/><path d="M5 17a2 2 0 0 1 2-2h12"/><path d="M9 7h6"/></svg></div><h3>База клієнтів у блокноті чи месенджері</h3><p>Немає історії візитів, не видно, хто ваш найкращий клієнт і хто давно не приходив.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg></div><h3>Сарафанне радіо працює саме по собі</h3><p>Клієнти радять вас друзям, але це ніяк не заохочується й не рахується.</p></div></div>
     </div>
   </section>
 
   <section class="section" style="padding-top:20px">
     <div class="container center">
       <h2 class="h2 reveal">Як Loya допомагає салонам</h2>
-      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon">💳</div><h3>Знижкова або накопичувальна картка</h3><p>Відсоток знижки або бонус після потрібної суми — оберіть те, що пасує вашим послугам.</p></div><div class="card reveal"><div class="icon">🔁</div><h3>Повернення зниклих клієнтів</h3><p>Тим, хто давно не був, лист іде сам — із приводом записатися знову.</p></div><div class="card reveal"><div class="icon">🎁</div><h3>«Приведи подругу» й день народження</h3><p>Бонус за рекомендацію й привітання в день народження — автоматично, без ручних нагадувань.</p></div><div class="card reveal"><div class="icon">👩‍🎨</div><h3>Майстри та права доступу</h3><p>У кожного майстра свій PIN. Видно, хто скільки клієнтів обслужив.</p></div></div>
+      <div class="cards4" style="text-align:left"><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></div><h3>Знижкова або накопичувальна картка</h3><p>Відсоток знижки або бонус після потрібної суми — оберіть те, що пасує вашим послугам.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg></div><h3>Повернення зниклих клієнтів</h3><p>Тим, хто давно не був, лист іде сам — із приводом записатися знову.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-2-4-6-4-6-1.5S10 9 12 9zm0 0c2-4 6-4 6-1.5S14 9 12 9z"/></svg></div><h3>«Приведи подругу» й день народження</h3><p>Бонус за рекомендацію й привітання в день народження — автоматично, без ручних нагадувань.</p></div><div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l8 8M10 3l-4 4"/><path d="M14 11l-3 3a3 3 0 1 0 4 4l3-3"/><circle cx="18" cy="18" r="1"/></svg></div><h3>Майстри та права доступу</h3><p>У кожного майстра свій PIN. Видно, хто скільки клієнтів обслужив.</p></div></div>
       
-      <div class="niche-shot tour-frame reveal"><img src="/img/dashboard_uk.webp" alt="Уся картина дня: клієнт місяця, дні народження, останні покупки й ключові цифри." loading="lazy" width="1600" height="1000"></div>
+    </div>
+  </section>
+
+  <section class="section" id="tour" style="padding-top:20px">
+    <div class="container center">
+      <h2 class="h2 reveal">Зазирніть усередину</h2>
+      <p class="lead reveal">Справжні екрани програми — гарно, зрозуміло й вашою мовою.</p>
+      <div class="tour-tabs"><button class="tour-tab active" data-tab="dashboard" data-i18n="tabDash">Головна</button><button class="tour-tab" data-tab="scan" data-i18n="tabScan">Сканування</button><button class="tour-tab" data-tab="marketing" data-i18n="tabMkt">Маркетинг</button><button class="tour-tab" data-tab="clients" data-i18n="tabClients">Клієнти</button><button class="tour-tab" data-tab="analytics" data-i18n="tabAnalytics">Аналітика</button></div>
+      <div class="tour-frame reveal"><img id="tour-img" src="/img/dashboard_uk.webp" alt="Уся картина дня: клієнт місяця, дні народження, останні покупки й ключові цифри." loading="lazy" width="1600" height="1000"></div>
+      <p class="tour-cap" id="tour-cap">Уся картина дня: клієнт місяця, дні народження, останні покупки й ключові цифри.</p>
     </div>
   </section>
 
