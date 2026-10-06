@@ -53,6 +53,7 @@
         <div class="trust"><span data-i18n="trust1"></span><span data-i18n="trust2"></span><span data-i18n="trust3"></span><span data-i18n="trust4"></span></div>
       </div>
       <div class="hero-visual" aria-hidden="true">
+        <div class="hero-glow"></div>
         <div class="laptop"><img id="hero-shot" src="/img/dashboard_{{LANG}}.webp" alt="{{ALT_DASH}}" fetchpriority="high" width="1600" height="1000"></div>
         <div class="phone"><div class="phone-scr">
           <div class="ph-head"><span>☕ Café Aurora</span><span class="ph-live">● LIVE</span></div>
@@ -72,18 +73,27 @@
   <div class="niches">
     <div class="container">
       <div class="niches-title" data-i18n="nichesTitle"></div>
-      <div class="niches-row"><a href="{{NICHE_cafe}}" data-i18n="n1"></a><a href="{{NICHE_cafe}}" data-i18n="n2"></a><a href="{{NICHE_beauty}}" data-i18n="n3"></a><a href="{{NICHE_beauty}}" data-i18n="n4"></a><a href="{{NICHE_beauty}}" data-i18n="n5"></a><span data-i18n="n6"></span><span data-i18n="n7"></span><a href="{{NICHE_shop}}" data-i18n="n8"></a></div>
+      <div class="niches-marquee"><div class="niches-track"><div class="niches-row"><a href="{{NICHE_cafe}}" data-i18n="n1"></a><a href="{{NICHE_cafe}}" data-i18n="n2"></a><a href="{{NICHE_beauty}}" data-i18n="n3"></a><a href="{{NICHE_beauty}}" data-i18n="n4"></a><a href="{{NICHE_beauty}}" data-i18n="n5"></a><span data-i18n="n6"></span><span data-i18n="n7"></span><a href="{{NICHE_shop}}" data-i18n="n8"></a></div><div class="niches-row" aria-hidden="true"><a tabindex="-1" href="{{NICHE_cafe}}" data-i18n="n1"></a><a tabindex="-1" href="{{NICHE_cafe}}" data-i18n="n2"></a><a tabindex="-1" href="{{NICHE_beauty}}" data-i18n="n3"></a><a tabindex="-1" href="{{NICHE_beauty}}" data-i18n="n4"></a><a tabindex="-1" href="{{NICHE_beauty}}" data-i18n="n5"></a><span data-i18n="n6"></span><span data-i18n="n7"></span><a tabindex="-1" href="{{NICHE_shop}}" data-i18n="n8"></a></div></div></div>
     </div>
   </div>
+
+  <section class="stats" aria-label="Loya">
+    <div class="container stats-grid">
+      <div class="stat reveal"><b><span data-count="10">10</span></b><span data-i18n="stat1"></span></div>
+      <div class="stat reveal"><b>€<span data-count="0">0</span></b><span data-i18n="stat2"></span></div>
+      <div class="stat reveal"><b><span data-count="14">14</span></b><span data-i18n="stat3"></span></div>
+      <div class="stat reveal"><b><span data-count="4">4</span></b><span data-i18n="stat4"></span></div>
+    </div>
+  </section>
 
   <section class="section prob">
     <div class="container center">
       <h2 class="h2 reveal" data-i18n="probTitle"></h2>
       <p class="lead reveal" data-i18n="probSub"></p>
       <div class="cards3" style="text-align:left">
-        <div class="card reveal"><div class="icon">🗂️</div><h3 data-i18n="prob1T"></h3><p data-i18n="prob1D"></p></div>
-        <div class="card reveal"><div class="icon">👻</div><h3 data-i18n="prob2T"></h3><p data-i18n="prob2D"></p></div>
-        <div class="card reveal"><div class="icon">💸</div><h3 data-i18n="prob3T"></h3><p data-i18n="prob3D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="14" height="10" rx="2"/><path d="M7 20h12a2 2 0 0 0 2-2V9"/><path d="M3 10h14"/><path d="M4 3l16 18"/></svg></div><h3 data-i18n="prob1T"></h3><p data-i18n="prob1D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7"/><path d="M16 17l5 5M21 17l-5 5"/></svg></div><h3 data-i18n="prob2T"></h3><p data-i18n="prob2D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg></div><h3 data-i18n="prob3T"></h3><p data-i18n="prob3D"></p></div>
       </div>
     </div>
   </section>
@@ -131,15 +141,15 @@
       <h2 class="h2 reveal" data-i18n="featTitle"></h2>
       <p class="lead reveal" data-i18n="featSub"></p>
       <div class="features" style="text-align:left">
-        <div class="card reveal"><div class="icon">🃏</div><h3 data-i18n="f1T"></h3><p data-i18n="f1D"></p></div>
-        <div class="card reveal"><div class="icon">📱</div><h3 data-i18n="f2T"></h3><p data-i18n="f2D"></p></div>
-        <div class="card reveal"><div class="icon">🤖</div><h3 data-i18n="f3T"></h3><p data-i18n="f3D"></p></div>
-        <div class="card reveal"><div class="icon">🎯</div><h3 data-i18n="f4T"></h3><p data-i18n="f4D"></p></div>
-        <div class="card reveal"><div class="icon">📊</div><h3 data-i18n="f5T"></h3><p data-i18n="f5D"></p></div>
-        <div class="card reveal"><div class="icon">⚡</div><h3 data-i18n="f6T"></h3><p data-i18n="f6D"></p></div>
-        <div class="card reveal"><div class="icon">👥</div><h3 data-i18n="f7T"></h3><p data-i18n="f7D"></p></div>
-        <div class="card reveal"><div class="icon">🎟️</div><h3 data-i18n="f8T"></h3><p data-i18n="f8D"></p></div>
-        <div class="card reveal"><div class="icon">🔒</div><h3 data-i18n="f9T"></h3><p data-i18n="f9D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="7" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="17" cy="12" r="1.6"/></svg></div><h3 data-i18n="f1T"></h3><p data-i18n="f1D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M9 7h2v2H9zM13 7h2v2h-2zM9 11h2v2H9z"/><path d="M11 18h2"/></svg></div><h3 data-i18n="f2T"></h3><p data-i18n="f2D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/><path d="M18 2v3M20.5 3.5l-2 2"/></svg></div><h3 data-i18n="f3T"></h3><p data-i18n="f3D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></div><h3 data-i18n="f4T"></h3><p data-i18n="f4D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3 data-i18n="f5T"></h3><p data-i18n="f5D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div><h3 data-i18n="f6T"></h3><p data-i18n="f6D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="17.5" cy="8.5" r="2.5"/><path d="M17 14c3 0 5 2 5 5"/></svg></div><h3 data-i18n="f7T"></h3><p data-i18n="f7D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 7h6M9 11h6"/><rect x="9" y="14" width="6" height="4" rx="1"/></svg></div><h3 data-i18n="f8T"></h3><p data-i18n="f8D"></p></div>
+        <div class="card reveal"><div class="icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></svg></div><h3 data-i18n="f9T"></h3><p data-i18n="f9D"></p></div>
       </div>
     </div>
   </section>

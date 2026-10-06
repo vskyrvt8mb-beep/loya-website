@@ -87,11 +87,53 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); burger.focus(); } });
   }
 
-  // появление блоков при прокрутке
+  // появление блоков при прокрутке; в сетках карточки выезжают по очереди
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) document.documentElement.classList.add('motion');
+  document.querySelectorAll('.cards3, .cards4, .features, .steps, .plans, .dl-grid, .photo-grid, .stats-grid, .faq').forEach(grid => {
+    grid.querySelectorAll(':scope > .reveal').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 90 + Math.floor(i / 3) * 40 + 'ms'; });
+  });
   const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 }) : null;
   document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+
+  // однократные эффекты при появлении: номера шагов, счётчики цифр
+  const once = (sel, fn, threshold = 0.4) => {
+    const els = document.querySelectorAll(sel);
+    if (!els.length) return;
+    if (!('IntersectionObserver' in window)) { els.forEach(fn); return; }
+    const ob = new IntersectionObserver((entries) => entries.forEach(e => { if (e.isIntersecting) { fn(e.target); ob.unobserve(e.target); } }), { threshold });
+    els.forEach(el => ob.observe(el));
+  };
+  once('.steps', el => el.classList.add('line-in'), 0.3);
+  once('[data-count]', el => {
+    const to = Number(el.dataset.count) || 0;
+    if (reduceMotion || to === 0) { el.textContent = String(to); return; }
+    const t0 = performance.now(), dur = 1200;
+    const tick = (now) => { const k = Math.min(1, (now - t0) / dur); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); };
+    el.textContent = '0'; requestAnimationFrame(tick);
+  }, 0.6);
+
+  // подсветка карточек под курсором
+  if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('pointermove', (e) => {
+      const card = e.target.closest && e.target.closest('.card, .step, .dl-card');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+  }
+
+  // полоса прокрутки страницы
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress'; bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  let barTick = false;
+  const setBar = () => { const h = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${h > 0 ? Math.min(1, scrollY / h) : 0})`; barTick = false; };
+  window.addEventListener('scroll', () => { if (!barTick) { barTick = true; requestAnimationFrame(setBar); } }, { passive: true });
+  setBar();
 
   // тур по программе — настоящие скриншоты на выбранном языке
   let tourTab = 'dashboard';
@@ -110,7 +152,24 @@
     const hero = document.getElementById('hero-shot');
     if (hero) hero.src = `/img/dashboard_${lang}.webp`;
   }
-  document.querySelectorAll('.tour-tab').forEach(b => b.addEventListener('click', () => { tourTab = b.dataset.tab; updateTour(); }));
+  let tourAuto = !reduceMotion, tourTimer = null;
+  const tourTabs = [...document.querySelectorAll('.tour-tab')];
+  const stopTour = () => { tourAuto = false; clearInterval(tourTimer); tourTabs.forEach(b => b.classList.remove('auto')); };
+  tourTabs.forEach(b => b.addEventListener('click', () => { stopTour(); tourTab = b.dataset.tab; updateTour(); }));
+  const markAuto = () => tourTabs.forEach(b => { b.classList.remove('auto'); if (tourAuto && b.dataset.tab === tourTab) { void b.offsetWidth; b.classList.add('auto'); } });
+  const tourEl = document.getElementById('tour');
+  if (tourEl && tourTabs.length && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => entries.forEach(e => {
+      clearInterval(tourTimer);
+      if (e.isIntersecting && tourAuto) {
+        markAuto();
+        tourTimer = setInterval(() => {
+          const i = tourTabs.findIndex(b => b.dataset.tab === tourTab);
+          tourTab = tourTabs[(i + 1) % tourTabs.length].dataset.tab; updateTour(); markAuto();
+        }, 6000);
+      } else tourTabs.forEach(b => b.classList.remove('auto'));
+    }), { threshold: 0.5 }).observe(tourEl);
+  }
 
   // калькулятор: выручка в выбранной валюте по реальному курсу (/api/fx, кэш 12 ч).
   // Средний чек хранится в евро, поэтому при смене валюты сумма пересчитывается, а не просто меняется значок.
@@ -141,6 +200,18 @@
     el.min = min; el.max = max; el.step = step;
     el.value = Math.min(max, Math.max(min, Math.round(checkEur * r / step) * step));
   }
+  let outVal = null, outRaf = 0;
+  function animateOut(to) {
+    const el = document.getElementById('calc-out');
+    if (!el) return;
+    const from = outVal === null ? to : outVal;
+    cancelAnimationFrame(outRaf);
+    if (reduceMotion || from === to) { outVal = to; el.textContent = '+' + fmtMoney(to); return; }
+    const t0 = performance.now(), dur = 380;
+    const step = (now) => { const k = Math.min(1, (now - t0) / dur); outVal = from + (to - from) * (1 - Math.pow(1 - k, 3)); el.textContent = '+' + fmtMoney(outVal); if (k < 1) outRaf = requestAnimationFrame(step); else outVal = to; };
+    outRaf = requestAnimationFrame(step);
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  }
   function updateCalc() {
     const v = document.getElementById('calc-visitors');
     if (!v) return;
@@ -150,7 +221,7 @@
     document.getElementById('calc-rate-v').textContent = rt + '%';
     const extra = visitors * (rt / 100) * check;
     const price = PRICE_EUR * rate();
-    document.getElementById('calc-out').textContent = '+' + fmtMoney(extra);
+    animateOut(extra);
     const roi = Math.max(1, Math.floor(extra / price));
     let times = t('calcTimes');
     if (lang === 'ru' || lang === 'uk') {
