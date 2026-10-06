@@ -81,7 +81,7 @@ const faqLd = (lang, pairs) => ({ '@context': 'https://schema.org', '@type': 'FA
   mainEntity: pairs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) });
 
 // Фото «как это выглядит в кофейне» (пример кофейни Black Rich), с подписями на языке страницы
-const photos = (t) => [['photo-barista', 'real1'], ['photo-table', 'real2']].map(([f, k]) => `        <figure class="photo reveal">
+const photos = (t, lang) => [['photo-barista', 'real1'], ['photo-table', 'real2']].map(([n, k]) => [`${n}-${lang}`, k]).map(([f, k]) => `        <figure class="photo reveal">
           <img src="/img/${f}-768.webp" srcset="/img/${f}-768.webp 768w, /img/${f}-1536.webp 1536w" sizes="(max-width: 760px) 100vw, 560px" width="1536" height="1024" loading="lazy" decoding="async" alt="${esc(t(k))}">
           <figcaption>${esc(t(k))}</figcaption>
         </figure>`).join('\n');
@@ -91,7 +91,7 @@ function buildHome(lang) {
   const t = tr(lang);
   let html = fillI18n(template, t);
   html = html.replace(new RegExp(`<option value="${lang}">`), `<option value="${lang}" selected>`);
-  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t));
+  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t, lang));
   html = html.replace('<p class="tour-cap" id="tour-cap"></p>', `<p class="tour-cap" id="tour-cap">${esc(t('capDash'))}</p>`);
   for (const [key, n] of Object.entries(NICHES)) {
     html = html.split(`{{NICHE_${key}_NAME}}`).join(esc(n[lang].name)).split(`{{NICHE_${key}}}`).join(pathOf(lang, n.slug));
@@ -161,7 +161,7 @@ function buildNiche(lang, key, home) {
     <div class="container center">
       <h2 class="h2 reveal">${esc(d.howTitle)}</h2>
       <div class="cards4" style="text-align:left">${d.how.map(card).join('')}</div>
-      ${key === 'cafe' ? `<div class="photo-grid niche-photos">\n${photos(t)}\n      </div>` : ''}
+      ${key === 'cafe' ? `<div class="photo-grid niche-photos">\n${photos(t, lang)}\n      </div>` : ''}
       <div class="niche-shot tour-frame reveal"><img src="/img/dashboard_${lang}.webp" alt="${esc(t('capDash'))}" loading="lazy" width="1600" height="1000"></div>
     </div>
   </section>
