@@ -85,7 +85,7 @@ async function sync({ licenseKey, access, snapshot, touch, done, disable, logout
 
 async function login({ token, password }, meta) {
   if (!validToken(token) || typeof password !== 'string' || password.length < 1 || password.length > 200) return { status: 400, error: 'bad_request' };
-  if (ipLimited('login:' + ((meta && meta.ip) || ''), 30, 3600e3)) return { status: 429, error: 'locked' };
+  if (await ipLimited('login:' + ((meta && meta.ip) || ''), 30, 3600e3)) return { status: 429, error: 'locked' };
   const { data: row } = await supabase.from('owner_access').select('*').eq('token', token).maybeSingle();
   if (!row) { await new Promise(r => setTimeout(r, 400)); return { status: 401, error: 'wrong' }; }
   if (row.token_expires_at && new Date(row.token_expires_at).getTime() < Date.now()) return { status: 410, error: 'link_expired' };
@@ -104,8 +104,9 @@ async function login({ token, password }, meta) {
 }
 
 // ---------- вход без ссылки: email владельца + код из письма + пароль ----------
-const ipHits = new Map();
-function ipLimited(key, max, ms) { const now = Date.now(); const a = (ipHits.get(key) || []).filter(t => now - t < ms); if (a.length >= max) { ipHits.set(key, a); return true; } a.push(now); ipHits.set(key, a); return false; }
+// Лимиты попыток — общий счётчик в Supabase для всех экземпляров функции (см. _ratelimit.js).
+const RL = require('./_ratelimit');
+const ipLimited = (key, max, ms) => RL.limited('owner-' + key, max, ms);
 const CODE_MIN = 10, CODE_TRIES = 5;
 const codeHash = (code, token) => crypto.createHash('sha256').update(String(code) + ':' + String(token) + ':' + secret()).digest('hex');
 async function rowByEmail(email) {
@@ -128,9 +129,9 @@ const CODE_TXT = {
 // Шаг 1: код на почту. Ответ всегда одинаковый — по нему нельзя узнать, есть ли такой адрес.
 async function codeRequest({ email, lang }, meta) {
   const ip = (meta && meta.ip) || '';
-  if (ipLimited('code-ip:' + ip, 10, 3600e3)) return { status: 429, error: 'too_many' };
+  if (await ipLimited('code-ip:' + ip, 10, 3600e3)) return { status: 429, error: 'too_many' };
   const addr = String(email || '').trim().toLowerCase();
-  if (ipLimited('code-em:' + addr, 5, 3600e3)) return { status: 200, ok: true };
+  if (await ipLimited('code-em:' + addr, 5, 3600e3)) return { status: 200, ok: true };
   const row = await rowByEmail(addr);
   if (row && (await licenseActive(row.license_key))) {
     const code = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
@@ -143,7 +144,7 @@ async function codeRequest({ email, lang }, meta) {
 // Шаг 2: код + пароль. Пять неверных попыток — код сгорает, нужен новый.
 async function codeLogin({ email, code, password, lang }, meta) {
   const ip = (meta && meta.ip) || '';
-  if (ipLimited('codelogin:' + ip, 30, 3600e3)) return { status: 429, error: 'locked' };
+  if (await ipLimited('codelogin:' + ip, 30, 3600e3)) return { status: 429, error: 'locked' };
   if (!/^\d{6}$/.test(String(code || '')) || typeof password !== 'string' || !password || password.length > 200) return { status: 400, error: 'bad_request' };
   const row = await rowByEmail(email);
   if (!row || !row.login_code_hash) { await new Promise(r => setTimeout(r, 400)); return { status: 401, error: 'wrong' }; }

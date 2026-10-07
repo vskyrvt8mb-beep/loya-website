@@ -42,14 +42,17 @@ const TX = {
     cmdAdd: 'Add', cmdEdit: 'Edit', stP: 'waiting for the till', stD: 'applied', stF: 'not applied', r_duplicate: 'this client already exists', r_not_found: 'client not found', r_bad_email: 'invalid email',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], vip: 'VIP', risk: 'away for a while', near: 'close to a reward', bonusWord: 'bonus', sub: 'Owner access only', priv: 'Privacy policy' }
 };
+const TX2 = require('./_owner_tx');
+for (const l of Object.keys(TX)) Object.assign(TX[l], TX2[l] || {});
+const crypto = require('crypto');
 const { dictJs: dictJsShared } = require('./_dict');
 function dictJs() { return dictJsShared(TX); }
 
-const PAGE = (token) => `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#0d0f14"><title>Loya</title>
+const PAGE = (token, nonce) => `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#07080b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Loya"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="icon" href="/favicon-96.png"><title>Loya</title>
 <style>
 :root{--a:#d4af37;--ar:212,175,55;--bg:#0d0f14;--card:#151922;--line:rgba(255,255,255,.09);--mut:rgba(243,239,230,.62)}*{box-sizing:border-box;margin:0}
-body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),transparent 70%),var(--bg);color:#f3efe6;min-height:100vh;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
+body{font-family:Manrope,system-ui,-apple-system,'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),transparent 70%),var(--bg);color:#f3efe6;min-height:100vh;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
 .wrap{max-width:980px;margin:0 auto}.top{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}.top h1{font-size:20px;flex:1;min-width:140px}
 .pill{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.07);color:inherit;border-radius:10px;padding:7px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.pill.on{background:var(--a);border-color:var(--a);color:#16110a}
 .tabs{display:flex;gap:8px;margin:6px 0 16px}.tabs .pill{padding:9px 16px;font-size:14px}
@@ -66,8 +69,30 @@ input,textarea{width:100%;height:48px;border-radius:12px;border:1px solid rgba(2
 .chip{display:inline-block;font-size:11px;font-weight:700;border-radius:8px;padding:2px 7px;margin-left:5px;background:rgba(var(--ar),.18);color:#f3efe6;border:1px solid rgba(var(--ar),.7)}.chip.r{background:rgba(239,68,68,.16);color:#fca5a5}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}.modal .in{background:#151922;border:1px solid var(--line);border-radius:20px;padding:20px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px}
 .fine{margin-top:22px;text-align:center;font-size:12.5px}.fine a{color:var(--mut)}.hide{display:none!important}
+
+@font-face{font-family:Manrope;font-weight:200 800;font-display:swap;src:url(/fonts/manrope-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC}
+@font-face{font-family:Manrope;font-weight:200 800;font-display:swap;src:url(/fonts/manrope-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0400-045F,U+0490-0491}
+@font-face{font-family:Manrope;font-weight:200 800;font-display:swap;src:url(/fonts/manrope-latin-ext-wght-normal.woff2) format('woff2');unicode-range:U+0100-02AF}
+body{background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),transparent 70%),#07080b;background-attachment:fixed}
+.stat,.box,.modal .in{border:1px solid transparent!important;background:linear-gradient(170deg,rgba(24,26,33,.95),rgba(12,13,17,.95)) padding-box,linear-gradient(140deg,rgba(var(--ar),.55),rgba(255,255,255,.05) 35%,rgba(255,255,255,.04) 65%,rgba(var(--ar),.35)) border-box!important}
+.stat b{font-weight:800;font-variant-numeric:tabular-nums}.btn{box-shadow:0 10px 26px rgba(var(--ar),.25)}.btn.sec{box-shadow:none}
+.att{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.att button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border-radius:14px;border:1px solid rgba(var(--ar),.4);background:rgba(var(--ar),.07);color:inherit;font:inherit;cursor:pointer;text-align:left}
+.att button:hover{background:rgba(var(--ar),.16)}.att b{font-size:24px;font-weight:800}.att span{font-size:13px;color:var(--mut);font-weight:700}.att em{font-style:normal;font-size:12px;color:var(--a)}
+.ctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.ctl select{height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:#151922;color:inherit;font:inherit;font-size:13px;padding:0 10px}
+.crow{cursor:pointer;border-radius:10px;transition:background .15s;padding-left:6px;padding-right:6px;margin:0 -6px}.crow:hover{background:rgba(255,255,255,.04)}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 10px;font-size:14px}.kv span{color:var(--mut)}
+.rem{display:flex;gap:8px;align-items:center;justify-content:center;font-size:13.5px;color:var(--mut)}.rem input{width:18px;height:18px;accent-color:var(--a)}
+.pwbox{position:relative}.pwbox button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mut);font-size:18px;cursor:pointer;padding:6px}
+.upd{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:12.5px;margin-bottom:10px;flex-wrap:wrap}.dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80}.dot.old{background:#fbbf24;box-shadow:0 0 10px #fbbf24}
+.skel{height:84px;border-radius:16px;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.08),rgba(255,255,255,.04));background-size:200% 100%;animation:sk 1.4s linear infinite}@keyframes sk{to{background-position:-200% 0}}
+.hint{font-size:12.5px;color:var(--mut);text-align:center;margin-top:10px}
+@media(max-width:640px){.tabs{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:8;margin:0;padding:6px;border-radius:16px;background:rgba(12,13,17,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(var(--ar),.35)}.tabs .pill{flex:1;padding:11px}body{padding-bottom:96px}.top h1{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.skel{animation:none}}
+:root{color-scheme:dark}
+@media(max-width:640px){.crow{flex-wrap:wrap}.crow>span:last-child{width:100%;justify-content:flex-start}.crow>span:last-child .pill{padding:6px 12px;font-size:12.5px}
+.top{gap:6px}.top .pill{padding:6px 9px;font-size:12px}.top h1{flex-basis:100%}}
 </style></head><body><div class="wrap">
-<div id="login" class="login hide"><h1>🔒 Loya</h1><p id="l-sub"></p><form id="lf"><input type="password" id="pw" autocomplete="current-password"><div class="err" id="lerr"></div><button class="btn" id="lbtn" type="submit"></button></form><p style="margin-top:14px"><a href="/owner" id="l-email" style="color:var(--a)"></a></p><div class="top" style="justify-content:center;margin-top:18px" id="lang0"></div></div>
+<div id="login" class="login hide"><h1>🔒 Loya</h1><p id="l-sub"></p><form id="lf"><div class="pwbox"><input type="password" id="pw" autocomplete="current-password"><button type="button" id="pwt" aria-label="">👁</button></div><label class="rem"><input type="checkbox" id="remember"><span id="rem-t"></span></label><div class="err" id="lerr"></div><button class="btn" id="lbtn" type="submit"></button></form><p style="margin-top:14px"><a href="/owner" id="l-email" style="color:var(--a)"></a></p><div class="top" style="justify-content:center;margin-top:18px" id="lang0"></div></div>
 <div id="elogin" class="login hide"><h1>🔒 Loya</h1><h2 id="e-title" style="margin:6px 0"></h2><p id="e-sub"></p>
 <form id="ef1"><input type="email" id="em" autocomplete="email"><div class="err" id="eerr1"></div><button class="btn" id="ebtn1" type="submit"></button></form>
 <form id="ef2" class="hide"><p id="e-sent" style="font-size:13px"></p><input type="text" id="ec" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><input type="password" id="epw" autocomplete="current-password"><div class="err" id="eerr2"></div><button class="btn" id="ebtn2" type="submit"></button><p style="margin-top:10px"><a href="#" id="e-back" style="color:var(--a)"></a></p></form>
@@ -77,29 +102,33 @@ input,textarea{width:100%;height:48px;border-radius:12px;border:1px solid rgba(2
 <div id="v-o"></div><div id="v-c" class="hide"></div></div>
 <p class="fine"><a href="/privacy.html" target="_blank" rel="noopener" id="priv"></a></p></div>
 <div id="modal" class="modal hide"><div class="in" id="mbody"></div></div>
-<script>
+<script nonce="${nonce}">
 const TXT=${dictJs()};const TKN=${JSON.stringify(token)};
 let lang=(function(){try{const s=localStorage.getItem('loya_owner_lang');if(TXT[s])return s}catch(e){}for(const l of (navigator.languages||[navigator.language||''])){const k=String(l).slice(0,2).toLowerCase();if(k==='cs')return'sk';if(TXT[k])return k}return'en'})();
 let session=null,snap=null,info=null,view='o',query='',showN=60;
 const $=id=>document.getElementById(id);const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const T=()=>TXT[lang];
-try{session=sessionStorage.getItem('loya_owner_s_'+TKN.slice(0,8))}catch(e){}
+const SK='loya_owner_s_'+TKN.slice(0,8);try{session=sessionStorage.getItem(SK)||localStorage.getItem(SK)}catch(e){}
+let filt='all',sortK='last',lastLoad=0;
 function money(v){const c={EUR:'€',USD:'$',GBP:'£',UAH:'₴'}[(snap&&snap.brand.currency)||'EUR']||'€';const n=Math.round((Number(v)||0)*100)/100;const t=Number.isInteger(n)?String(n):n.toFixed(2);return lang==='en'?c+t:t+' '+c}
 function langBtns(id){$(id).innerHTML=Object.keys(TXT).map(k=>'<button type="button" class="pill '+(k===lang?'on':'')+'" data-l="'+k+'">'+k.toUpperCase()+'</button>').join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;try{localStorage.setItem('loya_owner_lang',lang)}catch(e){}paint()})}
 async function api(path,body){const r=await fetch('/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({token:TKN,session:session},body||{}))});let j={};try{j=await r.json()}catch(e){}j._s=r.status;return j}
 function setAccent(){const c=(snap&&snap.brand&&/^#[0-9a-fA-F]{6}$/.test(snap.brand.color))?snap.brand.color:'#d4af37';const n=parseInt(c.slice(1),16);document.documentElement.style.setProperty('--a',c);document.documentElement.style.setProperty('--ar',((n>>16)&255)+','+((n>>8)&255)+','+(n&255))}
 function paint(){const t=T();document.documentElement.lang=lang;$('priv').textContent=t.priv;
-$('l-sub').textContent=t.sub;$('pw').placeholder=t.pass;$('lbtn').textContent=t.login;$('l-email').textContent=t.viaEmail;langBtns('lang0');
+$('l-sub').textContent=t.sub;$('pw').placeholder=t.pass;$('rem-t').textContent=t.remember;$('pwt').setAttribute('aria-label',t.showPw);$('lbtn').textContent=t.login;$('l-email').textContent=t.viaEmail;langBtns('lang0');
 if(!TKN){$('elogin').classList.remove('hide');$('login').classList.add('hide');$('app').classList.add('hide');$('e-title').textContent=t.eTitle;$('e-sub').textContent=t.eSub;$('em').placeholder=t.ePh;$('ebtn1').textContent=t.eSend;$('e-sent').textContent=t.eSent;$('ec').placeholder=t.cPh;$('epw').placeholder=t.pass;$('ebtn2').textContent=t.eGo;$('e-back').textContent=t.eBack;langBtns('lang2');return}
 if(!session||!snap&&!info){ if(!session){$('login').classList.remove('hide');$('app').classList.add('hide');return} }
-$('login').classList.add('hide');$('app').classList.remove('hide');setAccent();langBtns('lang1');
+$('login').classList.add('hide');$('app').classList.remove('hide');setAccent();langBtns('lang1');if(!snap&&!info){$('v-o').innerHTML='<p class="upd">'+E(t.loading)+'</p><div class="grid">'+'<div class="skel"></div>'.repeat(4)+'</div><div class="skel" style="height:180px"></div>'}
 $('ttl').textContent=(snap&&snap.brand&&snap.brand.name)||t.title;$('rf').textContent='↻ '+t.refresh;$('lo').textContent=t.logout;$('lall').textContent=t.logoutAll;$('tab-o').textContent=t.tabOverview;$('tab-c').textContent=t.tabClients;
-if(!snap){$('v-o').innerHTML='<div class="box">'+E(t.stale)+'</div>';return}
+if(!snap){if(info)$('v-o').innerHTML='<div class="box">'+E(t.stale)+'</div>';return}
 const at=info&&info.at?new Date(info.at):null;const old=at&&(Date.now()-at.getTime()>20*60000);
 $('stale').classList.toggle('hide',!old);$('stale').textContent=old?t.stale:'';
 renderOverview();renderClients()}
 function renderOverview(){const t=T(),s=snap,st=s.stats||{},ad=s.advanced||{},rv=s.revenue||{},fn=s.funnel||{};
 const at=info&&info.at?new Date(info.at).toLocaleString(lang==='en'?'en-GB':lang):'';
-let h='<p style="color:var(--mut);font-size:12.5px;margin-bottom:10px">'+E(t.updated)+' '+E(at)+(info&&info.pending?' · '+E(t.pendingN(info.pending)):'')+'</p><div class="grid">';
+const mins=info&&info.at?Math.floor((Date.now()-new Date(info.at))/60e3):0;
+let h='<div class="upd"><span class="dot'+(mins>20?' old':'')+'"></span><span>'+E(t.updated)+' '+E(at)+' · <span id="upd-ago">'+E(t.ago(mins))+'</span></span><span>· '+E(t.auto)+'</span>'+(info&&info.pending?'<span>· '+E(t.pendingN(info.pending))+'</span>':'')+'</div>';
+const CL=s.clients||[],nR=CL.filter(c=>c.risk).length,nN=CL.filter(c=>c.near).length,nV=CL.filter(c=>c.vip).length;
+h+='<div class="box"><h3>'+E(t.attT)+'</h3>'+(nR||nN||nV?'<div class="att">'+[[nR,t.attRisk,'risk'],[nN,t.attNear,'near'],[nV,t.attVip,'vip']].filter(x=>x[0]).map(x=>'<button data-af="'+x[2]+'"><b>'+x[0]+'</b><span>'+E(x[1])+'</span><em>'+E(t.attGo)+' →</em></button>').join('')+'</div>':'<p style="color:var(--mut);font-size:13.5px">'+E(t.attNone)+'</p>')+'</div><div class="grid">';
 const stat=(v,l)=>'<div class="stat"><b>'+E(v)+'</b><span>'+E(l)+'</span></div>';
 h+=stat(st.totalClients||0,t.clients)+stat(st.scansToday||0,t.scansToday)+stat(ad.newClientsThisMonth||0,t.newMonth)+stat(ad.activeClients||0,t.active);
 if(rv.totalChecks>0)h+=stat(money(rv.monthRevenue),t.revMonth)+stat(money(rv.avgCheck),t.avgCheck);
@@ -115,17 +144,31 @@ h+='<div class="two"><div class="box"><h3>'+E(t.top)+'</h3>'+((s.topClients||[])
 h+='<div class="box"><h3>'+E(t.recent)+'</h3>'+((s.recent||[]).slice(0,8).map(r=>'<div class="row"><span>'+E(r.name)+'<small>'+E(String(r.at).slice(0,16))+'</small></span><span>'+(r.type==='discount'?'−'+r.pct+'%':r.result==='reward'?'🎁':r.type==='stamp'?'✓':'€')+'</span></div>').join('')||'—')+'</div></div>';
 const on=s.online||{};if(on.total>0)h+='<div class="box"><h3>'+E(t.online)+'</h3><div class="grid" style="margin:0">'+stat(on.active,t.oAct)+stat(on.used,t.oUsed)+stat(on.expired,t.oExp)+'</div></div>';
 if(info&&info.logins&&info.logins.length){h+='<div class="box" style="margin-top:14px"><b>'+E(t.logins)+'</b>'+info.logins.map(l=>'<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid rgba(255,255,255,.08)"><span>'+(l.ok?'✅ ':'⛔ ')+E(new Date(l.at).toLocaleString(lang==='en'?'en-GB':lang))+'</span><span style="color:var(--mut)">'+E(l.method==='code'?t.lCode:t.lLink)+(l.ok?'':' · '+E(t.lFail))+(l.ip?' · '+E(l.ip):'')+'</span></div>').join('')+'</div>'}
-$('v-o').innerHTML=h}
+h+='<p class="hint">'+E(t.homeHint)+'</p>';$('v-o').innerHTML=h;$('v-o').querySelectorAll('[data-af]').forEach(b=>b.onclick=()=>{filt=b.dataset.af;query='';showTab('c');renderClients()})}
+function showTab(v){view=v;document.querySelectorAll('.tabs .pill').forEach(x=>x.classList.toggle('on',x.dataset.t===v));$('v-o').classList.toggle('hide',v!=='o');$('v-c').classList.toggle('hide',v!=='c');scrollTo({top:0})}
 function renderClients(){const t=T(),s=snap;const q=query.trim().toLowerCase();const qd=q.replace(/\\D/g,'');
-let list=(s.clients||[]).filter(c=>!q||c.name.toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(qd.length>=3&&(c.phone||'').replace(/\\D/g,'').includes(qd)));
+const ts=v=>{const d=Date.parse(v);return isNaN(d)?0:d};
+let list=(s.clients||[]).filter(c=>(filt==='all'||c[filt])&&(!q||c.name.toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(qd.length>=3&&(c.phone||'').replace(/\\D/g,'').includes(qd))));
+list=list.slice().sort((a,b)=>sortK==='name'?String(a.name).localeCompare(String(b.name),lang):sortK==='visits'?(b.visits||0)-(a.visits||0):ts(b.last)-ts(a.last));
 const total=list.length;list=list.slice(0,showN);
-let h='<div style="display:flex;gap:8px;margin-bottom:12px"><input id="q" placeholder="'+E(t.search)+'" value="'+E(query)+'"><button class="btn" id="addc" style="white-space:nowrap">'+E(t.add)+'</button></div>';
+let h='<div style="display:flex;gap:8px;margin-bottom:10px"><input id="q" placeholder="'+E(t.search)+'" value="'+E(query)+'"><button class="btn" id="addc" style="white-space:nowrap">'+E(t.add)+'</button></div>';
+h+='<div class="ctl">'+[['all',t.fAll],['vip',t.fVip],['risk',t.fRisk],['near',t.fNear]].map(f=>'<button class="pill '+(filt===f[0]?'on':'')+'" data-fl="'+f[0]+'">'+E(f[1])+'</button>').join('')+'<select id="srt" aria-label="'+E(t.sortBy)+'">'+[['last',t.sLast],['visits',t.sVisits],['name',t.sName]].map(o=>'<option value="'+o[0]+'"'+(sortK===o[0]?' selected':'')+'>'+E(o[1])+'</option>').join('')+'</select><button class="pill" id="csv">⬇ '+E(t.csv)+'</button></div>';
 if(info&&info.recent&&info.recent.length){const stl={pending:t.stP,done:t.stD,failed:t.stF};h+='<div class="box" style="padding:10px 14px">'+info.recent.slice(0,4).map(c=>'<div class="row" style="font-size:13px"><span>'+E((c.cmd.type==='client_add'?t.cmdAdd:c.cmd.type==='card_add'?t.cmdCard:t.cmdEdit)+': '+(c.cmd.name||''))+'</span><span style="color:'+(c.status==='failed'?'#fca5a5':c.status==='done'?'#86efac':'var(--mut)')+'">'+E(stl[c.status]||c.status)+(c.result?' ('+E(t['r_'+c.result]||c.result)+')':'')+'</span></div>').join('')+'</div>'}
-h+='<div class="box">'+(list.map(c=>'<div class="row"><span><b>'+E(c.name)+'</b>'+(c.vip?'<span class="chip">'+E(t.vip)+'</span>':'')+(c.risk?'<span class="chip r">'+E(t.risk)+'</span>':'')+'<small>'+E([c.phone,c.email].filter(Boolean).join(' · '))+'</small><small>'+E(t.last)+': '+E(c.last||t.never)+' · '+E(t.visitsWord)+': '+c.visits+'</small>'+cardChips(c)+'</span><span style="display:flex;gap:6px;flex-shrink:0"><button class="pill" data-g="'+c.id+'">'+E(t.giveCard)+'</button><button class="pill" data-e="'+c.id+'">'+E(t.edit)+'</button></span></div>').join('')||'<p style="color:var(--mut)">'+E(t.noClients)+'</p>')+'</div>';
+h+='<div class="box">'+(list.map(c=>'<div class="row crow" data-o="'+c.id+'"><span><b>'+E(c.name)+'</b>'+(c.vip?'<span class="chip">'+E(t.vip)+'</span>':'')+(c.risk?'<span class="chip r">'+E(t.risk)+'</span>':'')+'<small>'+E([c.phone,c.email].filter(Boolean).join(' · '))+'</small><small>'+E(t.last)+': '+E(c.last||t.never)+' · '+E(t.visitsWord)+': '+c.visits+'</small>'+cardChips(c)+'</span><span style="display:flex;gap:6px;flex-shrink:0"><button class="pill" data-g="'+c.id+'">'+E(t.giveCard)+'</button><button class="pill" data-e="'+c.id+'">'+E(t.edit)+'</button></span></div>').join('')||'<p style="color:var(--mut)">'+E(t.noClients)+'</p>')+'</div>';
 h+='<p style="text-align:center;color:var(--mut);font-size:12.5px">'+E(t.shown(list.length,total))+'</p>'+(total>list.length?'<p style="text-align:center;margin-top:8px"><button class="pill" id="more">+</button></p>':'');
 const keep=document.activeElement&&document.activeElement.id==='q';$('v-c').innerHTML=h;
 const qi=$('q');qi.oninput=()=>{query=qi.value;showN=60;renderClients()};if(keep){qi.focus();qi.setSelectionRange(qi.value.length,qi.value.length)}
-$('addc').onclick=()=>openForm(null);const mo=$('more');if(mo)mo.onclick=()=>{showN+=60;renderClients()};$('v-c').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openForm((s.clients||[]).find(c=>c.id===Number(b.dataset.e))));$('v-c').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>openCard((s.clients||[]).find(c=>c.id===Number(b.dataset.g))))}
+$('addc').onclick=()=>openForm(null);$('v-c').querySelectorAll('[data-fl]').forEach(b=>b.onclick=()=>{filt=b.dataset.fl;showN=60;renderClients()});$('srt').onchange=e=>{sortK=e.target.value;renderClients()};$('csv').onclick=exportCsv;
+$('v-c').querySelectorAll('[data-o]').forEach(r=>r.onclick=e=>{if(e.target.closest('button'))return;openClient((s.clients||[]).find(c=>c.id===Number(r.dataset.o)))});const mo=$('more');if(mo)mo.onclick=()=>{showN+=60;renderClients()};$('v-c').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openForm((s.clients||[]).find(c=>c.id===Number(b.dataset.e))));$('v-c').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>openCard((s.clients||[]).find(c=>c.id===Number(b.dataset.g))))}
+function exportCsv(){const cell=v=>{let x=String(v==null?'':v);if(/^[=+\\-@]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"'};
+const rows=[['name','phone','email','visits','last','vip','risk','notes']].concat((snap.clients||[]).map(c=>[c.name,c.phone,c.email,c.visits,c.last,c.vip?1:'',c.risk?1:'',c.notes]));
+const b=new Blob(['﻿'+rows.map(r=>r.map(cell).join(',')).join('\\r\\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='loya-clients-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function openClient(c){if(!c)return;const t=T();const kv=(a,b)=>b?'<span>'+E(a)+'</span><div>'+b+'</div>':'';const tel=String(c.phone||'').replace(/[^\\d+]/g,'');
+$('mbody').innerHTML='<b style="font-size:18px">'+E(c.name)+(c.vip?' <span class="chip">'+E(t.vip)+'</span>':'')+(c.risk?' <span class="chip r">'+E(t.risk)+'</span>':'')+'</b><div class="kv">'+kv(t.phone,E(c.phone))+kv(t.email,E(c.email))+kv(t.visitsWord,E(String(c.visits||0)))+kv(t.last,E(c.last||t.never))+kv(t.notesT,E(c.notes))+'</div>'+
+'<div><b style="font-size:13px;color:var(--a)">'+E(t.cards)+'</b>'+(cardChips(c)||'<p style="color:var(--mut);font-size:13px">'+E(t.noCards)+'</p>')+'</div>'+
+'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(tel?'<a class="btn sec" style="display:inline-flex;align-items:center;text-decoration:none" href="tel:'+E(tel)+'">📞 '+E(t.call)+'</a>':'')+(c.email?'<a class="btn sec" style="display:inline-flex;align-items:center;text-decoration:none" href="mailto:'+E(c.email)+'">✉️ '+E(t.write)+'</a>':'')+'</div>'+
+'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="oc-g" style="flex:1 1 140px;white-space:nowrap">'+E(t.giveCard)+'</button><button class="btn sec" id="oc-e">'+E(t.edit)+'</button><button class="btn sec" id="oc-x">'+E(t.close)+'</button></div>';
+$('oc-g').onclick=()=>openCard(c);$('oc-e').onclick=()=>openForm(c);$('oc-x').onclick=()=>$('modal').classList.add('hide');$('modal').classList.remove('hide')}
 function cardChips(c){const k=(c.cards||[]);if(!k.length)return'';return '<span style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">'+k.map(x=>'<span class="chip">'+(x.t==='s'?'● '+x.a+'/'+x.b:x.t==='m'?E(money(x.a))+' / '+E(money(x.b)):(x.bonus?'🎁 ':'')+'−'+x.a+'%')+'</span>').join('')+'</span>'}
 function openCard(c){if(!c)return;const t=T();const field=(ty)=>ty==='stamp'?['vStamp',10,'1','2','50']:ty==='discount'?['vDiscount',5,'1','1','100']:['vSpend',200,'0.01','1','1000000'];
 const draw=(ty)=>{const f=field(ty);$('mbody').innerHTML='<b style="font-size:17px">'+E(t.giveTitle)+': '+E(c.name)+'</b><div style="display:flex;gap:6px;flex-wrap:wrap">'+['stamp','discount','spend'].map(x=>'<button type="button" class="pill '+(x===ty?'on':'')+'" data-ty="'+x+'">'+E(t[x==='stamp'?'cStamp':x==='discount'?'cDiscount':'cSpend'])+'</button>').join('')+'</div>'+
@@ -145,11 +188,11 @@ if(r.ok){$('mbody').innerHTML='<div class="ok">'+E(t.queued)+'</div><button clas
 else{$('f-ok').disabled=false;$('f-err').textContent=r.error==='queue_full'?t.qFull:r.error==='bad_email'?t.badEmail:r.error==='bad_name'?t.needName:t.err}}}
 async function load(){const r=await api('owner-data');if(r._s===401&&r.error==='session'){logout(true);return}
 if(!r.ok){$('app').classList.remove('hide');$('login').classList.add('hide');const t=T();$('v-o').innerHTML='<div class="box">'+E(r.error==='license_inactive'?t.lapsed:r.error==='not_enabled'?t.notFound:t.err)+'</div>';return}
-snap=r.snapshot;info={at:r.at,pending:r.pending,recent:r.recent,logins:r.logins||[]};paint()}
-function logout(){session=null;snap=null;info=null;try{sessionStorage.removeItem('loya_owner_s_'+TKN.slice(0,8))}catch(e){}paint()}
+snap=r.snapshot;info={at:r.at,pending:r.pending,recent:r.recent,logins:r.logins||[]};lastLoad=Date.now();paint()}
+function logout(){session=null;snap=null;info=null;try{sessionStorage.removeItem(SK);localStorage.removeItem(SK)}catch(e){}paint()}
 $('lf').addEventListener('submit',async ev=>{ev.preventDefault();const t=T();$('lerr').textContent='';$('lbtn').disabled=true;
 const r=await api('owner-login',{password:$('pw').value});$('lbtn').disabled=false;
-if(r.ok){session=r.session;try{sessionStorage.setItem('loya_owner_s_'+TKN.slice(0,8),session)}catch(e){}$('pw').value='';await load();return}
+if(r.ok){session=r.session;try{($('remember').checked?localStorage:sessionStorage).setItem(SK,session)}catch(e){}$('pw').value='';await load();return}
 $('lerr').textContent=r.error==='locked'?t.locked:r.error==='license_inactive'?t.lapsed:r.error==='wrong'?t.wrong:r.error==='link_expired'?t.linkExpired:t.err});
 $('lall').onclick=async()=>{const t=T();if(!confirm(t.logoutAllQ))return;await api('owner-logout-all');logout()};
 let eMail='';
@@ -161,8 +204,11 @@ $('ef2').addEventListener('submit',async ev=>{ev.preventDefault();const t=T();$(
 const r=await api('owner-code-login',{email:eMail,code:$('ec').value.trim(),password:$('epw').value,lang});$('ebtn2').disabled=false;
 if(r.ok&&r.token){try{sessionStorage.setItem('loya_owner_s_'+r.token.slice(0,8),r.session)}catch(e){}location.replace('/owner/'+r.token);return}
 $('eerr2').textContent=r.error==='code_expired'?t.codeExpired:r.error==='locked'?t.tooMany:r.error==='license_inactive'?t.lapsed:t.wrong});
-$('rf').onclick=load;$('lo').onclick=logout;
-document.querySelectorAll('.tabs .pill').forEach(b=>b.onclick=()=>{view=b.dataset.t;document.querySelectorAll('.tabs .pill').forEach(x=>x.classList.toggle('on',x===b));$('v-o').classList.toggle('hide',view!=='o');$('v-c').classList.toggle('hide',view!=='c')});
+$('rf').onclick=load;$('lo').onclick=logout;$('pwt').onclick=()=>{const i=$('pw');i.type=i.type==='password'?'text':'password';i.focus()};
+setInterval(()=>{if(session&&snap&&document.visibilityState==='visible'&&$('modal').classList.contains('hide')&&Date.now()-lastLoad>55e3)load()},15e3);
+setInterval(()=>{const u=$('upd-ago');if(u&&info&&info.at)u.textContent=T().ago(Math.floor((Date.now()-new Date(info.at))/60e3))},30e3);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&session&&snap&&Date.now()-lastLoad>30e3)load()});
+document.querySelectorAll('.tabs .pill').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 $('modal').addEventListener('mousedown',e=>{if(e.target===$('modal'))$('modal').classList.add('hide')});
 paint();if(session)load();
 </script></body></html>`;
@@ -174,6 +220,9 @@ module.exports = async (req, res) => {
   res.setHeader('Referrer-Policy', 'no-referrer');
   // Без ссылки (/owner) — вход по email владельца: код на почту + пароль.
   if (token && !/^[a-f0-9]{48}$/.test(token)) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
+  const nonce = crypto.randomBytes(16).toString('base64');
+  res.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`);
+  res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.status(200).send(PAGE(token));
+  res.status(200).send(PAGE(token, nonce));
 };
