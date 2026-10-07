@@ -40,13 +40,14 @@
 <main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
+    <div class="hero-streaks" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div>
         <div class="badge"><b>NEW</b><span data-i18n="heroBadge"></span></div>
         <h1 class="hero-title"><span data-i18n="heroTitle1"></span><span class="gold" data-i18n="heroTitle2"></span></h1>
         <p class="hero-sub" data-i18n="heroSub"></p>
         <div class="hero-ctas">
-          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta"></span></a>
+          <a href="#download" class="btn btn-primary"><span data-i18n="heroCta"></span> <span class="arr" aria-hidden="true">→</span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2"></span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote"></div>
@@ -63,13 +64,19 @@
           <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
             <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft"></div></div>
         </div></div>
+        <div class="loy-card"><div class="lc-top"><b>Black Rich</b><span>LOYALTY CARD</span></div><div class="lc-qr"><i></i></div><svg class="lc-swoosh" viewBox="0 0 200 80" aria-hidden="true"><path d="M5 70 C 60 70, 110 10, 195 8" fill="none" stroke="url(#lcg)" stroke-width="2.2"/><defs><linearGradient id="lcg" x1="0" x2="1"><stop offset="0" stop-color="#b8862d" stop-opacity="0"/><stop offset=".6" stop-color="#f7d88f"/><stop offset="1" stop-color="#e3b857"/></linearGradient></defs></svg></div>
         <div class="chip c1" data-i18n="chip1"></div>
         <div class="chip c2" data-i18n="chip2"></div>
         <div class="chip c3" data-i18n="chip3"></div>
       </div>
     </div>
+    <div class="container hero-tiles">
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span><div><b data-i18n="ht1T"></b><p data-i18n="ht1D"></p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span><div><b data-i18n="ht2T"></b><p data-i18n="ht2D"></p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><b data-i18n="ht3T"></b><p data-i18n="ht3D"></p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></span><div><b data-i18n="ht4T"></b><p data-i18n="ht4D"></p></div></div>
+    </div>
   </section>
-
 
   <section class="stats" aria-label="Loya">
     <div class="container stats-grid">
@@ -85,6 +92,46 @@
       <h2 class="h2 reveal" data-i18n="forTitle"></h2>
       <p class="lead reveal" data-i18n="forSub"></p>
 {{FOR_TILES}}
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle"></h2>
+      <p class="lead reveal" data-i18n="priceSub"></p>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial"></b><span data-i18n="plansTrialSub"></span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName"></div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta"></a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge"></div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1"></li><li data-i18n="planStarterF2"></li><li data-i18n="planStarterF3"></li><li data-i18n="planStarterF4"></li><li data-i18n="planStarterF5"></li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta"></button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge"></div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth"></span></div>
+          <ul class="plan-list"><li data-i18n="planProF0"></li><li data-i18n="planProF1"></li><li data-i18n="planProF2"></li><li data-i18n="planProF3"></li><li data-i18n="planProF4"></li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta"></button>
+        </div>
+      </div>
+      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint"></p>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" placeholder="Email" aria-label="Email" required>
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote"></p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
+        <p class="plan-note"><a href="/terms.html?lang={{LANG}}" class="muted" data-i18n="footTerms"></a></p>
+      </form>
     </div>
   </section>
 
@@ -181,45 +228,6 @@
     </div>
   </section>
 
-  <section class="section" id="pricing">
-    <div class="container center">
-      <h2 class="h2 reveal" data-i18n="priceTitle"></h2>
-      <p class="lead reveal" data-i18n="priceSub"></p>
-      <div class="plans-trial reveal"><b data-i18n="plansTrial"></b><span data-i18n="plansTrialSub"></span></div>
-      <div class="plans">
-        <div class="plan pcard reveal">
-          <div class="plan-name" data-i18n="planFreeName"></div>
-          <div class="plan-price"><b>€0</b><span data-i18n="perMonth"></span></div>
-          <ul class="plan-list"><li data-i18n="planFreeF1"></li><li data-i18n="planFreeF2"></li><li data-i18n="planFreeF3"></li></ul>
-          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta"></a>
-        </div>
-        <div class="plan pcard featured reveal">
-          <div class="plan-badge" data-i18n="planStarterBadge"></div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
-          <ul class="plan-list"><li data-i18n="planStarterF1"></li><li data-i18n="planStarterF2"></li><li data-i18n="planStarterF3"></li><li data-i18n="planStarterF4"></li><li data-i18n="planStarterF5"></li></ul>
-          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta"></button>
-        </div>
-        <div class="plan pcard reveal">
-          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge"></div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth"></span></div>
-          <ul class="plan-list"><li data-i18n="planProF0"></li><li data-i18n="planProF1"></li><li data-i18n="planProF2"></li><li data-i18n="planProF3"></li><li data-i18n="planProF4"></li></ul>
-          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta"></button>
-        </div>
-      </div>
-      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint"></p>
-      <form class="checkout plans-checkout reveal" novalidate>
-        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" placeholder="Email" aria-label="Email" required>
-        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
-        <div class="checkout-err"></div>
-        <p class="plan-note" data-i18n="payNote"></p>
-        <div class="plan-secure">🔒 <span data-i18n="priceSecure"></span></div>
-        <p class="plan-note"><a href="/terms.html?lang={{LANG}}" class="muted" data-i18n="footTerms"></a></p>
-      </form>
-    </div>
-  </section>
 
 
   <section class="section" id="faq">

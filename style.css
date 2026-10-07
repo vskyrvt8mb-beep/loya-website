@@ -793,3 +793,80 @@ html.motion .tstep.in .tnum { transform: none; opacity: 1; }
 }
 .pricing-page { min-width: 0; max-width: 100%; }
 @media (max-width: 640px) { .pricing-page { overflow: hidden; } .pricing-page .plans { width: auto; max-width: none; } }
+
+/* ================= v5: «люкс» — золотой свет и стеклянные карточки ================= */
+/* стекло с тонкой золотой рамкой-градиентом */
+.glass, .card, .for-tile, .stat, .dl-card, .duo-col, .plans .plan, .faq details, .contact-card, .photo, .calc {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(170deg, rgba(24,26,33,.92), rgba(12,13,17,.92)) padding-box,
+    linear-gradient(140deg, rgba(247,216,143,.55), rgba(255,255,255,.06) 32%, rgba(255,255,255,.04) 62%, rgba(227,184,87,.42)) border-box !important;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.plans .plan.featured, .duo-good, .contact-card {
+  background:
+    radial-gradient(420px 220px at 100% 0%, rgba(227,184,87,.16), transparent 70%) padding-box,
+    linear-gradient(170deg, rgba(28,27,24,.94), rgba(13,13,15,.94)) padding-box,
+    linear-gradient(140deg, #f7d88f, rgba(227,184,87,.25) 40%, rgba(255,255,255,.05) 65%, #e3b857) border-box !important;
+}
+.duo-bad { background:
+    linear-gradient(170deg, rgba(24,22,24,.92), rgba(12,12,15,.92)) padding-box,
+    linear-gradient(140deg, rgba(248,113,113,.35), rgba(255,255,255,.05) 40%, rgba(255,255,255,.04) 70%, rgba(248,113,113,.2)) border-box !important; }
+.card:hover, .for-tile:hover { box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 40px rgba(227,184,87,.08); }
+
+/* золотые световые линии и свечение на фоне первого экрана */
+.hero-streaks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.hero-streaks::before, .hero-streaks::after { content: ''; position: absolute; border-radius: 50%; filter: blur(1px); }
+.hero-streaks::before { width: 1500px; height: 760px; right: -520px; top: -260px; border: 2px solid transparent;
+  border-top-color: rgba(247,216,143,.55); border-left-color: rgba(227,184,87,.18); transform: rotate(-14deg);
+  box-shadow: 0 -10px 60px -20px rgba(227,184,87,.45); animation: streakDrift 14s ease-in-out infinite; }
+.hero-streaks::after { width: 1100px; height: 520px; left: -560px; bottom: -300px; border: 2px solid transparent;
+  border-top-color: rgba(227,184,87,.35); transform: rotate(18deg); box-shadow: 0 -8px 50px -18px rgba(227,184,87,.35); animation: streakDrift 18s ease-in-out infinite reverse; }
+@keyframes streakDrift { 50% { transform: rotate(-10deg) translateY(14px); opacity: .7; } }
+.hero::after { content: ''; position: absolute; right: 8%; top: 18%; width: 520px; height: 520px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(227,184,87,.16), transparent 62%); filter: blur(20px); }
+.hero-grid, .hero-tiles { position: relative; z-index: 2; }
+
+/* бейдж и главная кнопка */
+.hero .badge { border-color: rgba(227,184,87,.45); background: rgba(227,184,87,.08); }
+.btn .arr { display: inline-block; transition: transform .25s; } .btn:hover .arr { transform: translateX(4px); }
+
+/* физическая карта лояльности рядом с телефоном */
+.loy-card { position: absolute; z-index: 4; left: 250px; bottom: -34px; width: 250px; height: 150px; padding: 16px 18px; border-radius: 18px;
+  background: radial-gradient(160px 90px at 90% 10%, rgba(227,184,87,.28), transparent 70%), linear-gradient(150deg, #23211c, #0b0b0d 70%);
+  border: 1px solid rgba(247,216,143,.45); box-shadow: 0 30px 70px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.08);
+  transform: rotate(-7deg); animation: cardFloat 7s ease-in-out infinite; overflow: hidden; }
+@keyframes cardFloat { 50% { transform: rotate(-5deg) translateY(-8px); } }
+.lc-top b { display: block; font-size: 17px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lc-top span { font-size: 9px; letter-spacing: .22em; color: rgba(244,239,228,.6); font-weight: 700; }
+.lc-qr { position: absolute; right: 16px; bottom: 16px; width: 62px; height: 62px; border-radius: 9px; background: #f4efe4; padding: 6px; }
+.lc-qr i { display: block; width: 100%; height: 100%; background: conic-gradient(#111 25%, #f4efe4 0 50%, #111 0 75%, #f4efe4 0) 0 0 / 8px 8px; }
+.lc-swoosh { position: absolute; left: -6px; bottom: 6px; width: 170px; height: 70px; opacity: .9; }
+.chip.c2 { bottom: auto; top: 330px; }
+@media (max-width: 1100px) { .loy-card { left: auto; right: 6%; bottom: -20px; } }
+@media (max-width: 640px) { .loy-card { width: 170px; height: 104px; padding: 11px 12px; right: 0; bottom: 70px; border-radius: 14px; }
+  .lc-top b { font-size: 13px; } .lc-qr { width: 42px; height: 42px; right: 10px; bottom: 10px; padding: 4px; } .lc-swoosh { width: 110px; }
+  .chip.c2 { display: none; } }
+
+/* ряд главных функций под первым экраном */
+.hero-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 64px; }
+.ht { display: flex; gap: 14px; align-items: flex-start; padding: 20px; border-radius: 20px; transition: transform .25s, box-shadow .25s; }
+.ht:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(0,0,0,.45), 0 0 34px rgba(227,184,87,.12); }
+.ht-ic { flex: none; width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; color: #1a1204; background: var(--grad); box-shadow: 0 10px 24px rgba(227,184,87,.3); }
+.ht b { display: block; font-size: 16.5px; margin-bottom: 4px; }
+.ht p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+@media (max-width: 1100px) { .hero-tiles { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .hero-tiles { gap: 10px; margin-top: 34px; } .ht { flex-direction: column; gap: 10px; padding: 14px; } .ht-ic { width: 40px; height: 40px; } .ht b { font-size: 15px; } .ht p { font-size: 13px; } }
+
+/* секции: мягкое золотое свечение по краям для глубины */
+#pricing, #features, #download { position: relative; }
+#pricing::before, #features::before { content: ''; position: absolute; width: 700px; height: 700px; border-radius: 50%; pointer-events: none; z-index: -1;
+  background: radial-gradient(circle, rgba(227,184,87,.08), transparent 65%); }
+#pricing::before { left: -300px; top: 10%; } #features::before { right: -320px; top: 20%; }
+main { position: relative; z-index: 0; }
+
+/* заголовки секций: золотой акцент под заголовком */
+.section > .container.center > .h2::after, .for-sec .h2::after { content: ''; display: block; width: 56px; height: 3px; margin: 14px auto 0; border-radius: 3px; background: var(--grad); opacity: .9; }
+
+@media (prefers-reduced-motion: reduce) { .hero-streaks::before, .hero-streaks::after, .loy-card { animation: none !important; } .ht:hover { transform: none; } }
+#pricing, #features { overflow-x: clip; }

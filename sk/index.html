@@ -71,13 +71,14 @@
 <main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
+    <div class="hero-streaks" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div>
         <div class="badge"><b>NEW</b><span data-i18n="heroBadge">Novinka: kampane, ktoré sa odosielajú samy</span></div>
         <h1 class="hero-title"><span data-i18n="heroTitle1">Zákazníci sa vracajú.</span><span class="gold" data-i18n="heroTitle2">Znova a znova.</span></h1>
         <p class="hero-sub" data-i18n="heroSub">Loya je vernostný program pre kaviarne, salóny, obchody, cestovné kancelárie, fotoštúdiá a grooming. Elektronické karty namiesto papierových, skener priamo v telefóne, chytré kampane a prehľadná analytika — všetko v jednej aplikácii.</p>
         <div class="hero-ctas">
-          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Vyskúšať 14 dní zadarmo</span></a>
+          <a href="#download" class="btn btn-primary"><span data-i18n="heroCta">Vyskúšať 14 dní zadarmo</span> <span class="arr" aria-hidden="true">→</span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2">Ako to funguje</span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote">Bez platobnej karty · potom od 9,99 € mesačne · bezplatná verzia do 10 zákazníkov</div>
@@ -94,13 +95,19 @@
           <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
             <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft">Ešte 2 do darčeka</div></div>
         </div></div>
-        <div class="chip c1" data-i18n="chip1">▲ +27 % tržby za mesiac</div>
+        <div class="loy-card"><div class="lc-top"><b>Black Rich</b><span>LOYALTY CARD</span></div><div class="lc-qr"><i></i></div><svg class="lc-swoosh" viewBox="0 0 200 80" aria-hidden="true"><path d="M5 70 C 60 70, 110 10, 195 8" fill="none" stroke="url(#lcg)" stroke-width="2.2"/><defs><linearGradient id="lcg" x1="0" x2="1"><stop offset="0" stop-color="#b8862d" stop-opacity="0"/><stop offset=".6" stop-color="#f7d88f"/><stop offset="1" stop-color="#e3b857"/></linearGradient></defs></svg></div>
+        <div class="chip c1" data-i18n="chip1">✓ Karta pridaná do Google Wallet</div>
         <div class="chip c2" data-i18n="chip2">🤖 E-mail odoslaný: „K darčeku vám chýba už krok&quot;</div>
         <div class="chip c3" data-i18n="chip3">⚡ Dvojité pečiatky 14:00–16:00</div>
       </div>
     </div>
+    <div class="container hero-tiles">
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span><div><b data-i18n="ht1T">Digitálne karty</b><p data-i18n="ht1D">Pečiatky, zľavy a bonusy — priamo v telefóne zákazníka.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span><div><b data-i18n="ht2T">QR registrácia</b><p data-i18n="ht2D">Zákazník sa pridá za 10 sekúnd, bez aplikácie.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><b data-i18n="ht3T">Analytika</b><p data-i18n="ht3D">Kto sa vracia, kto zmizol a čo prináša tržby.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></span><div><b data-i18n="ht4T">Kampane</b><p data-i18n="ht4D">E-maily a Telegram odchádzajú samy — v pravý čas.</p></div></div>
+    </div>
   </section>
-
 
   <section class="stats" aria-label="Loya">
     <div class="container stats-grid">
@@ -123,6 +130,46 @@
         <a class="for-tile reveal" href="/sk/photo-studio/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="ft-txt"><b>Fotoštúdiá</b><small>Karta fotení</small></span><span class="ft-go" aria-hidden="true">→</span></a>
         <a class="for-tile reveal" href="/sk/pet-grooming/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1 2.5 2.5 2.5 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c1.5 0 2.5-1 2.5-2.5 0-2.5-2.5-6-5.5-6z"/></svg></span><span class="ft-txt"><b>Grooming pre zvieratá</b><small>Pečiatková karta miláčika</small></span><span class="ft-go" aria-hidden="true">→</span></a>
       </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle">Tarify</h2>
+      <p class="lead reveal" data-i18n="priceSub">Začnite zadarmo. Bez poplatkov od zákazníkov a skrytých príplatkov — tarif si zvoľte, keď vám Loya začne prinášať úžitok.</p>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 dní všetkých funkcií — zadarmo a bez karty.</b><span data-i18n="plansTrialSub">Skúšobné obdobie sa spúšťa priamo v programe. Potom si vyberte tarif alebo zostaňte na bezplatnej verzii.</span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName">Zadarmo</div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ mesiac</span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1">Do 10 zákazníkov</li><li data-i18n="planFreeF2">Karty, QR registrácia a skenovanie</li><li data-i18n="planFreeF3">Jedna prevádzka</li></ul>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Stiahnuť program</a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge">Pre jednu prevádzku</div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ mesiac</span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1">Zákazníkov — bez obmedzení</li><li data-i18n="planStarterF2">Kampane e-mailom a cez Telegram, automatické e-maily</li><li data-i18n="planStarterF3">Karty v Google Wallet</li><li data-i18n="planStarterF4">Registrácia cez odkaz a prístup z domu</li><li data-i18n="planStarterF5">Tovar, sklad a doklady z pokladnice</li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Vybrať Starter</button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">Pre viac prevádzok</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ mesiac</span></div>
+          <ul class="plan-list"><li data-i18n="planProF0">Všetko zo Starter, a navyše:</li><li data-i18n="planProF1">Viac prevádzok (od 3) v jednom programe</li><li data-i18n="planProF2">Analytika za každú prevádzku aj spolu</li><li data-i18n="planProF3">Zamestnanci a roly pre všetky prevádzky</li><li data-i18n="planProF4">Spoločná databáza medzi počítačmi — výmena každé 2 minúty</li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Vybrať Pro</button>
+        </div>
+      </div>
+      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← posúvajte →</p>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Váš e-mail" aria-label="Váš e-mail">
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Predplatiť</span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote">Platba hneď, zrušenie kedykoľvek. Ak máte skúšobný kľúč, zadajte ten istý e-mail a kľúč sa stane plateným.</p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Bezpečná platba cez Stripe — údaje o karte sa k nám nedostanú</span></div>
+        <p class="plan-note"><a href="/terms.html?lang=sk" class="muted" data-i18n="footTerms">Podmienky a vrátenie peňazí</a></p>
+      </form>
     </div>
   </section>
 
@@ -226,45 +273,6 @@
     </div>
   </section>
 
-  <section class="section" id="pricing">
-    <div class="container center">
-      <h2 class="h2 reveal" data-i18n="priceTitle">Tarify</h2>
-      <p class="lead reveal" data-i18n="priceSub">Začnite zadarmo. Bez poplatkov od zákazníkov a skrytých príplatkov — tarif si zvoľte, keď vám Loya začne prinášať úžitok.</p>
-      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 dní všetkých funkcií — zadarmo a bez karty.</b><span data-i18n="plansTrialSub">Skúšobné obdobie sa spúšťa priamo v programe. Potom si vyberte tarif alebo zostaňte na bezplatnej verzii.</span></div>
-      <div class="plans">
-        <div class="plan pcard reveal">
-          <div class="plan-name" data-i18n="planFreeName">Zadarmo</div>
-          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ mesiac</span></div>
-          <ul class="plan-list"><li data-i18n="planFreeF1">Do 10 zákazníkov</li><li data-i18n="planFreeF2">Karty, QR registrácia a skenovanie</li><li data-i18n="planFreeF3">Jedna prevádzka</li></ul>
-          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Stiahnuť program</a>
-        </div>
-        <div class="plan pcard featured reveal">
-          <div class="plan-badge" data-i18n="planStarterBadge">Pre jednu prevádzku</div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ mesiac</span></div>
-          <ul class="plan-list"><li data-i18n="planStarterF1">Zákazníkov — bez obmedzení</li><li data-i18n="planStarterF2">Kampane e-mailom a cez Telegram, automatické e-maily</li><li data-i18n="planStarterF3">Karty v Google Wallet</li><li data-i18n="planStarterF4">Registrácia cez odkaz a prístup z domu</li><li data-i18n="planStarterF5">Tovar, sklad a doklady z pokladnice</li></ul>
-          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Vybrať Starter</button>
-        </div>
-        <div class="plan pcard reveal">
-          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">Pre viac prevádzok</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ mesiac</span></div>
-          <ul class="plan-list"><li data-i18n="planProF0">Všetko zo Starter, a navyše:</li><li data-i18n="planProF1">Viac prevádzok (od 3) v jednom programe</li><li data-i18n="planProF2">Analytika za každú prevádzku aj spolu</li><li data-i18n="planProF3">Zamestnanci a roly pre všetky prevádzky</li><li data-i18n="planProF4">Spoločná databáza medzi počítačmi — výmena každé 2 minúty</li></ul>
-          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Vybrať Pro</button>
-        </div>
-      </div>
-      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← posúvajte →</p>
-      <form class="checkout plans-checkout reveal" novalidate>
-        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Váš e-mail" aria-label="Váš e-mail">
-        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Predplatiť</span></button>
-        <div class="checkout-err"></div>
-        <p class="plan-note" data-i18n="payNote">Platba hneď, zrušenie kedykoľvek. Ak máte skúšobný kľúč, zadajte ten istý e-mail a kľúč sa stane plateným.</p>
-        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Bezpečná platba cez Stripe — údaje o karte sa k nám nedostanú</span></div>
-        <p class="plan-note"><a href="/terms.html?lang=sk" class="muted" data-i18n="footTerms">Podmienky a vrátenie peňazí</a></p>
-      </form>
-    </div>
-  </section>
 
 
   <section class="section" id="faq">

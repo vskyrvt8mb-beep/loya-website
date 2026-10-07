@@ -71,13 +71,14 @@
 <main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
+    <div class="hero-streaks" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div>
         <div class="badge"><b>NEW</b><span data-i18n="heroBadge">New: campaigns that send themselves</span></div>
         <h1 class="hero-title"><span data-i18n="heroTitle1">Customers come back.</span><span class="gold" data-i18n="heroTitle2">Again and again.</span></h1>
         <p class="hero-sub" data-i18n="heroSub">Loya is a loyalty program for cafés, salons, shops, travel agencies, photo studios and pet groomers. Digital cards instead of paper ones, a scanner right in your phone, smart campaigns and clear analytics — all in one app.</p>
         <div class="hero-ctas">
-          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Try 14 days free</span></a>
+          <a href="#download" class="btn btn-primary"><span data-i18n="heroCta">Try 14 days free</span> <span class="arr" aria-hidden="true">→</span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2">See how it works</span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote">No card needed · then from €9.99 a month · free version up to 10 customers</div>
@@ -94,13 +95,19 @@
           <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
             <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft">2 more to a free one</div></div>
         </div></div>
-        <div class="chip c1" data-i18n="chip1">▲ +27% revenue this month</div>
+        <div class="loy-card"><div class="lc-top"><b>Black Rich</b><span>LOYALTY CARD</span></div><div class="lc-qr"><i></i></div><svg class="lc-swoosh" viewBox="0 0 200 80" aria-hidden="true"><path d="M5 70 C 60 70, 110 10, 195 8" fill="none" stroke="url(#lcg)" stroke-width="2.2"/><defs><linearGradient id="lcg" x1="0" x2="1"><stop offset="0" stop-color="#b8862d" stop-opacity="0"/><stop offset=".6" stop-color="#f7d88f"/><stop offset="1" stop-color="#e3b857"/></linearGradient></defs></svg></div>
+        <div class="chip c1" data-i18n="chip1">✓ Card added to Google Wallet</div>
         <div class="chip c2" data-i18n="chip2">🤖 Email sent: “Just one step from your reward”</div>
         <div class="chip c3" data-i18n="chip3">⚡ Double stamps 2–4 pm</div>
       </div>
     </div>
+    <div class="container hero-tiles">
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span><div><b data-i18n="ht1T">Digital cards</b><p data-i18n="ht1D">Stamps, discounts and bonuses — right on the customer’s phone.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span><div><b data-i18n="ht2T">QR sign-up</b><p data-i18n="ht2D">Customers join in 10 seconds, no app needed.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><b data-i18n="ht3T">Analytics</b><p data-i18n="ht3D">Who comes back, who’s gone and what drives revenue.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></span><div><b data-i18n="ht4T">Campaigns</b><p data-i18n="ht4D">Emails and Telegram go out by themselves — at the right moment.</p></div></div>
+    </div>
   </section>
-
 
   <section class="stats" aria-label="Loya">
     <div class="container stats-grid">
@@ -123,6 +130,46 @@
         <a class="for-tile reveal" href="/photo-studio/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="ft-txt"><b>Photo studios</b><small>Shoot card</small></span><span class="ft-go" aria-hidden="true">→</span></a>
         <a class="for-tile reveal" href="/pet-grooming/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1 2.5 2.5 2.5 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c1.5 0 2.5-1 2.5-2.5 0-2.5-2.5-6-5.5-6z"/></svg></span><span class="ft-txt"><b>Pet grooming</b><small>Pet stamp card</small></span><span class="ft-go" aria-hidden="true">→</span></a>
       </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle">Plans</h2>
+      <p class="lead reveal" data-i18n="priceSub">Start free. No per-customer fees or hidden extras — move to a paid plan once Loya starts paying off.</p>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 days of every feature — free, no card.</b><span data-i18n="plansTrialSub">The trial starts right in the app. Then pick a plan or stay on the free version.</span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName">Free</div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ month</span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1">Up to 10 customers</li><li data-i18n="planFreeF2">Cards, QR sign-up and scanning</li><li data-i18n="planFreeF3">One location</li></ul>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Download the app</a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge">For one venue</div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ month</span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1">Unlimited customers</li><li data-i18n="planStarterF2">Email and Telegram campaigns, automatic emails</li><li data-i18n="planStarterF3">Cards in Google Wallet</li><li data-i18n="planStarterF4">Sign-up by link and access from home</li><li data-i18n="planStarterF5">Products, stock and till receipts</li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Choose Starter</button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">For several locations</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ month</span></div>
+          <ul class="plan-list"><li data-i18n="planProF0">Everything in Starter, plus:</li><li data-i18n="planProF1">Several locations (3+) in one app</li><li data-i18n="planProF2">Analytics per location and overall</li><li data-i18n="planProF3">Staff and roles for all locations</li><li data-i18n="planProF4">Shared database across computers — synced every 2 minutes</li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Choose Pro</button>
+        </div>
+      </div>
+      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← swipe →</p>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Your email" aria-label="Your email">
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Subscribe</span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote">You pay now and can cancel anytime. If you have a trial key, use the same email and it becomes paid.</p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Secure payment via Stripe — your card details never reach us</span></div>
+        <p class="plan-note"><a href="/terms.html?lang=en" class="muted" data-i18n="footTerms">Terms &amp; refunds</a></p>
+      </form>
     </div>
   </section>
 
@@ -226,45 +273,6 @@
     </div>
   </section>
 
-  <section class="section" id="pricing">
-    <div class="container center">
-      <h2 class="h2 reveal" data-i18n="priceTitle">Plans</h2>
-      <p class="lead reveal" data-i18n="priceSub">Start free. No per-customer fees or hidden extras — move to a paid plan once Loya starts paying off.</p>
-      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 days of every feature — free, no card.</b><span data-i18n="plansTrialSub">The trial starts right in the app. Then pick a plan or stay on the free version.</span></div>
-      <div class="plans">
-        <div class="plan pcard reveal">
-          <div class="plan-name" data-i18n="planFreeName">Free</div>
-          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ month</span></div>
-          <ul class="plan-list"><li data-i18n="planFreeF1">Up to 10 customers</li><li data-i18n="planFreeF2">Cards, QR sign-up and scanning</li><li data-i18n="planFreeF3">One location</li></ul>
-          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Download the app</a>
-        </div>
-        <div class="plan pcard featured reveal">
-          <div class="plan-badge" data-i18n="planStarterBadge">For one venue</div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ month</span></div>
-          <ul class="plan-list"><li data-i18n="planStarterF1">Unlimited customers</li><li data-i18n="planStarterF2">Email and Telegram campaigns, automatic emails</li><li data-i18n="planStarterF3">Cards in Google Wallet</li><li data-i18n="planStarterF4">Sign-up by link and access from home</li><li data-i18n="planStarterF5">Products, stock and till receipts</li></ul>
-          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Choose Starter</button>
-        </div>
-        <div class="plan pcard reveal">
-          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">For several locations</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ month</span></div>
-          <ul class="plan-list"><li data-i18n="planProF0">Everything in Starter, plus:</li><li data-i18n="planProF1">Several locations (3+) in one app</li><li data-i18n="planProF2">Analytics per location and overall</li><li data-i18n="planProF3">Staff and roles for all locations</li><li data-i18n="planProF4">Shared database across computers — synced every 2 minutes</li></ul>
-          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Choose Pro</button>
-        </div>
-      </div>
-      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← swipe →</p>
-      <form class="checkout plans-checkout reveal" novalidate>
-        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Your email" aria-label="Your email">
-        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Subscribe</span></button>
-        <div class="checkout-err"></div>
-        <p class="plan-note" data-i18n="payNote">You pay now and can cancel anytime. If you have a trial key, use the same email and it becomes paid.</p>
-        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Secure payment via Stripe — your card details never reach us</span></div>
-        <p class="plan-note"><a href="/terms.html?lang=en" class="muted" data-i18n="footTerms">Terms &amp; refunds</a></p>
-      </form>
-    </div>
-  </section>
 
 
   <section class="section" id="faq">
