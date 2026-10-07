@@ -57,11 +57,13 @@
       <a href="#pricing" data-i18n="navPricing">Ціна</a>
       <a href="#faq" data-i18n="navFaq">Питання</a>
       <a href="#contact" data-i18n="navContact">Контакти</a>
+      <a href="/owner" class="nav-login-m" data-i18n="navLoginHint">Увійти в кабінет власника</a>
     </nav>
     <div class="nav-right">
       <select class="lang-select" aria-label="Language">
         <option value="ru">RU</option><option value="uk" selected>UK</option><option value="sk">SK</option><option value="en">EN</option>
       </select>
+      <a href="/owner" class="btn btn-ghost btn-sm nav-login" title="" data-i18n-aria="navLoginHint" aria-label="Увійти в кабінет власника"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span data-i18n="navLogin">Увійти</span></a>
       <a href="#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Спробувати безкоштовно</a>
       <button class="nav-burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">☰</button>
     </div>
@@ -71,13 +73,14 @@
 <main id="main">
   <section class="hero">
     <div class="grid-bg"></div>
+    <div class="hero-streaks" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div>
         <div class="badge"><b>NEW</b><span data-i18n="heroBadge">Нове: розсилки, які надсилаються самі</span></div>
         <h1 class="hero-title"><span data-i18n="heroTitle1">Клієнти повертаються.</span><span class="gold" data-i18n="heroTitle2">Знову й знову.</span></h1>
         <p class="hero-sub" data-i18n="heroSub">Loya — програма лояльності для кав’ярень, салонів, магазинів, турагенцій, фотостудій і грумінгу. Електронні картки замість паперових, сканер прямо в телефоні, розумні розсилки й зрозуміла аналітика — усе в одному застосунку.</p>
         <div class="hero-ctas">
-          <a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Спробувати 14 днів безкоштовно</span></a>
+          <a href="#download" class="btn btn-primary"><span data-i18n="heroCta">Спробувати 14 днів безкоштовно</span> <span class="arr" aria-hidden="true">→</span></a>
           <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2">Як це працює</span></a>
         </div>
         <div class="hero-note" data-i18n="heroNote">Без банківської картки · далі від €9.99 на місяць · безкоштовна версія до 10 клієнтів</div>
@@ -94,13 +97,19 @@
           <div class="ph-card"><div class="ph-card-top"><span>☕ Café Aurora</span><em>✓</em></div>
             <div class="stamps"><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s class="on">✓</s><s></s><s class="gift">🎁</s></div><div class="ph-left" data-i18n="phLeft">Ще 2 до подарунка</div></div>
         </div></div>
-        <div class="chip c1" data-i18n="chip1">▲ +27% обороту за місяць</div>
+        <div class="loy-card"><div class="lc-top"><b>Black Rich</b><span>LOYALTY CARD</span></div><div class="lc-qr"><i></i></div><svg class="lc-swoosh" viewBox="0 0 200 80" aria-hidden="true"><path d="M5 70 C 60 70, 110 10, 195 8" fill="none" stroke="url(#lcg)" stroke-width="2.2"/><defs><linearGradient id="lcg" x1="0" x2="1"><stop offset="0" stop-color="#b8862d" stop-opacity="0"/><stop offset=".6" stop-color="#f7d88f"/><stop offset="1" stop-color="#e3b857"/></linearGradient></defs></svg></div>
+        <div class="chip c1" data-i18n="chip1">✓ Картку додано в Google Wallet</div>
         <div class="chip c2" data-i18n="chip2">🤖 Лист надіслано: «Вам лишився крок до подарунка»</div>
         <div class="chip c3" data-i18n="chip3">⚡ Подвійні штампи 14:00–16:00</div>
       </div>
     </div>
+    <div class="container hero-tiles">
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg></span><div><b data-i18n="ht1T">Цифрові картки</b><p data-i18n="ht1D">Штампи, знижки й бонуси — просто в телефоні клієнта.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span><div><b data-i18n="ht2T">QR-реєстрація</b><p data-i18n="ht2D">Клієнт вступає за 10 секунд, без застосунку.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><b data-i18n="ht3T">Аналітика</b><p data-i18n="ht3D">Хто повертається, хто зник і що приносить виручку.</p></div></div>
+      <div class="ht glass reveal"><span class="ht-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></span><div><b data-i18n="ht4T">Розсилки</b><p data-i18n="ht4D">Листи й Telegram ідуть самі — у потрібний момент.</p></div></div>
+    </div>
   </section>
-
 
   <section class="stats" aria-label="Loya">
     <div class="container stats-grid">
@@ -123,6 +132,46 @@
         <a class="for-tile reveal" href="/uk/photo-studio/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="ft-txt"><b>Фотостудії</b><small>Картка зйомок</small></span><span class="ft-go" aria-hidden="true">→</span></a>
         <a class="for-tile reveal" href="/uk/pet-grooming/"><span class="ft-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1 2.5 2.5 2.5 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c1.5 0 2.5-1 2.5-2.5 0-2.5-2.5-6-5.5-6z"/></svg></span><span class="ft-txt"><b>Грумінг для тварин</b><small>Штамп-картка улюбленця</small></span><span class="ft-go" aria-hidden="true">→</span></a>
       </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="container center">
+      <h2 class="h2 reveal" data-i18n="priceTitle">Тарифи</h2>
+      <p class="lead reveal" data-i18n="priceSub">Почніть безкоштовно. Без комісій з клієнтів і прихованих доплат — переходьте на тариф, коли Loya почне приносити користь.</p>
+      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 днів усіх можливостей — безкоштовно й без картки.</b><span data-i18n="plansTrialSub">Пробний період запускається прямо в програмі. Потім оберіть тариф або лишайтеся на безкоштовній версії.</span></div>
+      <div class="plans">
+        <div class="plan pcard reveal">
+          <div class="plan-name" data-i18n="planFreeName">Безкоштовно</div>
+          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ місяць</span></div>
+          <ul class="plan-list"><li data-i18n="planFreeF1">До 10 клієнтів</li><li data-i18n="planFreeF2">Картки, QR-реєстрація й сканування</li><li data-i18n="planFreeF3">Одна точка</li></ul>
+          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Завантажити програму</a>
+        </div>
+        <div class="plan pcard featured reveal">
+          <div class="plan-badge" data-i18n="planStarterBadge">Для одного закладу</div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ місяць</span></div>
+          <ul class="plan-list"><li data-i18n="planStarterF1">Клієнтів — без обмежень</li><li data-i18n="planStarterF2">Розсилки email і Telegram, автоматичні листи</li><li data-i18n="planStarterF3">Картки в Google Wallet</li><li data-i18n="planStarterF4">Реєстрація за посиланням і доступ з дому</li><li data-i18n="planStarterF5">Товари, склад і чеки з каси</li></ul>
+          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Обрати Starter</button>
+        </div>
+        <div class="plan pcard reveal">
+          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">Для кількох точок</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ місяць</span></div>
+          <ul class="plan-list"><li data-i18n="planProF0">Усе зі Starter, плюс:</li><li data-i18n="planProF1">Кілька точок (від 3) в одній програмі</li><li data-i18n="planProF2">Аналітика по кожній точці й загальна</li><li data-i18n="planProF3">Співробітники й ролі для всіх точок</li><li data-i18n="planProF4">Спільна база між комп’ютерами — обмін кожні 2 хвилини</li></ul>
+          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Обрати Pro</button>
+        </div>
+      </div>
+      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← гортайте →</p>
+      <form class="checkout plans-checkout reveal" novalidate>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Ваш email" aria-label="Ваш email">
+        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Оформити підписку</span></button>
+        <div class="checkout-err"></div>
+        <p class="plan-note" data-i18n="payNote">Оплата одразу, скасування будь-коли. Якщо у вас пробний ключ — вкажіть той самий email, і він стане платним.</p>
+        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Безпечна оплата через Stripe — дані картки не потрапляють до нас</span></div>
+        <p class="plan-note"><a href="/terms.html?lang=uk" class="muted" data-i18n="footTerms">Умови та повернення</a></p>
+      </form>
     </div>
   </section>
 
@@ -226,45 +275,6 @@
     </div>
   </section>
 
-  <section class="section" id="pricing">
-    <div class="container center">
-      <h2 class="h2 reveal" data-i18n="priceTitle">Тарифи</h2>
-      <p class="lead reveal" data-i18n="priceSub">Почніть безкоштовно. Без комісій з клієнтів і прихованих доплат — переходьте на тариф, коли Loya почне приносити користь.</p>
-      <div class="plans-trial reveal"><b data-i18n="plansTrial">14 днів усіх можливостей — безкоштовно й без картки.</b><span data-i18n="plansTrialSub">Пробний період запускається прямо в програмі. Потім оберіть тариф або лишайтеся на безкоштовній версії.</span></div>
-      <div class="plans">
-        <div class="plan pcard reveal">
-          <div class="plan-name" data-i18n="planFreeName">Безкоштовно</div>
-          <div class="plan-price"><b>€0</b><span data-i18n="perMonth">/ місяць</span></div>
-          <ul class="plan-list"><li data-i18n="planFreeF1">До 10 клієнтів</li><li data-i18n="planFreeF2">Картки, QR-реєстрація й сканування</li><li data-i18n="planFreeF3">Одна точка</li></ul>
-          <a class="btn btn-ghost" href="#download" data-i18n="planFreeCta">Завантажити програму</a>
-        </div>
-        <div class="plan pcard featured reveal">
-          <div class="plan-badge" data-i18n="planStarterBadge">Для одного закладу</div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth">/ місяць</span></div>
-          <ul class="plan-list"><li data-i18n="planStarterF1">Клієнтів — без обмежень</li><li data-i18n="planStarterF2">Розсилки email і Telegram, автоматичні листи</li><li data-i18n="planStarterF3">Картки в Google Wallet</li><li data-i18n="planStarterF4">Реєстрація за посиланням і доступ з дому</li><li data-i18n="planStarterF5">Товари, склад і чеки з каси</li></ul>
-          <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta">Обрати Starter</button>
-        </div>
-        <div class="plan pcard reveal">
-          <div class="plan-badge plan-badge-pro" data-i18n="planProBadge">Для кількох точок</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth">/ місяць</span></div>
-          <ul class="plan-list"><li data-i18n="planProF0">Усе зі Starter, плюс:</li><li data-i18n="planProF1">Кілька точок (від 3) в одній програмі</li><li data-i18n="planProF2">Аналітика по кожній точці й загальна</li><li data-i18n="planProF3">Співробітники й ролі для всіх точок</li><li data-i18n="planProF4">Спільна база між комп’ютерами — обмін кожні 2 хвилини</li></ul>
-          <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta">Обрати Pro</button>
-        </div>
-      </div>
-      <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← гортайте →</p>
-      <form class="checkout plans-checkout reveal" novalidate>
-        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
-        <input type="email" autocomplete="email" data-i18n-ph="emailPh" data-i18n-aria="emailPh" required placeholder="Ваш email" aria-label="Ваш email">
-        <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta">Оформити підписку</span></button>
-        <div class="checkout-err"></div>
-        <p class="plan-note" data-i18n="payNote">Оплата одразу, скасування будь-коли. Якщо у вас пробний ключ — вкажіть той самий email, і він стане платним.</p>
-        <div class="plan-secure">🔒 <span data-i18n="priceSecure">Безпечна оплата через Stripe — дані картки не потрапляють до нас</span></div>
-        <p class="plan-note"><a href="/terms.html?lang=uk" class="muted" data-i18n="footTerms">Умови та повернення</a></p>
-      </form>
-    </div>
-  </section>
 
 
   <section class="section" id="faq">
