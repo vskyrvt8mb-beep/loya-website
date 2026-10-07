@@ -48,6 +48,9 @@ const ICONS = {
   '📊': '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   '💅': '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.6L20 18M8.6 16.4L20 6"/>',
   '🛍️': '<path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  '✈️': '<path d="M10.5 13.5L3 11l1.5-1.5 8 .5 4-4a2.1 2.1 0 0 1 3 3l-4 4 .5 8L14.5 22l-2.5-7.5"/><path d="M6 18l2-2"/>',
+  '📷': '<path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  '🐾': '<circle cx="6" cy="10" r="2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="10" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1 2.5 2.5 2.5 1.2 0 1.8-.6 3-.6s1.8.6 3 .6c1.5 0 2.5-1 2.5-2.5 0-2.5-2.5-6-5.5-6z"/>',
 };
 const iconOf = (e) => (ICONS[e] ? svgI(ICONS[e]) : e);
 
@@ -60,7 +63,8 @@ function nicheVisual(key, lang) {
     body = `<div class="nv-points"><b class="nv-num">€<span data-count="${v.done}">${v.done}</span></b><span>/ €${v.total}</span></div>
           <div class="nv-bar"><i style="--to:${pct}%"></i></div>`;
   } else {
-    body = `<div class="nv-stamps nv-${v.type}">${Array.from({ length: v.total }, (_, i) => `<s class="${i < v.done ? 'on' : ''}${i === v.done ? ' next' : ''}${i === v.total - 1 ? ' gift' : ''}">${i === v.total - 1 ? '🎁' : i < v.done ? '✓' : ''}</s>`).join('')}</div>`;
+    const cols = v.total <= 6 ? v.total : (v.type === 'visits' ? 4 : 5);
+    body = `<div class="nv-stamps nv-${v.type}" style="grid-template-columns:repeat(${cols},1fr)">${Array.from({ length: v.total }, (_, i) => `<s class="${i < v.done ? 'on' : ''}${i === v.done ? ' next' : ''}${i === v.total - 1 ? ' gift' : ''}">${i === v.total - 1 ? '🎁' : i < v.done ? '✓' : ''}</s>`).join('')}</div>`;
   }
   return `<div class="niche-visual nv-${key}" aria-hidden="true">
       <div class="hero-glow"></div>
@@ -94,6 +98,10 @@ function tourBlock(t, lang) {
 // Меню «Для кого» в шапке и быстрый выбор бизнеса на главной
 const navFor = (lang, t) => `<div class="nav-drop"><button type="button" class="nav-drop-btn" aria-expanded="false" aria-controls="nav-for"><span data-i18n="navFor">${esc(t('navFor'))}</span> <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
         <div class="nav-drop-menu" id="nav-for">${Object.entries(NICHES).map(([k, n]) => `<a href="${pathOf(lang, n.slug)}"><span class="nd-ic">${iconOf(n.icon)}</span><span><b>${esc(VIS[k][lang].short)}</b><small>${esc(VIS[k][lang].kind)}</small></span></a>`).join('')}</div></div>`;
+const forTiles = (lang) => `      <div class="for-grid">${Object.entries(NICHES).map(([k, n]) => `
+        <a class="for-tile reveal" href="${pathOf(lang, n.slug)}"><span class="ft-ic">${iconOf(n.icon)}</span><span class="ft-txt"><b>${esc(VIS[k][lang].short)}</b><small>${esc(VIS[k][lang].kind)}</small></span><span class="ft-go" aria-hidden="true">→</span></a>`).join('')}
+      </div>`;
+const footNiches = (lang) => Object.entries(NICHES).map(([k, n]) => `<a href="${pathOf(lang, n.slug)}">${esc(VIS[k][lang].short)}</a>`).join('');
 const heroFor = (lang, t) => `<div class="hero-for"><span>${esc(t('heroFor'))}</span>${Object.entries(NICHES).map(([k, n]) => `<a href="${pathOf(lang, n.slug)}">${iconOf(n.icon)}<span>${esc(VIS[k][lang].short)}</span></a>`).join('')}</div>`;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -164,7 +172,7 @@ function buildHome(lang) {
   const t = tr(lang);
   let html = fillI18n(template, t);
   html = html.replace(new RegExp(`<option value="${lang}">`), `<option value="${lang}" selected>`);
-  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t, lang)).replace('{{NAV_FOR}}', navFor(lang, t)).replace('{{HERO_FOR}}', heroFor(lang, t));
+  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t, lang)).replace('{{NAV_FOR}}', navFor(lang, t)).replace('{{HERO_FOR}}', heroFor(lang, t)).replace('{{FOR_TILES}}', forTiles(lang)).replace('{{FOOT_NICHES}}', footNiches(lang));
   html = html.replace('<p class="tour-cap" id="tour-cap"></p>', `<p class="tour-cap" id="tour-cap">${esc(t('capDash'))}</p>`);
   for (const [key, n] of Object.entries(NICHES)) {
     html = html.split(`{{NICHE_${key}_NAME}}`).join(esc(n[lang].name)).split(`{{NICHE_${key}}}`).join(pathOf(lang, n.slug));
