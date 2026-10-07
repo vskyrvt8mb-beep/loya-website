@@ -266,3 +266,20 @@ begin
 end $$;
 revoke all on function rate_hit(text, integer, integer) from public, anon, authenticated;
 grant execute on function rate_hit(text, integer, integer) to service_role;
+
+-- Админка: журнал действий и настройки (момент «выйти на всех устройствах»).
+create table if not exists admin_log (
+  id bigint generated always as identity primary key,
+  at timestamptz not null default now(),
+  op text not null,
+  ip text,
+  detail jsonb
+);
+create index if not exists idx_admin_log_at on admin_log (at desc);
+alter table admin_log enable row level security;
+
+create table if not exists admin_settings (
+  key text primary key,
+  value text
+);
+alter table admin_settings enable row level security;
