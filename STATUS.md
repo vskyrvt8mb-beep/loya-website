@@ -37,8 +37,10 @@
 Open Graph, JSON-LD (Organization, SoftwareApplication, FAQPage). Есть `robots.txt` и `sitemap.xml`.
 Контакт поддержки: loya.loyalty.send@gmail.com (секция «Контакты» на главной и подвал).
 
-Страницы под ниши: `/cafe/`, `/beauty-salon/`, `/shop/` (и `/ru/…`, `/uk/…`, `/sk/…`) — тексты в
-`scripts/niches.js`, собираются тем же `node scripts/build-seo.js`.
+Страницы под ниши: `/cafe/`, `/beauty-salon/`, `/shop/`, `/travel-agency/`, `/photo-studio/`, `/pet-grooming/`
+(и `/ru/…`, `/uk/…`, `/sk/…`) — тексты в `scripts/niches.js`, живые макеты карт в `scripts/niche-visuals.js`,
+собираются тем же `node scripts/build-seo.js`. Новая ниша = новый ключ в обоих файлах — меню «Для кого»,
+плитки на главной, подвал и sitemap обновятся сами.
 Картинки для соцсетей на каждом языке — `og-image_<lang>.png`, пересобрать: `npm i --no-save playwright-core && node scripts/build-og.js`.
 
 ## Скачивание
