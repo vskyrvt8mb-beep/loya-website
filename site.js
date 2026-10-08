@@ -90,7 +90,7 @@
   const burger = document.querySelector('.nav-burger');
   const links = document.querySelector('.nav-links');
   if (burger && links) {
-    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); };
+    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); document.documentElement.classList.toggle('menu-lock', open); };
     burger.addEventListener('click', () => setOpen(!links.classList.contains('open')));
     links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); burger.focus(); } });
