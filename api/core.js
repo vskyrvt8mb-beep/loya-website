@@ -12,7 +12,8 @@ const h_sync = require('./_x_sync');
 const h_download = require('./_x_download');
 const h_fx = require('./_x_fx');
 const h_guide = require('./_x_send_guide');
-const ACTIONS = { 'send-mail': h_send_mail, 'health': h_health, 'admin-login': h_admin_login, 'admin-data': h_admin_data, 'admin-action': h_admin_action, 'admin-page': h_admin_page, 'manage': h_billing, 'resend-key': h_billing, 'trial-start': h_billing, 'sync': h_sync, 'download': h_download, 'fx': h_fx, 'send-guide': h_guide };
+const h_tg = require('./_x_tg_webhook');
+const ACTIONS = { 'send-mail': h_send_mail, 'health': h_health, 'admin-login': h_admin_login, 'admin-data': h_admin_data, 'admin-action': h_admin_action, 'admin-page': h_admin_page, 'manage': h_billing, 'resend-key': h_billing, 'trial-start': h_billing, 'sync': h_sync, 'download': h_download, 'fx': h_fx, 'send-guide': h_guide, 'tg-webhook': h_tg };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }
