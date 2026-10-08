@@ -50,5 +50,7 @@ module.exports = async (req, res) => {
 <p><a href="${home}" style="color:#b8862d;font-weight:bold">${t.more} →</a></p><p style="color:#555">${t.q}</p><p>— Loya</p></div>`;
   try { await sendSystemMail({ to: email, subject: t.subj, html }); }
   catch (e) { console.error('[send-guide]', e && e.message); res.status(502).json({ error: 'mail_error' }); return; }
+  const TG = require('./_tg');
+  await TG.notify(`📩 <b>Запросили инструкцию на почту</b>\n${TG.esc(email)} · ${TG.lang(lang)}\nПотенциальный клиент — можно написать через пару дней`);
   res.status(200).json({ ok: true });
 };

@@ -97,6 +97,8 @@ async function login({ password, code }, ip) {
     if (!totpOk(sec, code)) { await log('login_fail', ip, { reason: 'code' }); return { status: 401, error: 'bad_code' }; }
   }
   await log('login', ip, { twofa: !!sec });
+  const TG = require('./_tg');
+  await TG.notify(`🔐 <b>Вход в админку</b>\nIP ${TG.esc(ip)}${sec ? ' · с кодом 2FA' : ' · без 2FA'}\nЕсли это не вы — смените ADMIN_PASSWORD и нажмите «Выйти на всех устройствах»`);
   return { status: 200, ok: true, session: sign(), twofa: !!sec };
 }
 
@@ -244,7 +246,7 @@ async function deleteKeys(keys) {
 async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code }, ip) {
   if (!(await check(session))) return { status: 401, error: 'session' };
   const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code });
-  if (res.status === 200 && !['client', 'totp_setup', 'totp_test'].includes(op)) {
+  if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test'].includes(op)) {
     await log(op, ip, { key: KEY_RE.test(String(key || '')) ? key : undefined, keys: Array.isArray(keys) ? keys.slice(0, 50) : undefined,
       email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' ? Number(days) : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
       deleted: res.deleted });
@@ -268,6 +270,8 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
     try { svg = await require('qrcode').toString(uri, { type: 'svg', margin: 1, color: { dark: '#0b0b0d', light: '#ffffff' } }); } catch (e) { svg = ''; }
     return { status: 200, ok: true, secret: sec, uri, svg };
   }
+  if (op === 'tg_connect') return require('./_tg').connect();
+  if (op === 'tg_test') return require('./_tg').test();
   if (op === 'totp_test') {
     const sec = String(setupSecret || '').toUpperCase();
     return /^[A-Z2-7]{16,64}$/.test(sec) && totpOk(sec, code) ? { status: 200, ok: true } : { status: 400, error: 'bad_code' };

@@ -60,6 +60,8 @@ async function startTrial({ email, machineHash, lang }, ip) {
   const { error: e3 } = await supabase.from('licenses').insert({ license_key: key, email: addr, plan: 'trial', tier: 'pro', status: 'active', trial_until: until, machine_hash: mh });
   if (e3) return { status: 500, error: 'db_error', detail: String(e3.message || '').slice(0, 140) };
   try { await sendKeyEmail({ email: addr, key, lang, kind: 'trial', until }); } catch (e) { /* ключ всё равно вернём в программу */ }
+  const TG = require('./_tg');
+  await TG.notify(`🆕 <b>Пробный период</b> · 14 дней\n${TG.esc(addr)} · ${TG.lang(lang)}\nдо ${new Date(until).toLocaleDateString('ru-RU')}`);
   return { status: 200, ok: true, key, trialUntil: until };
 }
 
