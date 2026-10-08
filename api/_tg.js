@@ -45,25 +45,52 @@ async function notify(text) {
   } catch (e) { console.error('[tg]', e && e.message); return false; }
 }
 
-// «Подключить Telegram»: берём последний личный чат, который написал боту, сохраняем его и шлём проверочное сообщение.
+// Секрет, который Telegram присылает в заголовке каждого запроса к /api/tg-webhook: чужие запросы отбрасываем.
+const webhookSecret = () => require('crypto').createHash('sha256').update('loya-tg-webhook:' + token()).digest('hex').slice(0, 48);
+const SITE = () => process.env.PUBLIC_URL || 'https://loya-loyalty.com';
+
+// Приём сообщений от людей: Telegram сам присылает их на /api/tg-webhook (см. _x_tg_webhook.js).
+async function setWebhook() {
+  await call('setWebhook', { url: `${SITE()}/api/tg-webhook`, secret_token: webhookSecret(), allowed_updates: ['message'], drop_pending_updates: false });
+  try {
+    await call('setMyCommands', { commands: [{ command: 'start', description: 'Написать в поддержку Loya' }] });
+    await call('setMyDescription', { description: 'Поддержка Loya — программы лояльности для малого бизнеса. Напишите вопрос, и мы ответим здесь.\n\nLoya support — ask your question and we will reply here.' });
+  } catch (e) { /* не важно */ }
+}
+
+// «Подключить Telegram»: берём последний личный чат, который написал боту, сохраняем его, шлём проверочное сообщение
+// и включаем приём сообщений от людей (webhook). Пока webhook включён, getUpdates не работает — на время выключаем.
 async function connect() {
   if (!token()) return { status: 400, error: 'tg_no_token' };
   let updates;
-  try { updates = await call('getUpdates', { limit: 100, allowed_updates: ['message'] }); }
-  catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
-  const chats = (updates || []).map((u) => u.message && u.message.chat).filter((c) => c && c.type === 'private');
-  const chat = chats[chats.length - 1];
-  if (!chat) return { status: 404, error: 'tg_no_chat' };
-  const name = [chat.first_name, chat.last_name].filter(Boolean).join(' ') + (chat.username ? ` (@${chat.username})` : '');
-  let saved = false;
   try {
-    const { error } = await supabase.from('admin_settings').upsert({ key: 'tg_chat', value: String(chat.id) });
-    saved = !error;
-  } catch (e) { saved = false; }
-  chatCache = { at: 0, id: '' };
-  try { await send(chat.id, '✅ <b>Loya подключена.</b> Сюда будут приходить пробные периоды, оплаты, отмены и заявки с сайта.'); }
-  catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
-  return { status: 200, ok: true, name, chat: String(chat.id), saved };
+    const info = await call('getWebhookInfo', {});
+    if (info && info.url) await call('deleteWebhook', { drop_pending_updates: false });
+    updates = await call('getUpdates', { limit: 100, allowed_updates: ['message'] });
+  } catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
+  const chats = (updates || []).map((u) => u.message && u.message.chat).filter((c) => c && c.type === 'private');
+  let chat = chats[chats.length - 1];
+  let saved = false;
+  if (chat) {
+    try {
+      const { error } = await supabase.from('admin_settings').upsert({ key: 'tg_chat', value: String(chat.id) });
+      saved = !error;
+    } catch (e) { saved = false; }
+    chatCache = { at: 0, id: '' };
+  } else {
+    // новых сообщений нет (их уже забрал webhook) — оставляем ранее подключённый чат
+    const prev = await chatId();
+    if (!prev) { try { await setWebhook(); } catch (e) { /* ниже всё равно ошибка */ } return { status: 404, error: 'tg_no_chat' }; }
+    chat = { id: prev, first_name: 'чат ' + prev }; saved = true;
+  }
+  const name = [chat.first_name, chat.last_name].filter(Boolean).join(' ') + (chat.username ? ` (@${chat.username})` : '');
+  let hook = true;
+  try { await setWebhook(); } catch (e) { hook = false; }
+  try {
+    await send(chat.id, '✅ <b>Loya подключена.</b> Сюда будут приходить пробные периоды, оплаты, отмены и заявки с сайта.'
+      + (hook ? '\n\n💬 Сообщения, которые люди пишут боту, тоже будут приходить сюда. Чтобы ответить через бота — нажмите «Ответить» (Reply) на сообщение клиента. Или напишите человеку со своего аккаунта по кнопке под сообщением.' : ''));
+  } catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
+  return { status: 200, ok: true, name, chat: String(chat.id), saved, hook };
 }
 
 async function test() {
@@ -77,11 +104,13 @@ async function test() {
 // Для панели «Готовность к запуску».
 async function state() {
   if (!token()) return 'off';
-  return (await chatId()) ? 'ok' : 'nochat';
+  if (!(await chatId())) return 'nochat';
+  try { const info = await call('getWebhookInfo', {}); if (!info || info.url !== `${SITE()}/api/tg-webhook`) return 'nohook'; } catch (e) { /* сеть — не пугаем */ }
+  return 'ok';
 }
 
 const money = (amount, currency) => (amount == null ? '' : `${(Number(amount) / 100).toFixed(2)} ${String(currency || 'eur').toUpperCase()}`);
 const LANG_FLAG = { ru: '🇷🇺', uk: '🇺🇦', sk: '🇸🇰', en: '🇬🇧' };
 const lang = (l) => LANG_FLAG[l] ? `${LANG_FLAG[l]} ${l}` : esc(l || '');
 
-module.exports = { notify, connect, test, state, esc, money, lang };
+module.exports = { notify, connect, test, state, esc, money, lang, call, chatId, token, webhookSecret, setWebhook };
