@@ -226,7 +226,7 @@ async function cancelStripe(key, atPeriodEnd) {
 
 // Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
 // Подписку в Stripe это НЕ отменяет — для этого есть отдельное действие «Отменить подписку».
-const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins'];
+const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins', 'wallet_designs'];
 async function deleteKeys(keys) {
   const deleted = [], failed = [];
   for (const k of keys) {

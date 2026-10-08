@@ -17,7 +17,8 @@ module.exports = async (req, res) => {
     if (!card || !card.code) { res.status(400).json({ error: 'bad_request' }); return; }
     if (!(await W.checkLicense(licenseKey))) { res.status(403).json({ error: 'license_inactive' }); return; }
     const sa = W.serviceAccount();
-    const { classId, object } = W.buildObject(licenseKey, card, brand || {});
+    const design = await require('./_walletDesign').getDesignInfo(licenseKey);
+    const { classId, object } = W.buildObject(licenseKey, card, brand || {}, design);
 
     let payload, rejected = null, heroDropped = false;
     try {

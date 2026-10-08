@@ -127,7 +127,7 @@ function textWidth(str, size) {
   return w * size;
 }
 
-function buildHeroSvg({ card, brand, niche, lang }) {
+function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress }) {
   const T = TXT[lang] || TXT.ru;
   const accent = /^#[0-9a-fA-F]{6}$/.test(brand.color || '') ? brand.color : '#d4a24a';
   const name = String(brand.name || 'Loya').slice(0, 32);
@@ -153,6 +153,22 @@ function buildHeroSvg({ card, brand, niche, lang }) {
     body = stampsBlock(card.stamp_count, card.stamp_target || 10, accent, T);
   }
 
+  // Своя картинка заведения: на всю ширину баннера; если поверх показываем штампы —
+  // слева затемнение, чтобы текст и кружки читались на любой фотографии.
+  if (bgImage && /^data:image\/(png|jpeg);base64,/.test(bgImage)) {
+    const overlay = showProgress === false ? '' : `<defs><linearGradient id="shadeL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0b0e13" stop-opacity=".86"/><stop offset="55%" stop-color="#0b0e13" stop-opacity=".55"/><stop offset="100%" stop-color="#0b0e13" stop-opacity=".1"/></linearGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#shadeL)"/>
+      <text x="48" y="71" font-family="Carlito" font-weight="700" font-size="34" fill="#ffffff">${esc(name)}</text>
+      <rect x="${pillX - 54}" y="38" width="${pillW}" height="44" rx="22" fill="rgba(255,255,255,.16)"/>
+      <text x="${pillX - 54 + pillW / 2}" y="67" font-family="Carlito" font-weight="700" font-size="22" fill="#f1f1f1" text-anchor="middle">${esc(pill)}</text>
+      ${body}`;
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect width="${W}" height="${H}" fill="#181c23"/>
+  <image x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice" href="${bgImage}" xlink:href="${bgImage}"/>
+  ${overlay}
+</svg>`;
+  }
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">

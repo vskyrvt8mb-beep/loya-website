@@ -61,17 +61,21 @@ const BACK = {
   sk: { client: 'Klient', how: 'Ako používať', howText: 'Ukážte QR kód pri pokladni — pečiatky a bonusy sa pripíšu a karta sa sama aktualizuje.', by: 'Kartu vydal systém Loya — loya-loyalty.com' },
   en: { client: 'Client', how: 'How to use', howText: 'Show the QR code at the till — stamps and bonuses are added and the card updates itself.', by: 'Card issued via Loya — loya-loyalty.com' }
 };
-function buildPassJson(cfg, serial, card, brand) {
+function buildPassJson(cfg, serial, card, brand, design) {
   const lang = W.TEXT[card.lang] ? card.lang : 'en';
   const T = W.TEXT[lang], B = BACK[lang];
   const p = W.progress(card, lang, brand.currency);
   const typeName = card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
   const name = String(brand.name || 'Loya').slice(0, 60);
+  // Свой цвет фона заведения: на светлом фоне текст тёмный, иначе белый.
+  const ownBg = design && /^#[0-9a-fA-F]{6}$/.test(design.bg_color || '') ? design.bg_color : '';
+  const lum = ownBg ? (() => { const n = parseInt(ownBg.slice(1), 16); return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; })() : 0;
+  const lightBg = lum > 0.62;
   return {
     formatVersion: 1,
     passTypeIdentifier: cfg.passTypeId, teamIdentifier: cfg.teamId, serialNumber: serial,
     organizationName: name, description: `${name} — ${typeName}`, logoText: name,
-    backgroundColor: PASS_BG, foregroundColor: 'rgb(255,255,255)', labelColor: hexToRgb(brand.color),
+    backgroundColor: ownBg ? hexToRgb(ownBg) : PASS_BG, foregroundColor: lightBg ? 'rgb(20,20,20)' : 'rgb(255,255,255)', labelColor: lightBg ? 'rgb(70,70,70)' : hexToRgb(brand.color),
     webServiceURL: `${SITE_URL}/api/apple-ws`, authenticationToken: authTokenFor(serial),
     sharingProhibited: true,
     barcodes: [{ format: 'PKBarcodeFormatQR', message: String(card.code), messageEncoding: 'iso-8859-1', altText: String(card.code) }],
@@ -129,18 +133,39 @@ function signManifest(cfg, manifestBuf) {
 }
 
 // Полоса-баннер с прогрессом (тот же рисунок, что и в Google Wallet). Не получилось — карта без неё.
-function stripImages(card, brand) {
+function stripImages(card, brand, design) {
   try {
     const { renderHeroPng } = require('./_walletHero');
     const args = { card, brand, niche: brand.niche || 'other', lang: card.lang };
+    if (design && design.hero) { args.bgImage = `data:${design.hero_mime || 'image/jpeg'};base64,${design.hero}`; args.showProgress = design.hero_stamps !== false; }
     return [['strip.png', renderHeroPng(args, 375)], ['strip@2x.png', renderHeroPng(args, 750)], ['strip@3x.png', renderHeroPng(args, 1125)]];
   } catch (e) { return []; }
 }
 
+// Свой логотип заведения → картинки нужных Apple размеров (вписываем, не обрезая).
+function fitPng(dataUrl, w, h) {
+  const { Resvg } = require('@resvg/resvg-js');
+  const svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet" href="${dataUrl}" xlink:href="${dataUrl}"/></svg>`;
+  return new Resvg(svg, { fitTo: { mode: 'original' } }).render().asPng();
+}
+function logoImages(design) {
+  if (!design || !design.logo) return null;
+  try {
+    const url = `data:${design.logo_mime || 'image/png'};base64,${design.logo}`;
+    return [['logo.png', fitPng(url, 50, 50)], ['logo@2x.png', fitPng(url, 100, 100)], ['logo@3x.png', fitPng(url, 150, 150)],
+      ['icon.png', fitPng(url, 29, 29)], ['icon@2x.png', fitPng(url, 58, 58)], ['icon@3x.png', fitPng(url, 87, 87)]];
+  } catch (e) { return null; }
+}
+
+// opts.design — строка wallet_designs заведения (логотип, баннер, цвет) или null.
 function buildPkpass(cfg, serial, card, brand, opts = {}) {
-  const files = [['pass.json', Buffer.from(JSON.stringify(buildPassJson(cfg, serial, card, brand)), 'utf8')]];
-  for (const [n, b64] of Object.entries(ASSETS)) files.push([n, Buffer.from(b64, 'base64')]);
-  if (opts.strip !== false) files.push(...stripImages(card, brand));
+  const design = opts.design || null;
+  const files = [['pass.json', Buffer.from(JSON.stringify(buildPassJson(cfg, serial, card, brand, design)), 'utf8')]];
+  const own = logoImages(design);
+  const ownNames = new Set((own || []).map(([n]) => n));
+  for (const [n, b64] of Object.entries(ASSETS)) if (!ownNames.has(n)) files.push([n, Buffer.from(b64, 'base64')]);
+  if (own) files.push(...own);
+  if (opts.strip !== false) files.push(...stripImages(card, brand, design));
   const manifest = {};
   for (const [n, data] of files) manifest[n] = crypto.createHash('sha1').update(data).digest('hex');
   const manifestBuf = Buffer.from(JSON.stringify(manifest), 'utf8');
@@ -175,4 +200,9 @@ function pushUpdate(cfg, pushTokens, host) {
   });
 }
 
-module.exports = { config, configured, serialFor, validSerial, authTokenFor, downloadTokenFor, safeEq, buildPassJson, buildPkpass, pushUpdate, zip, crc32, SITE_URL };
+// Дизайн заведения для карты Apple (по ключу подписки); нет таблицы/дизайна — null.
+async function designFor(licenseKey) {
+  try { const D = require('./_walletDesign'); return await D.getDesignFull(D.bizOf(licenseKey), ''); } catch (e) { return null; }
+}
+
+module.exports = { designFor, config, configured, serialFor, validSerial, authTokenFor, downloadTokenFor, safeEq, buildPassJson, buildPkpass, pushUpdate, zip, crc32, SITE_URL };

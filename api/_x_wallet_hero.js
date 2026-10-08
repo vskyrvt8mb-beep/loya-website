@@ -22,7 +22,18 @@ module.exports = async (req, res) => {
     const niche = String(q.niche || 'other').slice(0, 30);
     const lang = ['ru', 'uk', 'sk', 'en'].includes(q.lang) ? q.lang : 'ru';
 
-    const png = renderHeroPng({ card, brand, niche, lang });
+    // Свой баннер заведения (картинка из «Дизайн карт в Wallet»): b — отпечаток бизнеса, dv — версия.
+    let bgImage = null, showProgress = true;
+    if (q.b && q.dv) {
+      try {
+        const row = await require('./_walletDesign').getDesignFull(String(q.b), String(q.dv));
+        if (row && row.hero && (await require('./_license').licenseActive(row.license_key))) {
+          bgImage = `data:${row.hero_mime || 'image/jpeg'};base64,${row.hero}`;
+          showProgress = q.hs !== '0';
+        }
+      } catch (e) { /* без картинки — стандартный баннер */ }
+    }
+    const png = renderHeroPng({ card, brand, niche, lang, bgImage, showProgress });
     // Один и тот же адрес всегда рисует одну и ту же картинку (состояние в самом URL),
     // поэтому его можно кешировать надолго и не пересчитывать на каждый запрос Google.
     res.setHeader('Content-Type', 'image/png');

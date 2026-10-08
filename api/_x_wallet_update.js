@@ -5,9 +5,11 @@ const W = require('./_wallet');
 
 async function googleUpdate(licenseKey, card, brand) {
   let sa; try { sa = W.serviceAccount(); } catch (e) { return { skipped: true }; }
-  const { object } = W.buildObject(licenseKey, card, brand || {});
+  const design = await require('./_walletDesign').getDesignInfo(licenseKey);
+  const { object } = W.buildObject(licenseKey, card, brand || {}, design);
   const token = await W.accessToken(sa);
-  const patchBody = (withHero) => ({ textModulesData: object.textModulesData, header: object.header, cardTitle: object.cardTitle, hexBackgroundColor: object.hexBackgroundColor, ...(withHero ? { heroImage: object.heroImage } : {}) });
+  // Логотип и баннер тоже обновляем — так новый дизайн заведения доходит и до уже сохранённых карт.
+  const patchBody = (withImages) => ({ textModulesData: object.textModulesData, header: object.header, cardTitle: object.cardTitle, hexBackgroundColor: object.hexBackgroundColor, ...(withImages ? { heroImage: object.heroImage, logo: object.logo } : {}) });
   const path = `genericObject/${encodeURIComponent(object.id)}`;
   const call = async (b) => fetch(`https://walletobjects.googleapis.com/walletobjects/v1/${path}`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
   let r = await call(patchBody(true));

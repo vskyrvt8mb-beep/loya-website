@@ -4,9 +4,11 @@
 const h_link = require('./_x_wallet_link');
 const h_update = require('./_x_wallet_update');
 const h_hero = require('./_x_wallet_hero');
-const ACTIONS = { 'link': h_link, 'update': h_update, 'hero': h_hero };
+const D = require('./_walletDesign');
+// design — свой дизайн карт (логотип, баннер, цвет), asset — эти картинки для Google Wallet.
+const ACTIONS = { 'link': h_link, 'update': h_update, 'hero': h_hero, 'design': D.handleDesign, 'asset': D.handleAsset };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }
-  return h(req, res);
+  return Promise.resolve(h(req, res)).catch(() => { if (!res.headersSent) res.status(500).json({ error: 'server_error' }); });
 };

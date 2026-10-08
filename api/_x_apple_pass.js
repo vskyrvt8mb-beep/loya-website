@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     const { data: row } = await supabase.from('apple_passes').select('*').eq('serial', serial).maybeSingle();
     if (!row) { text(res, 404, msg(req, 'nf')); return; }
     if (!(await licenseActive(row.license_key))) { text(res, 403, msg(req, 'inactive')); return; }
-    const buf = A.buildPkpass(A.config(), serial, row.card || {}, row.brand || {});
+    const buf = A.buildPkpass(A.config(), serial, row.card || {}, row.brand || {}, { design: await A.designFor(row.license_key) });
     res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
     res.setHeader('Content-Disposition', 'attachment; filename="loyalty-card.pkpass"');
     res.setHeader('Cache-Control', 'no-store');

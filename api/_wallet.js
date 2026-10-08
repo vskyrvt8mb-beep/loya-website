@@ -62,7 +62,7 @@ const SITE_URL = process.env.PUBLIC_URL || 'https://loya-loyalty.com';
 // и для текущего состояния карты клиента (сколько штампов уже есть, сколько накоплено).
 // Картинку рисует /api/wallet-hero.png — она пересоздаётся заново при каждом изменении
 // прогресса, потому что состояние закодировано прямо в адресе ссылки.
-function heroImageUrl(card, brand, lang) {
+function heroImageUrl(card, brand, lang, design) {
   const q = new URLSearchParams({
     type: card.type, name: clean(brand.name || 'Loya', 60), color: brand.color || '', niche: brand.niche || 'other',
     currency: brand.currency || 'EUR', lang: ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'ru',
@@ -71,6 +71,8 @@ function heroImageUrl(card, brand, lang) {
   if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
   else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); }
   else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
+  // Свой баннер заведения: картинка берётся из wallet_designs по «отпечатку» бизнеса и версии дизайна.
+  if (design && design.hasHero) { q.set('b', design.biz); q.set('dv', String(design.ver)); if (!design.heroStamps) q.set('hs', '0'); }
   q.set('action', 'hero');
   return `${SITE_URL}/api/wallet?${q.toString()}`;
 }
@@ -88,13 +90,16 @@ function progress(card, lang, currency) {
   return { header: W.hProgress, body: `${Number(card.stamp_count) || 0} / ${Number(card.stamp_target) || 0}` };
 }
 
-function buildObject(licenseKey, card, brand) {
+// design — из _walletDesign.getDesignInfo(): свой логотип, баннер и цвет фона заведения (если есть).
+function buildObject(licenseKey, card, brand, design) {
   const lang = TEXT[card.lang] ? card.lang : 'en';
   const W = TEXT[lang];
   const { classId, objectId } = ids(licenseKey, card.code);
   const color = /^#[0-9a-fA-F]{6}$/.test(brand.color || '') ? brand.color : '#b8862d';
   // Сама карта — тёмная графитовая, как в программе; фирменный цвет — в акцентах баннера.
-  const passBg = '#20252d';
+  const passBg = design && /^#[0-9a-fA-F]{6}$/.test(design.bg || '') ? design.bg : '#20252d';
+  const D = require('./_walletDesign');
+  const logoUri = design && design.hasLogo ? D.assetUrl(design, 'logo') : `${SITE_URL}/logo.png`;
   const p = progress(card, lang, brand.currency);
   const typeName = card.type === 'discount' ? W.discount : card.type === 'spend' ? W.spend : W.stamp;
   return {
@@ -104,8 +109,8 @@ function buildObject(licenseKey, card, brand) {
       classId,
       state: 'ACTIVE',
       hexBackgroundColor: passBg,
-      logo: { sourceUri: { uri: `${SITE_URL}/logo.png` }, contentDescription: { defaultValue: { language: lang, value: 'Loya' } } },
-      heroImage: { sourceUri: { uri: heroImageUrl(card, brand, lang) }, contentDescription: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } } },
+      logo: { sourceUri: { uri: logoUri }, contentDescription: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } } },
+      heroImage: { sourceUri: { uri: heroImageUrl(card, brand, lang, design) }, contentDescription: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } } },
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },
       header: { defaultValue: { language: lang, value: clean(card.client_name || typeName, 60) } },

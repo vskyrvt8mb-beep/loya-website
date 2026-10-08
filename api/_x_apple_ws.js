@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
       const ims = req.headers && req.headers['if-modified-since'];
       if (ims && Math.floor(updated.getTime() / 1000) <= Math.floor(new Date(ims).getTime() / 1000)) { res.status(304).end(); return; }
       if (!(await licenseActive(row.license_key))) { res.status(304).end(); return; }   // подписка неактивна — карту не обновляем
-      const buf = A.buildPkpass(cfg, serial, row.card || {}, row.brand || {});
+      const buf = A.buildPkpass(cfg, serial, row.card || {}, row.brand || {}, { design: await A.designFor(row.license_key) });
       res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
       res.setHeader('Last-Modified', updated.toUTCString());
       res.status(200).send(buf); return;

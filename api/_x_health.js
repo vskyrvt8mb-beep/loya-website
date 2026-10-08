@@ -2,7 +2,7 @@
 // только да/нет. Нужна кнопке «Проверить связь с сервером» в программе (раздел «Подписка»).
 const { supabase } = require('./_mail');
 
-const SITE_VERSION = '2.8.0';
+const SITE_VERSION = '2.13.0';
 let priceCache = { at: 0, v: null };
 // Режим Stripe определяем по префиксу ключа (sk_live_… / sk_test_…), а цену проверяем запросом к Stripe:
 // частая ошибка при запуске — боевой ключ с тестовой ценой (или наоборот), оплата тогда просто не открывается.
@@ -42,7 +42,7 @@ async function collect(body) {
   // из дома и счётчика писем работать не будут — показываем, каких именно не хватает.
   out.tablesMissing = [];
   if (out.db) {
-    for (const t of ['licenses', 'mail_log', 'business_profiles', 'online_registrations', 'owner_access', 'owner_commands', 'apple_passes', 'apple_registrations', 'pos_keys', 'pos_events', 'sync_devices', 'sync_entities', 'sync_applied', 'owner_logins']) {
+    for (const t of ['licenses', 'mail_log', 'business_profiles', 'online_registrations', 'owner_access', 'owner_commands', 'apple_passes', 'apple_registrations', 'pos_keys', 'pos_events', 'sync_devices', 'sync_entities', 'sync_applied', 'owner_logins', 'wallet_designs']) {
       try { const { error } = await supabase.from(t).select('*').limit(1); if (error) out.tablesMissing.push(t); } catch (e) { out.tablesMissing.push(t); }
     }
     // Новые колонки для админки (бесплатный доступ, блокировка, «последний вход»).
