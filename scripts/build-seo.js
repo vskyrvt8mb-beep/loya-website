@@ -318,3 +318,80 @@ for (const p of ['privacy.html', 'terms.html']) entries.push(`  <url>\n    <loc>
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join('\n')}\n</urlset>\n`);
 console.log('written sitemap.xml');
+
+// ---------- лёгкие файлы: словарь только своего языка и сжатый CSS ----------
+const crypto = require('crypto');
+fs.mkdirSync(path.join(ROOT, 'i18n'), { recursive: true });
+for (const lang of LANGS) {
+  fs.writeFileSync(path.join(ROOT, 'i18n', `${lang}.js`),
+    `// Сгенерировано scripts/build-seo.js из i18n.js — не править руками.\nwindow.SITE_I18N=${JSON.stringify({ [lang]: T[lang] })};\n`);
+}
+const cssSrc = fs.readFileSync(path.join(ROOT, 'style.css'), 'utf8');
+const cssMin = cssSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{};:,>])\s*/g, '$1').replace(/;}/g, '}').trim();
+fs.writeFileSync(path.join(ROOT, 'style.min.css'), cssMin + '\n');
+const ver = crypto.createHash('sha1').update(cssMin).digest('hex').slice(0, 8);
+const jsVer = crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'site.js'))).update(fs.readFileSync(path.join(ROOT, 'i18n.js'))).digest('hex').slice(0, 8);
+const assets = (html, lang) => html
+  .replace(/href="\/style(?:\.min)?\.css(?:\?v=[a-f0-9]+)?"/g, `href="/style.min.css?v=${ver}"`)
+  .replace(/src="\/i18n(?:\/[a-z]{2})?\.js(?:\?v=[a-f0-9]+)?"/g, lang ? `src="/i18n/${lang}.js?v=${jsVer}"` : `src="/i18n.js?v=${jsVer}"`)
+  .replace(/src="\/site\.js(?:\?v=[a-f0-9]+)?"/g, `src="/site.js?v=${jsVer}"`);
+for (const rel of pages) {
+  const f = path.join(ROOT, rel), lang = (rel.match(/^(ru|uk|sk)\//) || [, 'en'])[1];
+  fs.writeFileSync(f, assets(fs.readFileSync(f, 'utf8'), lang));
+}
+console.log('written i18n/*.js, style.min.css', (cssSrc.length / 1024).toFixed(0) + 'KB →', (cssMin.length / 1024).toFixed(0) + 'KB');
+
+// ---------- внутренние страницы: та же шапка и подвал, что на главной ----------
+const enHome = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const slugRe = Object.values(NICHES).map((n) => n.slug).join('|');
+const relink = (s) => s
+  .replace(/href="#([\w-]+)"/g, 'href="/#$1" data-lp="#$1"')
+  .replace(new RegExp(`href="/(${slugRe})/"`, 'g'), 'href="/$1/" data-lp="$1/"')
+  .replace(/href="\/"/g, 'href="/" data-lp=""')
+  .replace(/\?lang=en"/g, '"').replace(/ aria-current="(?:true|page)"/g, '').replace(/ selected>/g, '>');
+const header = relink(enHome.slice(enHome.indexOf('<header class="nav">'), enHome.indexOf('</header>') + 9)).replace('<header class="nav">', '<header class="nav scrolled">');
+const footerRaw = enHome.slice(enHome.indexOf('<footer>'), enHome.indexOf('</footer>') + 9);
+const fab = enHome.slice(enHome.indexOf('<div class="msg-fab"'), enHome.indexOf('<div class="sticky-cta">'));
+const footer = relink(footerRaw.replace(/<span class="foot-langs">[\s\S]*?<\/span><span>Windows/, '<span>Windows')) + '\n' + fab;
+const HB = '<!--SITE-HEADER-->', HE = '<!--/SITE-HEADER-->', FB = '<!--SITE-FOOTER-->', FE = '<!--/SITE-FOOTER-->';
+function inject(file) {
+  const f = path.join(ROOT, file);
+  let s = fs.readFileSync(f, 'utf8');
+  if (s.includes(HB)) s = s.slice(0, s.indexOf(HB)) + HB + '\n' + header + '\n' + HE + s.slice(s.indexOf(HE) + HE.length);
+  else s = s.replace(/<header class="nav scrolled">[\s\S]*?<\/header>/, HB + '\n' + header + '\n' + HE);
+  if (s.includes(FB)) s = s.slice(0, s.indexOf(FB)) + FB + '\n' + footer + FE + s.slice(s.indexOf(FE) + FE.length);
+  else s = s.replace(/<script src="\/i18n\.js[^"]*"><\/script>/, (m) => FB + '\n' + footer + FE + '\n' + m);
+  fs.writeFileSync(f, assets(s));
+}
+
+// ---------- страница 404 ----------
+const headCommon = enHome.slice(enHome.indexOf('<link rel="icon"'), enHome.indexOf('<link rel="preload" as="image"'));
+fs.writeFileSync(path.join(ROOT, '404.html'), `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loya — 404</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07080b">
+${headCommon.trim()}
+</head>
+<body class="page" data-page="404">
+${HB}
+${HE}
+<main id="main" class="nf">
+  <div class="container center">
+    <div class="nf-code" aria-hidden="true">404</div>
+    <h1 class="h2" data-i18n="nfTitle">${esc(T.en.nfTitle)}</h1>
+    <p class="lead" data-i18n="nfSub">${esc(T.en.nfSub)}</p>
+    <p class="nf-cta"><a href="/" data-lp="" class="btn btn-primary"><span data-i18n="nfHome">${esc(T.en.nfHome)}</span> <span class="arr" aria-hidden="true">→</span></a></p>
+${forTiles('en').replace(/href="\/([a-z-]+)\/"/g, 'href="/$1/" data-lp="$1/"').replace(/ class="for-tile reveal"/g, ' class="for-tile"')}
+  </div>
+</main>
+<script src="/i18n.js"></script>
+<script src="/site.js"></script>
+</body>
+</html>
+`);
+for (const file of ['pricing.html', 'success.html', 'privacy.html', 'terms.html', '404.html']) inject(file);
+console.log('written 404.html; header/footer → pricing, success, privacy, terms, 404');

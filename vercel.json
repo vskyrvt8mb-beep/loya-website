@@ -139,6 +139,10 @@
     {
       "source": "/api/fx",
       "destination": "/api/core?action=fx"
+    },
+    {
+      "source": "/api/send-guide",
+      "destination": "/api/core?action=send-guide"
     }
   ],
   "functions": {
