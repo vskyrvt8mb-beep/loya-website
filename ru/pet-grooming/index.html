@@ -40,7 +40,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/manrope-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.min.css?v=b7f6d77e">
+<link rel="stylesheet" href="/style.min.css?v=b0c19ae8">
 </head>
 <body data-page="niche" data-page-lang="ru" data-page-sub="pet-grooming">
 <a class="skip-link" href="#main" data-i18n="skipToContent">Перейти к содержанию</a>
@@ -63,7 +63,14 @@
         <option value="ru" selected>RU</option><option value="uk">UK</option><option value="sk">SK</option><option value="en">EN</option>
       </select>
       <a href="/owner" class="btn btn-ghost btn-sm nav-login" title="" data-i18n-aria="navLoginHint" aria-label="Войти в кабинет владельца"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><span data-i18n="navLogin">Войти</span></a>
-      <a href="/ru/#pricing" class="btn btn-primary btn-sm" data-i18n="navCta">Попробовать бесплатно</a>
+      <div class="dl-drop">
+        <button type="button" class="btn btn-primary btn-sm dl-drop-btn" aria-expanded="false" aria-haspopup="true" aria-controls="dl-drop-menu" data-i18n-aria="navDl" aria-label="Скачать"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span data-i18n="navDl">Скачать</span><svg class="dd-chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="dl-drop-menu" id="dl-drop-menu">
+          <a href="/download" data-download data-os="win"><span class="dd-ic"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#00a4ef" d="M2 4.5l8-1.1V11H2zM11 3.3L22 2v9h-11zM2 12h8v7.6l-8-1.1zM11 12h11v10l-11-1.5z"/></svg></span><span><b>Windows</b><small data-i18n="ddWin">Установщик .exe · Windows 10/11</small></span></a>
+          <a href="/download-android" data-os="android"><span class="dd-ic"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#3ddc84" d="M17.6 9.5a5.6 5.6 0 0 0-11.2 0zM8.4 7.2a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zm7.2 0a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zM6.4 10.3v7.2a1 1 0 0 0 1 1h.9v2.3a1.1 1.1 0 0 0 2.2 0v-2.3h3v2.3a1.1 1.1 0 0 0 2.2 0v-2.3h.9a1 1 0 0 0 1-1v-7.2zM4.1 10.3a1.1 1.1 0 0 0-1.1 1.1v4.5a1.1 1.1 0 0 0 2.2 0v-4.5a1.1 1.1 0 0 0-1.1-1.1zm15.8 0a1.1 1.1 0 0 0-1.1 1.1v4.5a1.1 1.1 0 0 0 2.2 0v-4.5a1.1 1.1 0 0 0-1.1-1.1z"/></svg></span><span><b>Android</b><small data-i18n="ddAnd">Файл .apk · планшет и телефон</small></span><em class="dd-rec" data-i18n="ddRec">для вашего устройства</em></a>
+          <a href="https://apps.microsoft.com/detail/9NDD15Q4KTPQ?hl=ru-ru" target="_blank" rel="noopener" data-os="store"><span class="dd-ic"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#f25022" d="M2 2h9.5v9.5H2z"/><path fill="#7fba00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00a4ef" d="M2 12.5h9.5V22H2z"/><path fill="#ffb900" d="M12.5 12.5H22V22h-9.5z"/></svg></span><span><b>Microsoft Store</b><small data-i18n="ddStore">Автообновления через магазин</small></span></a>
+        </div>
+      </div>
       <button class="nav-burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">☰</button>
     </div>
   </div>
@@ -186,7 +193,7 @@
 </div>
 <div class="sticky-cta"><a href="/ru/#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Попробовать 14 дней бесплатно</span></a></div>
 
-<script src="/i18n/ru.js?v=1fd2feb0"></script>
-<script src="/site.js?v=1fd2feb0"></script>
+<script src="/i18n/ru.js?v=3ec2ff54"></script>
+<script src="/site.js?v=3ec2ff54"></script>
 </body>
 </html>

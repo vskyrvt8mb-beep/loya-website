@@ -66,8 +66,9 @@
   }));
 
   // меню «Для кого»: открывается по нажатию (и наведению на компьютере), закрывается по Esc и клику мимо
-  document.querySelectorAll('.nav-drop').forEach(drop => {
-    const btn = drop.querySelector('.nav-drop-btn');
+  // и кнопка «Скачать» в шапке (выбор Windows / Android / Microsoft Store) — так же
+  document.querySelectorAll('.nav-drop, .dl-drop').forEach(drop => {
+    const btn = drop.querySelector('.nav-drop-btn, .dl-drop-btn');
     const set = (open) => { drop.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); };
     btn.addEventListener('click', (e) => { e.stopPropagation(); set(!drop.classList.contains('open')); });
     document.addEventListener('click', (e) => { if (!drop.contains(e.target)) set(false); });
@@ -331,6 +332,8 @@
 
   // «Скачать установщик» — /download сам ведёт на последний .exe (api/_x_download.js)
   document.querySelectorAll('[data-download]').forEach(a => { a.href = '/download'; });
+  // на Android-устройстве первым предлагаем .apk
+  if (/Android/i.test(navigator.userAgent || '')) document.documentElement.classList.add('os-android');
 
   // «Отправить ссылку на почту» — письмо самому себе со ссылкой на страницу скачивания
   const dlMail = document.getElementById('dl-mail');
