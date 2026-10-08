@@ -64,6 +64,13 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const TG = require('./_tg');
+  const testTag = event.livemode ? '' : ' · 🧪 тест';
+  const tier = (t) => t === 'pro' ? 'Pro' : 'Starter';
+  const emailBySub = async (subId) => {
+    try { const { data } = await supabase.from('licenses').select('email, tier').eq('stripe_subscription_id', subId).limit(1); return (data && data[0]) || {}; }
+    catch (e) { return {}; }
+  };
   try {
     switch (event.type) {
       // Успешная первая оплата — создаём новый лицензионный ключ.
@@ -75,7 +82,7 @@ module.exports = async (req, res) => {
         const { data: existing } = await supabase.from('licenses').select('license_key').eq('stripe_subscription_id', session.subscription).limit(1);
         if (existing && existing.length) break;
         const email = (session.customer_details && session.customer_details.email) || session.customer_email || '';
-        const tier = (session.metadata && session.metadata.tier === 'pro') ? 'pro' : 'starter';
+        const tier_ = (session.metadata && session.metadata.tier === 'pro') ? 'pro' : 'starter';
         const lang = (session.metadata && session.metadata.lang) || (session.locale && String(session.locale).slice(0, 2)) || 'en';
         // Был пробный ключ на этот email — продолжаем с ним: программа уже настроена, ключ менять не нужно.
         if (email) {
@@ -83,15 +90,16 @@ module.exports = async (req, res) => {
           const { data: trials } = await supabase.from('licenses').select('license_key').eq('plan', 'trial').ilike('email', pattern).limit(1);
           if (trials && trials[0]) {
             const key = trials[0].license_key;
-            let { error: e1 } = await supabase.from('licenses').update({ plan: 'stripe', tier, status: 'active', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, livemode: !!event.livemode, updated_at: new Date().toISOString() }).eq('license_key', key);
-            if (e1 && /livemode/i.test(String(e1.message))) ({ error: e1 } = await supabase.from('licenses').update({ plan: 'stripe', tier, status: 'active', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, updated_at: new Date().toISOString() }).eq('license_key', key));
+            let { error: e1 } = await supabase.from('licenses').update({ plan: 'stripe', tier: tier_, status: 'active', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, livemode: !!event.livemode, updated_at: new Date().toISOString() }).eq('license_key', key);
+            if (e1 && /livemode/i.test(String(e1.message))) ({ error: e1 } = await supabase.from('licenses').update({ plan: 'stripe', tier: tier_, status: 'active', stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, updated_at: new Date().toISOString() }).eq('license_key', key));
             if (e1) { console.error('[webhook] Не удалось перевести пробный ключ:', e1.message); throw new Error('db_update_failed'); }
             try { await require('./_billing').sendKeyEmail({ email, key, lang, kind: 'upgraded' }); } catch (e) { console.error('[webhook] Письмо не отправилось:', e.message); }
+            await TG.notify(`💰 <b>Пробный → подписка</b>\n${tier(tier_)} · ${TG.money(session.amount_total, session.currency)}\n${TG.esc(email)}${testTag}`);
             break;
           }
         }
         const licenseKey = generateLicenseKey();
-        const row = { license_key: licenseKey, email, tier, stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, status: 'active' };
+        const row = { license_key: licenseKey, email, tier: tier_, stripe_customer_id: session.customer, stripe_subscription_id: session.subscription, status: 'active' };
         // livemode: ключ создан по настоящей оплате (true) или по тестовой (false) — в админке тестовые видно и можно удалить.
         let { error } = await supabase.from('licenses').insert({ ...row, livemode: !!event.livemode });
         if (error && /livemode/i.test(String(error.message))) ({ error } = await supabase.from('licenses').insert(row));   // колонку ещё не добавили в базе
@@ -105,6 +113,7 @@ module.exports = async (req, res) => {
           try { await require('./_billing').sendKeyEmail({ email, key: licenseKey, lang }); }
           catch (e) { console.error('[webhook] Письмо с ключом не отправилось:', e.message); }
         }
+        await TG.notify(`💰 <b>Новая подписка</b>\n${tier(tier_)} · ${TG.money(session.amount_total, session.currency)}\n${TG.esc(email || '—')}${testTag}`);
         break;
       }
 
@@ -121,6 +130,16 @@ module.exports = async (req, res) => {
         if (status) upd.status = status;
         if (newTier) upd.tier = newTier;
         if (status || newTier) await supabase.from('licenses').update(upd).eq('stripe_subscription_id', sub.id);
+        const prev = (event.data && event.data.previous_attributes) || {};
+        if (sub.cancel_at_period_end && prev.cancel_at_period_end === false) {
+          const r = await emailBySub(sub.id);
+          const until = sub.current_period_end || (item && item.current_period_end);
+          await TG.notify(`⏳ <b>Клиент отменил подписку</b>\n${TG.esc(r.email || '—')}${until ? `\nработает до ${new Date(until * 1000).toLocaleDateString('ru-RU')}` : ''}${testTag}`);
+        }
+        if (newTier && prev.items) {
+          const r = await emailBySub(sub.id);
+          await TG.notify(`🔀 <b>Смена тарифа</b> → ${tier(newTier)}\n${TG.esc(r.email || '—')}${testTag}`);
+        }
         break;
       }
 
@@ -133,6 +152,11 @@ module.exports = async (req, res) => {
           await supabase.from('licenses')
             .update({ status: 'active', updated_at: new Date().toISOString() })
             .eq('stripe_subscription_id', subId);
+          // первая оплата уже пришла как «Новая подписка» — здесь только продления
+          if (invoice.billing_reason === 'subscription_cycle' && invoice.amount_paid > 0) {
+            const r = await emailBySub(subId);
+            await TG.notify(`🔁 <b>Продление</b> · ${TG.money(invoice.amount_paid, invoice.currency)}\n${TG.esc(invoice.customer_email || r.email || '—')}${testTag}`);
+          }
         }
         break;
       }
@@ -148,6 +172,8 @@ module.exports = async (req, res) => {
           await supabase.from('licenses')
             .update({ status: 'past_due', updated_at: new Date().toISOString() })
             .eq('stripe_subscription_id', subId);
+          const r = await emailBySub(subId);
+          await TG.notify(`⚠️ <b>Не прошла оплата</b> · ${TG.money(invoice.amount_due, invoice.currency)}\n${TG.esc(invoice.customer_email || r.email || '—')}\nStripe повторит попытку сам${testTag}`);
         }
         break;
       }
@@ -159,6 +185,8 @@ module.exports = async (req, res) => {
         await supabase.from('licenses')
           .update({ status: 'canceled', updated_at: new Date().toISOString() })
           .eq('stripe_subscription_id', subscription.id);
+        const r = await emailBySub(subscription.id);
+        await TG.notify(`❌ <b>Подписка закончилась</b>\n${tier(r.tier)} · ${TG.esc(r.email || '—')}${testTag}`);
         break;
       }
 

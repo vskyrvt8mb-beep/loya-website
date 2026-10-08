@@ -42,6 +42,8 @@ async function readiness() {
   else if (/gmail\.com$/i.test(host)) add('mail', 'warn', 'gmail');
   else if (!process.env.MAIL_FROM) add('mail', 'warn', 'nofrom');
   else add('mail', 'ok', 'ok');
+  const tg = await require('./_tg').state();
+  add('telegram', tg === 'ok' ? 'ok' : tg === 'nochat' ? 'warn' : 'info', tg);
   add('wallet', out.wallet && out.walletKeyValid ? 'info' : 'bad', out.wallet && out.walletKeyValid ? 'mode' : 'off');
   add('apple', out.apple ? 'ok' : 'info');
   // Самопроверка функции синхронизации Pro (sync_apply из schema.sql): пробная запись в служебную «организацию».
