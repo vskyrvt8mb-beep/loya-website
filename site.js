@@ -36,7 +36,8 @@
     }
   }
   if (!lang) lang = detectLang();
-  const t = (k) => (T[lang] && T[lang][k] !== undefined) ? T[lang][k] : (T.en[k] || k);
+  // на языковых страницах загружен только словарь этого языка — поэтому запасной английский может отсутствовать
+  const t = (k) => (T[lang] && T[lang][k] !== undefined) ? T[lang][k] : ((T.en && T.en[k]) || k);
   window.loyaT = t;
   window.loyaLang = () => lang;
 
@@ -47,6 +48,7 @@
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     if (document.body.dataset.page === 'privacy') document.title = `Loya — ${t('footPrivacy')}`;
     if (document.body.dataset.page === 'terms') document.title = `Loya — ${t('footTerms')}`;
+    if (document.body.dataset.page === '404') document.title = `Loya — ${t('nfTitle')}`;
     if (document.body.dataset.page === 'pricing') document.title = `Loya — ${t('pTitle')} · €9.99`;
     if (document.body.dataset.page === 'success') document.title = `Loya — ${t('sTitle').replace(/\s*🎉/, '')}`;
     if (document.body.dataset.page === 'home') {
@@ -90,7 +92,7 @@
   const burger = document.querySelector('.nav-burger');
   const links = document.querySelector('.nav-links');
   if (burger && links) {
-    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); };
+    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); document.documentElement.classList.toggle('menu-lock', open); };
     burger.addEventListener('click', () => setOpen(!links.classList.contains('open')));
     links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); burger.focus(); } });
@@ -333,6 +335,61 @@
   // «Отправить ссылку на почту» — письмо самому себе со ссылкой на страницу скачивания
   const dlMail = document.getElementById('dl-mail');
   if (dlMail) dlMail.href = 'mailto:?subject=' + encodeURIComponent(t('dlMailSubject')) + '&body=' + encodeURIComponent(location.origin + location.pathname + '#download');
+
+  // внутренние страницы (оплата, условия, 404…): ссылки шапки и подвала ведут на главную/нишу на языке посетителя
+  const homeBase = (l) => (l === 'en' ? '/' : '/' + l + '/');
+  const fixLp = () => document.querySelectorAll('[data-lp]').forEach(a => { a.href = homeBase(lang) + a.dataset.lp; });
+  if (!pageLang) { fixLp(); document.querySelectorAll('.lang-select').forEach(sel => sel.addEventListener('change', () => setTimeout(fixLp, 0))); }
+
+  // кнопка мессенджеров
+  const fab = document.getElementById('msg-fab');
+  if (fab) {
+    const fb = fab.querySelector('.msg-fab-btn');
+    const set = (o) => { fab.classList.toggle('open', o); fb.setAttribute('aria-expanded', String(o)); };
+    fb.addEventListener('click', (e) => { e.stopPropagation(); set(!fab.classList.contains('open')); });
+    document.addEventListener('click', (e) => { if (!fab.contains(e.target)) set(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+  }
+
+  // демо-карта «как видит клиент»
+  const demo = document.getElementById('demo');
+  if (demo) {
+    const TOTAL = 10; let stamps = 6, lastFocus = null;
+    const box = document.getElementById('demo-stamps'), left = document.getElementById('demo-left'), toast = document.getElementById('demo-toast');
+    const draw = (pop) => {
+      box.innerHTML = Array.from({ length: TOTAL }, (_, i) => '<i class="' + (i < stamps ? 'on' : '') + (i === TOTAL - 1 ? ' gift' : '') + (pop && i === stamps - 1 ? ' pop' : '') + '">' + (i === TOTAL - 1 ? '🎁' : i < stamps ? '✓' : '') + '</i>').join('');
+      left.textContent = stamps >= TOTAL ? t('demoGift') : t('demoLeft').replace('{n}', TOTAL - stamps);
+    };
+    const open = () => { lastFocus = document.activeElement; stamps = 6; draw(); toast.textContent = ''; demo.hidden = false; document.documentElement.classList.add('menu-lock'); setTimeout(() => document.getElementById('demo-add').focus(), 30); };
+    const close = () => { demo.hidden = true; document.documentElement.classList.remove('menu-lock'); if (lastFocus) lastFocus.focus(); };
+    document.querySelectorAll('[data-demo-open]').forEach(b => b.addEventListener('click', open));
+    demo.querySelectorAll('[data-demo-close]').forEach(b => b.addEventListener('click', close));
+    demo.addEventListener('click', (e) => { if (e.target === demo) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !demo.hidden) close(); });
+    document.getElementById('demo-add').addEventListener('click', () => {
+      if (stamps >= TOTAL) stamps = 0;
+      stamps++; draw(true);
+      toast.textContent = stamps >= TOTAL ? t('demoGift') : '✓ ' + t('phVerdict').replace(/\d+\s*\/\s*\d+/, stamps + ' / ' + TOTAL);
+      toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+    });
+    document.getElementById('demo-reset').addEventListener('click', () => { stamps = 0; draw(); toast.textContent = ''; });
+  }
+
+  // «Пришлите инструкцию на почту»
+  const gf = document.getElementById('guide-form');
+  if (gf) gf.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = gf.querySelector('input'), btn = gf.querySelector('button'), msg = document.getElementById('guide-msg');
+    const email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = t('errEmail'); msg.className = 'guide-msg err'; input.focus(); return; }
+    btn.disabled = true; msg.textContent = '…'; msg.className = 'guide-msg';
+    try {
+      const r = await fetch('/api/send-guide', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang }) });
+      const ok = r.ok; msg.textContent = ok ? t('guideOk') : r.status === 429 ? t('errTooMany') : t('guideErr'); msg.className = 'guide-msg ' + (ok ? 'ok' : 'err');
+      if (ok) input.value = '';
+    } catch (ex) { msg.textContent = t('guideErr'); msg.className = 'guide-msg err'; }
+    btn.disabled = false;
+  });
 
   document.querySelectorAll('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
   apply();
