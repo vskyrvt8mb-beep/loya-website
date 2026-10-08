@@ -3,7 +3,7 @@
 // Ссылку узнаём на сервере (кэш 10 минут в функции и на CDN Vercel), чтобы не упираться
 // в лимит GitHub API у посетителей. Если узнать не удалось — страница последнего релиза.
 const REPO = 'vskyrvt8mb-beep/loya-website';
-const FALLBACK = `https://github.com/${REPO}/releases/latest`;
+const FALLBACK = `https://github.com/${REPO}/releases`;
 const cache = { exe: { at: 0, url: null }, apk: { at: 0, url: null } };
 
 async function latestAsset(kind) {
@@ -14,11 +14,18 @@ async function latestAsset(kind) {
   try {
     const headers = { 'User-Agent': 'loya-website', Accept: 'application/vnd.github+json' };
     if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-    const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers, signal: ctl.signal });
+    // Файлы для Windows и Android могут лежать в разных релизах (например, свежий релиз — только .apk),
+    // поэтому смотрим несколько последних опубликованных релизов и берём самый новый с нужным файлом.
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=20`, { headers, signal: ctl.signal });
     if (!r.ok) return null;
-    const rel = await r.json();
+    const list = await r.json();
     const re = kind === 'apk' ? /\.apk$/i : /\.exe$/i;
-    const asset = (rel.assets || []).find((a) => re.test(a.name) && !/blockmap/i.test(a.name));
+    let asset = null;
+    for (const rel of Array.isArray(list) ? list : []) {
+      if (rel.draft || rel.prerelease) continue;
+      asset = (rel.assets || []).find((a) => re.test(a.name) && !/blockmap/i.test(a.name));
+      if (asset) break;
+    }
     if (!asset) return null;
     cache[kind] = { at: Date.now(), url: asset.browser_download_url };
     return asset.browser_download_url;

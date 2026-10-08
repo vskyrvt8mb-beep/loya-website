@@ -974,3 +974,43 @@ main { position: relative; z-index: 0; }
 /* внутренние страницы с общей шапкой: отступ под фиксированную шапку */
 body.page main, body[data-page="privacy"] main, body[data-page="terms"] main { padding-top: 96px; }
 @media (prefers-reduced-motion: reduce) { .demo-dot, .demo-in, .dw-stamps i.pop, .dw-toast.show { animation: none; } .dw-toast.show { opacity: 1; transform: none; } }
+
+/* ===== кнопка «Скачать» в шапке: выбор Windows / Android / Microsoft Store ===== */
+.dl-drop { position: relative; }
+.dl-drop-btn { gap: 8px; }
+.dl-drop-btn .dd-chev { transition: transform .2s; opacity: .8; }
+.dl-drop.open .dl-drop-btn .dd-chev { transform: rotate(180deg); }
+.dl-drop-menu { position: absolute; right: 0; top: calc(100% + 12px); width: 330px; padding: 8px; border-radius: 20px; background: #0e1016; border: 1px solid var(--border2); box-shadow: 0 30px 70px rgba(0,0,0,.6);
+  opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .18s, transform .18s, visibility .18s; z-index: 60; display: flex; flex-direction: column; }
+.dl-drop.open .dl-drop-menu { opacity: 1; visibility: visible; transform: none; }
+.dl-drop-menu a { position: relative; display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 14px; color: var(--text); transition: background .15s; }
+.dl-drop-menu a:hover, .dl-drop-menu a:focus-visible { background: rgba(227,184,87,.1); }
+.dl-drop-menu b { display: block; font-size: 15.5px; }
+.dl-drop-menu small { display: block; font-size: 13px; color: var(--muted); font-weight: 600; }
+.dd-ic { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.05); border: 1px solid var(--border); }
+.dd-rec { display: none; position: absolute; top: 8px; right: 10px; font-style: normal; font-size: 11px; font-weight: 800; color: #1a1204; background: var(--grad); padding: 3px 8px; border-radius: 20px; }
+html.os-android .dl-drop-menu a[data-os="android"] { order: -1; }
+html.os-android .dl-drop-menu a[data-os="android"] .dd-rec { display: block; }
+html.os-android .dl-drop-menu a[data-os="android"] small { padding-right: 0; }
+
+/* строка «Скачать для: Windows · Android · Microsoft Store» под кнопками первого экрана */
+.hero-dl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: -6px 0 14px; font-size: 14px; color: var(--dim); font-weight: 600; }
+.hero-dl a { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.03); color: var(--text); font-weight: 700; transition: border-color .15s, background .15s; }
+.hero-dl a svg { width: 17px; height: 17px; }
+.hero-dl a:hover { border-color: rgba(227,184,87,.55); background: rgba(227,184,87,.08); }
+html.os-android .hero-dl a[data-os="android"] { order: -1; border-color: rgba(227,184,87,.6); background: rgba(227,184,87,.1); }
+html.os-android .hero-dl > span { order: -2; }
+
+/* страница скачивания: на Android карточка .apk первой */
+html.os-android .dl-grid .dl-card[data-os="android"] { order: -1; }
+
+@media (max-width: 640px) {
+  .nav-right .btn.dl-drop-btn { display: inline-flex; width: 44px; height: 44px; padding: 0; border-radius: 12px; }
+  .nav-right .btn.dl-drop-btn span, .nav-right .btn.dl-drop-btn .dd-chev { display: none; }
+  .nav-right .btn.dl-drop-btn svg { width: 20px; height: 20px; }
+  .dl-drop { position: static; }
+  .dl-drop-menu { position: fixed; left: 12px; right: 12px; top: 72px; width: auto; }
+  .hero-dl { margin-top: 2px; }
+  .hero-dl a { flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .dl-drop-menu { transition: none; } }
