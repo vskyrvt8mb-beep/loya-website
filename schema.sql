@@ -283,3 +283,20 @@ create table if not exists admin_settings (
   value text
 );
 alter table admin_settings enable row level security;
+
+-- 2.11: свой дизайн карт заведения в Google Wallet и Apple Wallet (логотип, баннер, цвет фона).
+-- Картинки хранятся base64 в самой строке (небольшие). biz — «отпечаток» ключа подписки.
+create table if not exists wallet_designs (
+  biz text primary key,
+  license_key text not null,
+  logo text, logo_mime text,
+  hero text, hero_mime text,
+  has_logo boolean not null default false,
+  has_hero boolean not null default false,
+  bg_color text,
+  hero_stamps boolean not null default true,
+  ver integer not null default 1,
+  updated_at timestamptz not null default now()
+);
+create index if not exists wallet_designs_license on wallet_designs(license_key);
+alter table wallet_designs enable row level security;

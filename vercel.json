@@ -133,6 +133,10 @@
       "destination": "/api/online?action=page&slug=:slug&mode=join"
     },
     {
+      "source": "/download-android",
+      "destination": "/api/core?action=download&os=android"
+    },
+    {
       "source": "/download",
       "destination": "/api/core?action=download"
     },
