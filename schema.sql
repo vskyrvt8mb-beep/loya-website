@@ -300,3 +300,15 @@ create table if not exists wallet_designs (
 );
 create index if not exists wallet_designs_license on wallet_designs(license_key);
 alter table wallet_designs enable row level security;
+
+-- 2.14: устройства, на которых введён ключ подписки (ограничение числа устройств на один ключ).
+create table if not exists license_devices (
+  license_key text not null,
+  device text not null,
+  platform text,
+  first_seen timestamptz not null default now(),
+  last_seen timestamptz not null default now(),
+  primary key (license_key, device)
+);
+create index if not exists idx_license_devices_seen on license_devices (license_key, last_seen desc);
+alter table license_devices enable row level security;
