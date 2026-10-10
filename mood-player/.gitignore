@@ -1,0 +1,7 @@
+# секреты и личные данные — никогда не коммитить
+*.p8
+config.json
+data.json
+edge-profile/
+dist/
+*.exe

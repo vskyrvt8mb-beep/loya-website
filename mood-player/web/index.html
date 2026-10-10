@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mood Player</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://js-cdn.music.apple.com/musickit/v3/musickit.js" async></script>
+</head>
+<body>
+
+<!-- 1. Первичная настройка: ключ Apple Developer -->
+<section id="setup" class="screen" hidden>
+  <h1>Настройка</h1>
+  <p class="muted">Нужен ключ MusicKit из Apple Developer. Подробно — в README, раздел «Ключ Apple».</p>
+  <label>Team ID<input id="teamId" placeholder="ABCDE12345" autocomplete="off"></label>
+  <label>Key ID<input id="keyId" placeholder="XYZ9876543" autocomplete="off"></label>
+  <label>Файл ключа AuthKey_XXXX.p8<input id="keyFile" type="file" accept=".p8"></label>
+  <button id="saveSetup" class="primary">Сохранить</button>
+  <p id="setupErr" class="err"></p>
+</section>
+
+<!-- 2. Вход в Apple Music -->
+<section id="login" class="screen" hidden>
+  <h1>Mood Player</h1>
+  <p class="muted">Войди в свой Apple ID с подпиской Apple Music. Вход запомнится.</p>
+  <button id="loginBtn" class="primary">Войти в Apple Music</button>
+  <p id="loginErr" class="err"></p>
+</section>
+
+<!-- 3. Плеер -->
+<main id="player" class="screen" hidden>
+  <div class="now">
+    <img id="art" alt="" width="96" height="96">
+    <div class="meta">
+      <div id="title" class="title">—</div>
+      <div id="artist" class="muted">Подбираю музыку…</div>
+      <div class="bar"><div id="progress"></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="loveBtn" title="Нравится — будет звучать чаще (Ctrl+Alt+Insert)">♥</button>
+    <button id="playBtn" class="big" title="Пауза / играть (Ctrl+Alt+Home)">▶</button>
+    <button id="nextBtn" title="Следующая (Ctrl+Alt+PageDown)">⏭</button>
+    <button id="banBtn" class="danger" title="Удалить навсегда (Ctrl+Alt+End)">🚫</button>
+  </div>
+  <div class="row small">
+    <button id="banArtistBtn" class="link">не ставить этого исполнителя</button>
+    <input id="volume" type="range" min="0" max="100" title="Громкость">
+  </div>
+
+  <h2>Настроение <span id="autoInfo" class="muted"></span></h2>
+  <div id="moods" class="chips"></div>
+
+  <label class="row small">Знакомое
+    <input id="novelty" type="range" min="0" max="100"> Новое
+  </label>
+
+  <details>
+    <summary>Удалённые песни (<span id="banCount">0</span>)</summary>
+    <ul id="banList" class="list"></ul>
+  </details>
+  <details>
+    <summary>Горячие клавиши (работают в игре)</summary>
+    <ul class="list keys">
+      <li><kbd>Ctrl+Alt+End</kbd> удалить песню навсегда</li>
+      <li><kbd>Ctrl+Alt+PageDown</kbd> следующая</li>
+      <li><kbd>Ctrl+Alt+Home</kbd> пауза / играть</li>
+      <li><kbd>Ctrl+Alt+Insert</kbd> нравится</li>
+      <li><kbd>Ctrl+Alt+PageUp</kbd> сменить настроение</li>
+    </ul>
+  </details>
+  <p id="status" class="muted small"></p>
+</main>
+
+<script src="moods.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
