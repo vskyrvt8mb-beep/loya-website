@@ -41,14 +41,23 @@ module.exports = async (req, res) => {
     const appVersion = typeof (req.body || {}).appVersion === 'string' ? req.body.appVersion.slice(0, 20) : null;
     try { await supabase.from('licenses').update({ last_seen_at: new Date().toISOString(), ...(appVersion ? { app_version: appVersion } : {}) }).eq('license_key', licenseKey.trim()); } catch (e) { /* колонок ещё нет — не страшно */ }
 
-    const state = L.licenseState(data);
+    let state = L.licenseState(data);
+    // Один ключ — ограниченное число устройств (см. _devices.js). Старые версии программы устройство не присылают.
+    const body = req.body || {};
+    const device = /^[0-9a-f]{64}$/.test(String(body.device || '')) ? String(body.device) : '';
+    let deviceLimit = 0;
+    if (state === 'active' && device) {
+      const dl = await require('./_devices').touch(licenseKey, device, body.platform, L.tierOf(data), data.plan);
+      if (dl.limited) { state = 'device_limit'; deviceLimit = dl.limit; }
+    }
     const active = state === 'active';
     const messages = {
       past_due: 'Не удалось списать оплату за подписку. Проверьте карту на сайте.',
       canceled: 'Подписка отменена.',
       banned: 'Доступ к программе заблокирован. Свяжитесь с поддержкой Loya.',
       free_expired: 'Бесплатный доступ закончился. Оформите подписку на сайте loya-loyalty.com.',
-      trial_expired: 'Пробный период закончился. Оформите подписку на сайте loya-loyalty.com.'
+      trial_expired: 'Пробный период закончился. Оформите подписку на сайте loya-loyalty.com.',
+      device_limit: 'Этот ключ уже используется на максимальном числе устройств. Напишите в поддержку Loya, чтобы освободить место.'
     };
 
     res.status(200).json({
@@ -59,7 +68,10 @@ module.exports = async (req, res) => {
       plan: data.plan || 'stripe',
       tier: active ? L.tierOf(data) : null,
       trialUntil: data.plan === 'trial' && data.trial_until ? new Date(data.trial_until).toISOString() : null,
-      serverTime: new Date().toISOString()
+      serverTime: new Date().toISOString(),
+      ...(deviceLimit ? { deviceLimit } : {}),
+      // Подписанный талон (если в Vercel задан LICENSE_SIGNING_KEY): без него программа 2.14+ не сохраняет «подписка активна».
+      ...(active && device ? (() => { const tok = require('./_licenseToken').issue({ licenseKey: licenseKey.trim(), device, row: data, tier: L.tierOf(data) }); return tok ? { token: tok } : {}; })() : {})
     });
   } catch (err) {
     // Собственная ошибка сервера — намеренно НЕ блокируем (active: true не отдаём, но

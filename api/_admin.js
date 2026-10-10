@@ -135,12 +135,13 @@ async function data({ session }) {
   const { data: rows, error } = await supabase.from('licenses').select('*').order('created_at', { ascending: false }).limit(2000);
   if (error) return { status: 500, error: 'db_error', detail: String(error.message || '').slice(0, 140) };
   const now = Date.now();
+  const devs = await require('./_devices').count();
   const list = (rows || []).map((r) => {
     const state = licenseState(r);
     return { key: r.license_key, email: r.email || '', state, status: r.status || '', plan: r.plan || 'stripe', banned: !!r.banned, note: r.note || '',
       tier: tierOf(r), trialUntil: r.trial_until || '',
       freeUntil: r.free_until ? String(r.free_until).slice(0, 10) : '', created: r.created_at || '', lastSeen: r.last_seen_at || '', version: r.app_version || '',
-      hasStripe: !!r.stripe_subscription_id, fromTrial: !!r.machine_hash,
+      hasStripe: !!r.stripe_subscription_id, fromTrial: !!r.machine_hash, devices: devs[r.license_key] || 0,
       livemode: r.livemode === true ? true : r.livemode === false ? false : null };
   });
   const recent = (x) => x.lastSeen && now - new Date(x.lastSeen).getTime() < 7 * 86400e3;
@@ -226,7 +227,7 @@ async function cancelStripe(key, atPeriodEnd) {
 
 // Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
 // Подписку в Stripe это НЕ отменяет — для этого есть отдельное действие «Отменить подписку».
-const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins', 'wallet_designs'];
+const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins', 'wallet_designs', 'license_devices'];
 async function deleteKeys(keys) {
   const deleted = [], failed = [];
   for (const k of keys) {
@@ -294,6 +295,7 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
   const k = str(key, 40);
   if (!KEY_RE.test(k)) return { status: 400, error: 'key' };
   if (op === 'client') return client(k);
+  if (op === 'reset_devices') return (await require('./_devices').reset(k)) ? { status: 200, ok: true } : { status: 500, error: 'db_error' };
   if (op === 'cancel_stripe') return cancelStripe(k, !!atPeriodEnd);
   if (op === 'resend_key') {
     const { data: rows } = await supabase.from('licenses').select('email, plan, trial_until').eq('license_key', k).limit(1);
