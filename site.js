@@ -335,6 +335,39 @@
   // на Android-устройстве первым предлагаем .apk
   if (/Android/i.test(navigator.userAgent || '')) document.documentElement.classList.add('os-android');
 
+  // Главная кнопка сама знает устройство: на Android — .apk, на Windows — установщик (14 дней бесплатно сразу после установки).
+  const heroMain = document.getElementById('hero-main');
+  const ua = navigator.userAgent || '';
+  const osKey = /Android/i.test(ua) ? 'And' : (/Windows NT/i.test(ua) && !/Windows Phone/i.test(ua)) ? 'Win' : '';
+  const paintHeroMain = () => {
+    if (!heroMain || !osKey) return;
+    heroMain.href = osKey === 'And' ? '/download-android' : '/download';
+    const sp = heroMain.querySelector('[data-i18n]'); if (sp) { sp.dataset.i18n = 'heroCta' + osKey; sp.textContent = t('heroCta' + osKey); }
+    heroMain.classList.add('hero-main-dl');
+    if (osKey === 'Win') heroMain.setAttribute('data-download', '');
+  };
+  paintHeroMain();
+
+  // Видео 36 секунд в окне (на языке страницы; файл грузится только по нажатию)
+  const vm = document.getElementById('video');
+  if (vm) {
+    const ve = document.getElementById('video-el'); let lastF = null;
+    const openV = () => {
+      lastF = document.activeElement;
+      const l = ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'en';
+      const src = '/video/loya_' + l + '.mp4';
+      if (!ve.currentSrc || ve.currentSrc.indexOf(src) < 0) { ve.poster = '/video/loya_' + l + '.jpg'; ve.innerHTML = '<source src="' + src + '" type="video/mp4">'; ve.load(); }
+      vm.hidden = false; document.documentElement.classList.add('menu-lock');
+      const p = ve.play(); if (p && p.catch) p.catch(() => {});
+      setTimeout(() => vm.querySelector('.vm-x').focus(), 30);
+    };
+    const closeV = () => { try { ve.pause(); } catch (e) { /* нет */ } vm.hidden = true; document.documentElement.classList.remove('menu-lock'); if (lastF) lastF.focus(); };
+    document.querySelectorAll('[data-video-open]').forEach(b => b.addEventListener('click', openV));
+    vm.querySelectorAll('[data-video-close]').forEach(b => b.addEventListener('click', closeV));
+    vm.addEventListener('click', (e) => { if (e.target === vm) closeV(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !vm.hidden) closeV(); });
+  }
+
   // «Отправить ссылку на почту» — письмо самому себе со ссылкой на страницу скачивания
   const dlMail = document.getElementById('dl-mail');
   if (dlMail) dlMail.href = 'mailto:?subject=' + encodeURIComponent(t('dlMailSubject')) + '&body=' + encodeURIComponent(location.origin + location.pathname + '#download');

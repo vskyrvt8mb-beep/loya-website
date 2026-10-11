@@ -56,10 +56,10 @@
         <h1 class="hero-title"><span data-i18n="heroTitle1"></span><span class="gold" data-i18n="heroTitle2"></span></h1>
         <p class="hero-sub" data-i18n="heroSub"></p>
         <div class="hero-ctas">
-          <a href="#download" class="btn btn-primary"><span data-i18n="heroCta"></span> <span class="arr" aria-hidden="true">→</span></a>
-          <a href="#how" class="btn btn-ghost">▶ <span data-i18n="heroCta2"></span></a>
+          <a href="#download" class="btn btn-primary" id="hero-main"><span data-i18n="heroCta"></span> <span class="arr" aria-hidden="true">→</span></a>
+          <button type="button" class="btn btn-ghost" data-video-open><span class="play-ic" aria-hidden="true">▶</span> <span data-i18n="heroVideo"></span></button>
         </div>
-        <div class="hero-dl"><span data-i18n="heroDl"></span><a href="/download" data-download data-os="win"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#00a4ef" d="M2 4.5l8-1.1V11H2zM11 3.3L22 2v9h-11zM2 12h8v7.6l-8-1.1zM11 12h11v10l-11-1.5z"/></svg>Windows</a><a href="/download-android" data-os="android"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#3ddc84" d="M17.6 9.5a5.6 5.6 0 0 0-11.2 0zM8.4 7.2a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zm7.2 0a.6.6 0 1 1 0-1.2.6.6 0 0 1 0 1.2zM6.4 10.3v7.2a1 1 0 0 0 1 1h.9v2.3a1.1 1.1 0 0 0 2.2 0v-2.3h3v2.3a1.1 1.1 0 0 0 2.2 0v-2.3h.9a1 1 0 0 0 1-1v-7.2zM4.1 10.3a1.1 1.1 0 0 0-1.1 1.1v4.5a1.1 1.1 0 0 0 2.2 0v-4.5a1.1 1.1 0 0 0-1.1-1.1zm15.8 0a1.1 1.1 0 0 0-1.1 1.1v4.5a1.1 1.1 0 0 0 2.2 0v-4.5a1.1 1.1 0 0 0-1.1-1.1z"/></svg>Android</a><a href="{{STORE_URL}}" target="_blank" rel="noopener" data-os="store"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#f25022" d="M2 2h9.5v9.5H2z"/><path fill="#7fba00" d="M12.5 2H22v9.5h-9.5z"/><path fill="#00a4ef" d="M2 12.5h9.5V22H2z"/><path fill="#ffb900" d="M12.5 12.5H22V22h-9.5z"/></svg>Microsoft Store</a></div>
+        <div class="hero-more"><span data-i18n="heroMore"></span> <a href="/download" data-download data-os="win">Windows</a><i>·</i><a href="/download-android" data-os="android">Android</a><i>·</i><a href="{{STORE_URL}}" target="_blank" rel="noopener" data-os="store">Microsoft Store</a></div>
         <div class="hero-note" data-i18n="heroNote"></div>
         <button type="button" class="demo-open" data-demo-open><span class="demo-dot" aria-hidden="true"></span><span data-i18n="demoBtn"></span> →</button>
         <div class="trust"><span data-i18n="trust1"></span><span data-i18n="trust2"></span><span data-i18n="trust3"></span><span data-i18n="trust4"></span></div>
@@ -103,6 +103,30 @@
       <h2 class="h2 reveal" data-i18n="forTitle"></h2>
       <p class="lead reveal" data-i18n="forSub"></p>
 {{FOR_TILES}}
+    </div>
+  </section>
+
+  <section class="section net-sec" id="network">
+    <div class="container">
+      <div class="net-grid">
+        <div class="net-text">
+          <h2 class="h2 reveal" data-i18n="netT"></h2>
+          <p class="lead reveal" data-i18n="netSub"></p>
+          <div class="net-points">
+            <div class="net-p reveal"><span class="net-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><div><b data-i18n="netP1T"></b><p data-i18n="netP1D"></p></div></div>
+            <div class="net-p reveal"><span class="net-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><b data-i18n="netP2T"></b><p data-i18n="netP2D"></p></div></div>
+            <div class="net-p reveal"><span class="net-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><div><b data-i18n="netP3T"></b><p data-i18n="netP3D"></p></div></div>
+          </div>
+          <p class="net-plans reveal" data-i18n="netPlans"></p>
+        </div>
+        <div class="net-visual reveal" aria-hidden="true">
+          <svg class="net-lines" viewBox="0 0 520 440" preserveAspectRatio="none"><path d="M260 220 L95 70 M260 220 L425 70 M260 220 L260 395" stroke="url(#netg)" stroke-width="2" stroke-dasharray="6 7" fill="none"/><defs><linearGradient id="netg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3b857" stop-opacity=".9"/><stop offset="1" stop-color="#e3b857" stop-opacity=".25"/></linearGradient></defs></svg>
+          <div class="nv-hub"><img src="/logo-80.webp" alt="" width="56" height="56"><b data-i18n="netAll"></b><span class="nv-hub-n">1 284</span><small data-i18n="netVisits"></small></div>
+          <div class="nv-pt nv-a"><span class="nv-dot"></span><b>☕ Aroma · Centrum</b><span class="nv-bars"><i style="height:45%"></i><i style="height:62%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:92%"></i></span><small>612 <span data-i18n="netVisits"></span></small></div>
+          <div class="nv-pt nv-b"><span class="nv-dot"></span><b>☕ Aroma · Stanica</b><span class="nv-bars"><i style="height:35%"></i><i style="height:48%"></i><i style="height:66%"></i><i style="height:58%"></i><i style="height:74%"></i></span><small>431 <span data-i18n="netVisits"></span></small></div>
+          <div class="nv-pt nv-c"><span class="nv-dot"></span><b>🛍 Aroma · Kiosk</b><span class="nv-bars"><i style="height:30%"></i><i style="height:40%"></i><i style="height:38%"></i><i style="height:52%"></i><i style="height:60%"></i></span><small>241 <span data-i18n="netVisits"></span></small></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -271,6 +295,9 @@
         <details class="reveal"><summary data-i18n="q6"></summary><p data-i18n="a6"></p></details>
         <details class="reveal"><summary data-i18n="q7"></summary><p data-i18n="a7"></p></details>
         <details class="reveal"><summary data-i18n="q8"></summary><p data-i18n="a8"></p></details>
+        <details class="reveal"><summary data-i18n="q9"></summary><p data-i18n="a9"></p></details>
+        <details class="reveal"><summary data-i18n="q10"></summary><p data-i18n="a10"></p></details>
+        <details class="reveal"><summary data-i18n="q11"></summary><p data-i18n="a11"></p></details>
           </div>
         </div>
         <aside class="contact-card reveal" id="contact">
@@ -322,6 +349,12 @@
   </section>
 </main>
 
+<div class="video-modal" id="video" hidden role="dialog" aria-modal="true" data-i18n-aria="videoTitle">
+  <div class="vm-box">
+    <button type="button" class="vm-x" data-video-close aria-label="×">×</button>
+    <video id="video-el" controls playsinline preload="none" poster="/video/loya_{{LANG}}.jpg"><source src="/video/loya_{{LANG}}.mp4" type="video/mp4"></video>
+  </div>
+</div>
 <div class="demo-modal" id="demo" hidden>
   <div class="demo-in" role="dialog" aria-modal="true" aria-labelledby="demo-t">
     <button type="button" class="demo-x" data-demo-close aria-label="×">×</button>
