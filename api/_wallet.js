@@ -45,10 +45,10 @@ function ids(licenseKey, cardCode) {
 }
 
 const TEXT = {
-  ru: { discount: 'Скидочная карта', stamp: 'Карта лояльности', spend: 'Накопительная карта', hDiscount: 'Скидка', hProgress: 'Штампы', hSpent: 'Накоплено' },
-  uk: { discount: 'Знижкова картка', stamp: 'Картка лояльності', spend: 'Накопичувальна картка', hDiscount: 'Знижка', hProgress: 'Штампи', hSpent: 'Накопичено' },
-  sk: { discount: 'Zľavová karta', stamp: 'Vernostná karta', spend: 'Vernostná karta na nákupy', hDiscount: 'Zľava', hProgress: 'Pečiatky', hSpent: 'Nazbierané' },
-  en: { discount: 'Discount card', stamp: 'Loyalty card', spend: 'Spend card', hDiscount: 'Discount', hProgress: 'Stamps', hSpent: 'Collected' }
+  ru: { discount: 'Скидочная карта', stamp: 'Карта лояльности', spend: 'Накопительная карта', hDiscount: 'Скидка', hProgress: 'Штампы', hSpent: 'Накоплено', hBonus: 'Бонусы', hRule: 'Правило' },
+  uk: { discount: 'Знижкова картка', stamp: 'Картка лояльності', spend: 'Накопичувальна картка', hDiscount: 'Знижка', hProgress: 'Штампи', hSpent: 'Накопичено', hBonus: 'Бонуси', hRule: 'Правило' },
+  sk: { discount: 'Zľavová karta', stamp: 'Vernostná karta', spend: 'Vernostná karta na nákupy', hDiscount: 'Zľava', hProgress: 'Pečiatky', hSpent: 'Nazbierané', hBonus: 'Bonusy', hRule: 'Pravidlo' },
+  en: { discount: 'Discount card', stamp: 'Loyalty card', spend: 'Spend card', hDiscount: 'Discount', hProgress: 'Stamps', hSpent: 'Collected', hBonus: 'Bonuses', hRule: 'How it works' }
 };
 const CUR = { EUR: '€', USD: '$', RUB: '₽', UAH: '₴' };
 
@@ -66,10 +66,10 @@ function heroImageUrl(card, brand, lang, design) {
   const q = new URLSearchParams({
     type: card.type, name: clean(brand.name || 'Loya', 60), color: brand.color || '', niche: brand.niche || 'other',
     currency: brand.currency || 'EUR', lang: ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'ru',
-    v: String(card.stamp_count || 0) + '.' + String(card.spend_accumulated || 0) // меняет URL при каждом скане
+    v: String(card.stamp_count || 0) + '.' + String(card.spend_accumulated || 0) + '.' + String(card.bonus_balance || 0) // меняет URL при каждом скане
   });
   if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
-  else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); }
+  else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); if (Number(card.bonus_balance) > 0) q.set('bonus', Math.round(Number(card.bonus_balance))); }
   else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
   // Свой баннер заведения: картинка берётся из wallet_designs по «отпечатку» бизнеса и версии дизайна.
   if (design && design.hasHero) { q.set('b', design.biz); q.set('dv', String(design.ver)); if (!design.heroStamps) q.set('hs', '0'); }
@@ -85,7 +85,12 @@ function progress(card, lang, currency) {
   if (card.type === 'discount') return { header: W.hDiscount, body: `-${Number(card.discount_percent) || 0}%` };
   if (card.type === 'spend') {
     const acc = money(card.spend_accumulated);
-    return { header: W.hSpent, body: Number(card.spend_target) > 0 ? `${acc} / ${money(card.spend_target)}` : acc };
+    const bonus = Math.max(0, Math.round(Number(card.bonus_balance) || 0));
+    const pts = Math.max(1, Math.round(Number(card.spend_bonus_points) || 1));
+    // С 2.17: бонусы копятся — за каждые «порог» денег клиент получает N бонусов (2000 при пороге 500 → 4 × N).
+    return { header: W.hSpent, body: Number(card.spend_target) > 0 ? `${acc} / ${money(card.spend_target)}` : acc,
+      bonus: Number(card.spend_target) > 0 ? { header: W.hBonus, body: String(bonus) } : null,
+      rule: Number(card.spend_target) > 0 ? { header: W.hRule, body: `${money(card.spend_target)} → +${pts}` } : null };
   }
   return { header: W.hProgress, body: `${Number(card.stamp_count) || 0} / ${Number(card.stamp_target) || 0}` };
 }
@@ -114,7 +119,7 @@ function buildObject(licenseKey, card, brand, design) {
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },
       header: { defaultValue: { language: lang, value: clean(card.client_name || typeName, 60) } },
-      textModulesData: [{ id: 'progress', header: p.header, body: p.body }],
+      textModulesData: [{ id: 'progress', header: p.header, body: p.body }].concat(p.bonus ? [{ id: 'bonus', header: p.bonus.header, body: p.bonus.body }] : [], p.rule ? [{ id: 'rule', header: p.rule.header, body: p.rule.body }] : []),
       barcode: { type: 'QR_CODE', value: clean(card.code, 80), alternateText: clean(card.code, 80) }
     }
   };

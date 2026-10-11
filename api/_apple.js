@@ -80,13 +80,14 @@ function buildPassJson(cfg, serial, card, brand, design) {
     sharingProhibited: true,
     barcodes: [{ format: 'PKBarcodeFormatQR', message: String(card.code), messageEncoding: 'iso-8859-1', altText: String(card.code) }],
     storeCard: {
-      headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }],
+      headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }].concat(p.bonus ? [{ key: 'bonus', label: p.bonus.header, value: p.bonus.body, changeMessage: '%@' }] : []),
       secondaryFields: [
         { key: 'client', label: B.client, value: String(card.client_name || '—').slice(0, 60) },
         { key: 'type', label: typeName, value: String(card.title || '').slice(0, 60) || '—' }
       ],
       backFields: [
         { key: 'how', label: B.how, value: B.howText },
+        ...(p.rule ? [{ key: 'rule', label: p.rule.header, value: p.rule.body }] : []),
         { key: 'code', label: 'QR', value: String(card.code) },
         { key: 'by', label: 'Loya', value: B.by }
       ]

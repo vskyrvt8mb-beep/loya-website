@@ -47,10 +47,10 @@ function iconSvg(niche, x, y, size, opacity) {
 // бизнеса плюс «пилюля» с типом карты, ниже — штампы (цветные с галочкой, пустые
 // пунктиром, последний — подарок), накопленная сумма или крупная скидка.
 const TXT = {
-  ru: { stamp: 'Штамп-карта', discount: 'Скидочная', spend: 'Накопительная', left: (n) => `Ещё ${n} до подарка`, ready: '🎁 Подарок ждёт вас!', every: 'На каждую покупку', toBonus: (m) => `Ещё ${m} до бонуса`, saved: 'Накоплено' },
-  uk: { stamp: 'Штамп-картка', discount: 'Знижкова', spend: 'Накопичувальна', left: (n) => `Ще ${n} до подарунка`, ready: '🎁 Подарунок чекає!', every: 'На кожну покупку', toBonus: (m) => `Ще ${m} до бонусу`, saved: 'Накопичено' },
-  sk: { stamp: 'Pečiatková karta', discount: 'Zľavová', spend: 'Na nákupy', left: (n) => `Ešte ${n} do darčeka`, ready: '🎁 Darček na vás čaká!', every: 'Na každý nákup', toBonus: (m) => `Ešte ${m} do bonusu`, saved: 'Nazbierané' },
-  en: { stamp: 'Stamp card', discount: 'Discount', spend: 'Spend card', left: (n) => `${n} more to a reward`, ready: '🎁 Your reward is ready!', every: 'On every purchase', toBonus: (m) => `${m} more to a bonus`, saved: 'Collected' }
+  ru: { stamp: 'Штамп-карта', discount: 'Скидочная', spend: 'Накопительная', left: (n) => `Ещё ${n} до подарка`, ready: '🎁 Подарок ждёт вас!', every: 'На каждую покупку', toBonus: (m) => `Ещё ${m} до бонуса`, saved: 'Накоплено', bonusN: (n) => `Бонусов: ${n}` },
+  uk: { stamp: 'Штамп-картка', discount: 'Знижкова', spend: 'Накопичувальна', left: (n) => `Ще ${n} до подарунка`, ready: '🎁 Подарунок чекає!', every: 'На кожну покупку', toBonus: (m) => `Ще ${m} до бонусу`, saved: 'Накопичено', bonusN: (n) => `Бонусів: ${n}` },
+  sk: { stamp: 'Pečiatková karta', discount: 'Zľavová', spend: 'Na nákupy', left: (n) => `Ešte ${n} do darčeka`, ready: '🎁 Darček na vás čaká!', every: 'Na každý nákup', toBonus: (m) => `Ešte ${m} do bonusu`, saved: 'Nazbierané', bonusN: (n) => `Bonusy: ${n}` },
+  en: { stamp: 'Stamp card', discount: 'Discount', spend: 'Spend card', left: (n) => `${n} more to a reward`, ready: '🎁 Your reward is ready!', every: 'On every purchase', toBonus: (m) => `${m} more to a bonus`, saved: 'Collected', bonusN: (n) => `Bonuses: ${n}` }
 };
 const INK = '#0e141b';       // цвет галочек и подарка на закрашенном кружке
 const MUTED = 'rgba(255,255,255,.62)';
@@ -143,8 +143,10 @@ function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress }) {
     const target = Number(card.spend_target) || 0, acc = Number(card.spend_accumulated) || 0;
     if (target > 0) {
       const left = Math.max(0, target - acc);
+      const bonus = Math.max(0, Math.round(Number(card.bonus_balance) || 0));
+      const cap = left > 0 ? T.toBonus(moneyFmt(left, brand.currency, lang)) : T.ready.replace('🎁 ', '');
       body = progressLine(acc / target, `${moneyFmt(acc, brand.currency, lang)} / ${moneyFmt(target, brand.currency, lang)}`,
-        left > 0 ? T.toBonus(moneyFmt(left, brand.currency, lang)) : T.ready.replace('🎁 ', ''), accent);
+        bonus > 0 ? `${T.bonusN(bonus)} · ${cap}` : cap, accent);
     } else {
       body = `<text x="48" y="228" font-family="Carlito" font-weight="700" font-size="96" fill="${accent}">${esc(moneyFmt(acc, brand.currency, lang))}</text>
         <text x="52" y="282" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(T.saved)}</text>`;

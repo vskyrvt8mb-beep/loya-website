@@ -15,7 +15,8 @@ module.exports = async (req, res) => {
       code: String(card.code).slice(0, 80), type: ['stamp', 'discount', 'spend'].includes(card.type) ? card.type : 'stamp',
       title: String(card.title || '').slice(0, 80), client_name: String(card.client_name || '').slice(0, 100), lang: ['ru', 'uk', 'sk', 'en'].includes(card.lang) ? card.lang : 'en',
       stamp_count: Number(card.stamp_count) || 0, stamp_target: Number(card.stamp_target) || 0, discount_percent: Number(card.discount_percent) || 0,
-      spend_accumulated: Number(card.spend_accumulated) || 0, spend_target: Number(card.spend_target) || 0
+      spend_accumulated: Number(card.spend_accumulated) || 0, spend_target: Number(card.spend_target) || 0,
+      bonus_balance: Math.max(0, Math.round(Number(card.bonus_balance) || 0)), spend_bonus_points: Math.max(1, Math.round(Number(card.spend_bonus_points) || 1))
     };
     const b = brand || {};
     const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24) };

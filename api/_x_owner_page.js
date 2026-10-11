@@ -55,6 +55,7 @@ const PAGE = (token, nonce) => `<!DOCTYPE html><html lang="ru"><head><meta chars
 body{font-family:Manrope,system-ui,-apple-system,'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),transparent 70%),var(--bg);color:#f3efe6;min-height:100vh;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
 .wrap{max-width:980px;margin:0 auto}.top{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}.top h1{font-size:20px;flex:1;min-width:140px}
 .pill{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.07);color:inherit;border-radius:10px;padding:7px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.pill.on{background:var(--a);border-color:var(--a);color:#16110a}
+.ptab{width:100%;border-collapse:collapse;font-size:13.5px}.ptab th{text-align:left;color:var(--mut);font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}.ptab td{padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}.ptab td small{display:block;color:var(--mut);font-size:11.5px}.linkb{all:unset;cursor:pointer;font-weight:700;color:var(--a)}.ptab .dot{display:inline-block;vertical-align:middle}.ctl .pill{white-space:nowrap}
 .tabs{display:flex;gap:8px;margin:6px 0 16px}.tabs .pill{padding:9px 16px;font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}.stat b{display:block;font-size:26px;line-height:1.1}.stat span{font-size:12.5px;color:var(--mut)}
 .box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}.box h3{font-size:15px;margin-bottom:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:760px){.two{grid-template-columns:1fr}}
@@ -99,8 +100,8 @@ body{background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),tran
 <form id="ef2" class="hide"><p id="e-sent" style="font-size:13px"></p><input type="text" id="ec" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><input type="password" id="epw" autocomplete="current-password"><div class="err" id="eerr2"></div><button class="btn" id="ebtn2" type="submit"></button><p style="margin-top:10px"><a href="#" id="e-back" style="color:var(--a)"></a></p></form>
 <div class="top" style="justify-content:center;margin-top:18px" id="lang2"></div></div>
 <div id="app" class="hide"><div class="top"><h1 id="ttl"></h1><span id="lang1" style="display:flex;gap:6px"></span><button class="pill" id="rf"></button><button class="pill" id="lo"></button><button class="pill" id="lall"></button></div>
-<div id="stale" class="warn hide"></div><div class="tabs"><button class="pill on" data-t="o" id="tab-o"></button><button class="pill" data-t="c" id="tab-c"></button></div>
-<div id="v-o"></div><div id="v-c" class="hide"></div></div>
+<div id="stale" class="warn hide"></div><div class="tabs"><button class="pill on" data-t="o" id="tab-o"></button><button class="pill" data-t="c" id="tab-c"></button><button class="pill hide" data-t="p" id="tab-p"></button></div>
+<div id="v-o"></div><div id="v-c" class="hide"></div><div id="v-p" class="hide"></div></div>
 <p class="fine"><a href="/privacy.html" target="_blank" rel="noopener" id="priv"></a></p></div>
 <div id="modal" class="modal hide"><div class="in" id="mbody"></div></div>
 <script nonce="${nonce}">
@@ -119,11 +120,11 @@ $('l-sub').textContent=t.sub;$('pw').placeholder=t.pass;$('rem-t').textContent=t
 if(!TKN){$('elogin').classList.remove('hide');$('login').classList.add('hide');$('app').classList.add('hide');$('e-title').textContent=t.eTitle;$('e-sub').textContent=t.eSub;$('em').placeholder=t.ePh;$('ebtn1').textContent=t.eSend;$('e-sent').textContent=t.eSent;$('ec').placeholder=t.cPh;$('epw').placeholder=t.pass;$('ebtn2').textContent=t.eGo;$('e-back').textContent=t.eBack;langBtns('lang2');return}
 if(!session||!snap&&!info){ if(!session){$('login').classList.remove('hide');$('app').classList.add('hide');return} }
 $('login').classList.add('hide');$('app').classList.remove('hide');setAccent();langBtns('lang1');if(!snap&&!info){$('v-o').innerHTML='<p class="upd">'+E(t.loading)+'</p><div class="grid">'+'<div class="skel"></div>'.repeat(4)+'</div><div class="skel" style="height:180px"></div>'}
-$('ttl').textContent=(snap&&snap.brand&&snap.brand.name)||t.title;$('rf').textContent='↻ '+t.refresh;$('lo').textContent=t.logout;$('lall').textContent=t.logoutAll;$('tab-o').textContent=t.tabOverview;$('tab-c').textContent=t.tabClients;
+$('ttl').textContent=(snap&&snap.brand&&snap.brand.name)||t.title;$('rf').textContent='↻ '+t.refresh;$('lo').textContent=t.logout;$('lall').textContent=t.logoutAll;$('tab-o').textContent=t.tabOverview;$('tab-c').textContent=t.tabClients;$('tab-p').textContent=t.tabPoints;$('tab-p').classList.toggle('hide',!(info&&info.points&&info.points.length));
 if(!snap){if(info)$('v-o').innerHTML='<div class="box">'+E(t.stale)+'</div>';return}
 const at=info&&info.at?new Date(info.at):null;const old=at&&(Date.now()-at.getTime()>20*60000);
 $('stale').classList.toggle('hide',!old);$('stale').textContent=old?t.stale:'';
-renderOverview();renderClients()}
+renderOverview();renderClients();renderPoints()}
 function renderOverview(){const t=T(),s=snap,st=s.stats||{},ad=s.advanced||{},rv=s.revenue||{},fn=s.funnel||{};
 const at=info&&info.at?new Date(info.at).toLocaleString(lang==='en'?'en-GB':lang):'';
 const mins=info&&info.at?Math.floor((Date.now()-new Date(info.at))/60e3):0;
@@ -146,7 +147,21 @@ h+='<div class="box"><h3>'+E(t.recent)+'</h3>'+((s.recent||[]).slice(0,8).map(r=
 const on=s.online||{};if(on.total>0)h+='<div class="box"><h3>'+E(t.online)+'</h3><div class="grid" style="margin:0">'+stat(on.active,t.oAct)+stat(on.used,t.oUsed)+stat(on.expired,t.oExp)+'</div></div>';
 if(info&&info.logins&&info.logins.length){h+='<div class="box" style="margin-top:14px"><b>'+E(t.logins)+'</b>'+info.logins.map(l=>'<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid rgba(255,255,255,.08)"><span>'+(l.ok?'✅ ':'⛔ ')+E(new Date(l.at).toLocaleString(lang==='en'?'en-GB':lang))+'</span><span style="color:var(--mut)">'+E(l.method==='code'?t.lCode:t.lLink)+(l.ok?'':' · '+E(t.lFail))+(l.ip?' · '+E(l.ip):'')+'</span></div>').join('')+'</div>'}
 h+='<p class="hint">'+E(t.homeHint)+'</p>';$('v-o').innerHTML=h;$('v-o').querySelectorAll('[data-af]').forEach(b=>b.onclick=()=>{filt=b.dataset.af;query='';showTab('c');renderClients()})}
-function showTab(v){view=v;document.querySelectorAll('.tabs .pill').forEach(x=>x.classList.toggle('on',x.dataset.t===v));$('v-o').classList.toggle('hide',v!=='o');$('v-c').classList.toggle('hide',v!=='c');scrollTo({top:0})}
+let ptSel='';
+function renderPoints(){const t=T();const P=(info&&info.points)||[];if(!P.length){$('v-p').innerHTML='<div class="box">'+E(t.pNone)+'</div>';return}
+if(ptSel&&!P.some(p=>p.point===ptSel))ptSel='';const cur=ptSel?(P.find(p=>p.point===ptSel)||{}).stats:info.total;const st=cur||{kpi:{},days:[],months:[],top:[]};const k=st.kpi||{};
+let h='<div class="ctl" style="margin-bottom:12px">'+[['',t.pAll]].concat(P.map(p=>[p.point,p.point])).map(x=>'<button class="pill '+(ptSel===x[0]?'on':'')+'" data-pt="'+E(x[0])+'">'+E(x[1])+'</button>').join('')+'</div>';
+const stat=(v,l)=>'<div class="stat"><b>'+E(v)+'</b><span>'+E(l)+'</span></div>';
+h+='<div class="grid">'+stat(k.clients||0,t.pClients)+stat(k.scansToday||0,t.pScansToday)+stat(k.scansMonth||0,t.pScansMonth)+stat(k.newMonth||0,t.pNew)+(k.revenueMonth||k.revenueTotal?stat(money(k.revenueMonth),t.pRevMonth)+stat(money(k.avgCheck),t.pAvg):'')+stat(k.rewardsMonth||0,t.pRewards)+(k.bonusBalance?stat(k.bonusBalance,t.pBonus):'')+stat(k.active30||0,t.pActive)+'</div>';
+const vd=(st.days||[]).slice(-14);const vmax=Math.max(1,...vd.map(d=>d.n||0));
+h+='<div class="two"><div class="box"><h3>'+E(t.pDays)+'</h3><div class="cols">'+vd.map(d=>'<div title="'+E(d.d)+': '+(d.n||0)+'"><i style="height:'+Math.round((d.n||0)/vmax*90)+'px"></i>'+E(String(d.d).slice(8))+'</div>').join('')+'</div></div>';
+const rm=(st.months||[]).slice(-6);const m=Math.max(1,...rm.map(x=>x.r||0));
+h+='<div class="box"><h3>'+E(t.pMonths)+'</h3>'+(rm.map(x=>'<div class="bar"><span class="l">'+E(x.m)+'</span><i style="width:'+Math.round((x.r||0)/m*42)+'%"></i><span class="v">'+E(money(x.r))+'</span></div>').join('')||'—')+'</div></div>';
+if(ptSel&&(st.top||[]).length)h+='<div class="box"><h3>'+E(t.pTop)+'</h3>'+st.top.map((c,i)=>'<div class="row"><span>'+(i+1)+'. '+E(c.n)+'</span><b>'+E(t.visitsWord)+': '+c.v+'</b></div>').join('')+'</div>';
+if(P.length>1||!ptSel){h+='<div class="box"><h3>'+E(t.pCompare)+'</h3><div style="overflow-x:auto"><table class="ptab"><tr><th>'+E(t.pPoint)+'</th><th>'+E(t.pScansMonth)+'</th><th>'+E(t.pRevMonth)+'</th><th>'+E(t.pClients)+'</th><th>'+E(t.pUpd)+'</th></tr>'+
+P.map(p=>{const q=(p.stats&&p.stats.kpi)||{};const mins=Math.floor((Date.now()-new Date(p.updated))/60e3);return '<tr><td><button class="linkb" data-pt="'+E(p.point)+'">'+E(p.point)+'</button><small>'+E(t.pDevices(p.devices.length))+' · '+E(p.shared?t.pShared:t.pOwn)+'</small></td><td>'+(q.scansMonth||0)+'</td><td>'+E(money(q.revenueMonth))+'</td><td>'+(q.clients||0)+'</td><td><span class="dot'+(mins>30?' old':'')+'"></span> '+E(t.ago(mins))+'</td></tr>'}).join('')+'</table></div></div>'}
+h+='<p class="hint">'+E(t.pHint)+'</p>';$('v-p').innerHTML=h;$('v-p').querySelectorAll('[data-pt]').forEach(b=>b.onclick=()=>{ptSel=b.dataset.pt;renderPoints();scrollTo({top:0})})}
+function showTab(v){view=v;document.querySelectorAll('.tabs .pill').forEach(x=>x.classList.toggle('on',x.dataset.t===v));$('v-o').classList.toggle('hide',v!=='o');$('v-c').classList.toggle('hide',v!=='c');$('v-p').classList.toggle('hide',v!=='p');scrollTo({top:0})}
 function renderClients(){const t=T(),s=snap;const q=query.trim().toLowerCase();const qd=q.replace(/\\D/g,'');
 const ts=v=>{const d=Date.parse(v);return isNaN(d)?0:d};
 let list=(s.clients||[]).filter(c=>(filt==='all'||c[filt])&&(!q||c.name.toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(qd.length>=3&&(c.phone||'').replace(/\\D/g,'').includes(qd))));
@@ -189,7 +204,7 @@ if(r.ok){$('mbody').innerHTML='<div class="ok">'+E(t.queued)+'</div><button clas
 else{$('f-ok').disabled=false;$('f-err').textContent=r.error==='queue_full'?t.qFull:r.error==='bad_email'?t.badEmail:r.error==='bad_name'?t.needName:t.err}}}
 async function load(){const r=await api('owner-data');if(r._s===401&&r.error==='session'){logout(true);return}
 if(!r.ok){$('app').classList.remove('hide');$('login').classList.add('hide');const t=T();$('v-o').innerHTML='<div class="box">'+E(r.error==='license_inactive'?t.lapsed:r.error==='not_enabled'?t.notFound:t.err)+'</div>';return}
-snap=r.snapshot;info={at:r.at,pending:r.pending,recent:r.recent,logins:r.logins||[]};lastLoad=Date.now();paint()}
+snap=r.snapshot;info={at:r.at,pending:r.pending,recent:r.recent,logins:r.logins||[],points:r.points||null,total:r.total||null};lastLoad=Date.now();paint()}
 function logout(){session=null;snap=null;info=null;try{sessionStorage.removeItem(SK);localStorage.removeItem(SK)}catch(e){}paint()}
 $('lf').addEventListener('submit',async ev=>{ev.preventDefault();const t=T();$('lerr').textContent='';$('lbtn').disabled=true;
 const r=await api('owner-login',{password:$('pw').value});$('lbtn').disabled=false;

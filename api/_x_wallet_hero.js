@@ -16,7 +16,8 @@ module.exports = async (req, res) => {
       type,
       stamp_count: num(q.count, 0), stamp_target: Math.max(1, num(q.target, 10)),
       spend_accumulated: num(q.acc, 0), spend_target: Math.max(0, num(q.target, 0)),
-      discount_percent: Math.min(99, Math.max(0, num(q.pct, 0)))
+      discount_percent: Math.min(99, Math.max(0, num(q.pct, 0))),
+      bonus_balance: Math.min(100000, Math.max(0, Math.round(num(q.bonus, 0))))
     };
     const brand = { name: String(q.name || 'Loya').slice(0, 60), color: String(q.color || ''), currency: String(q.currency || 'EUR').slice(0, 6) };
     const niche = String(q.niche || 'other').slice(0, 30);

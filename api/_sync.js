@@ -1,4 +1,4 @@
-// Pro: общая база между компьютерами одной организации (организация = ключ Pro).
+// Общая база между устройствами одной организации (организация = ключ подписки; с 2.17 — Starter и Pro).
 // Схема: программа сохраняет всё сразу у себя, а раз в пару минут отправляет изменения пачкой и забирает чужие.
 // Каждая запись (клиент, карта, визит) хранится на сервере с версией; запись принимается, только если устройство
 // знало последнюю версию (иначе — конфликт, устройство сливает изменения и пробует снова). Повтор той же
@@ -17,12 +17,12 @@ const isHex = (v, n) => new RegExp(`^[0-9a-f]{${n}}$`).test(String(v || ''));
 const hits = new Map();
 function limited(key, max, ms) { const now = Date.now(); const a = (hits.get(key) || []).filter(t => now - t < ms); if (a.length >= max) { hits.set(key, a); return true; } a.push(now); hits.set(key, a); return false; }
 
-// Синхронизация — только для активного ключа уровня Pro (проверка на сервере при каждом запросе).
+// Синхронизация — для любого действующего ключа (с 2.17 общая база есть и в Starter: до 3 точек, в Pro — до 10).
+// Проверка на сервере при каждом запросе.
 async function proLicense(licenseKey) {
   if (!isKey(licenseKey)) return { error: 'key', status: 400 };
   const row = await L.getLicense(licenseKey);
   if (!row || !L.isActive(row)) return { error: 'license_inactive', status: 403 };
-  if (L.tierOf(row) !== 'pro') return { error: 'pro_required', status: 403 };
   return { row };
 }
 async function device(licenseKey, deviceId, deviceKey) {
@@ -39,8 +39,12 @@ async function register({ licenseKey, deviceKey, name }, ip) {
   if (limited('reg:' + ip, 20, 3600e3)) return { status: 429, error: 'too_many' };
   const lic = await proLicense(licenseKey); if (lic.error) return { status: lic.status, error: lic.error };
   if (!isHex(deviceKey, 64)) return { status: 400, error: 'device' };
-  const { data: list } = await supabase.from('sync_devices').select('id').eq('license_key', licenseKey).eq('revoked', false);
-  if ((list || []).length >= MAX_DEVICES) return { status: 409, error: 'too_many_devices' };
+  // Считаем устройства, которые были на связи за 30 дней (переустановка программы не «съедает» место навсегда).
+  // Запас +2 — на переустановку в течение месяца; сам ключ всё равно не работает больше чем на лимите устройств.
+  const since = new Date(Date.now() - 30 * 86400e3).toISOString();
+  const { data: list } = await supabase.from('sync_devices').select('id').eq('license_key', licenseKey).eq('revoked', false).gte('last_seen_at', since);
+  const max = Math.min(MAX_DEVICES + 200, require('./_devices').limitFor(L.tierOf(lic.row), lic.row.plan, lic.row) + 2);
+  if ((list || []).length >= max) return { status: 409, error: 'too_many_devices', limit: max };
   const id = crypto.randomBytes(12).toString('hex');
   const { error } = await supabase.from('sync_devices').insert({ id, license_key: licenseKey, name: String(name || '').slice(0, 60), token_hash: sha(deviceKey), last_seen_at: new Date().toISOString() });
   if (error) return { status: 500, error: 'db_error' };

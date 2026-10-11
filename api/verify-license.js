@@ -45,10 +45,13 @@ module.exports = async (req, res) => {
     // Один ключ — ограниченное число устройств (см. _devices.js). Старые версии программы устройство не присылают.
     const body = req.body || {};
     const device = /^[0-9a-f]{64}$/.test(String(body.device || '')) ? String(body.device) : '';
-    let deviceLimit = 0;
+    let deviceLimit = 0, org = null;
     if (state === 'active' && device) {
-      const dl = await require('./_devices').touch(licenseKey, device, body.platform, L.tierOf(data), data.plan);
+      // С 2.17 программа присылает имя устройства и свою точку — их видно в админке и в «Сети точек».
+      const meta = { name: typeof body.deviceName === 'string' ? body.deviceName : '', point: typeof body.point === 'string' ? body.point : '' };
+      const dl = await require('./_devices').touch(licenseKey, device, body.platform, L.tierOf(data), data.plan, meta, data);
       if (dl.limited) { state = 'device_limit'; deviceLimit = dl.limit; }
+      else org = { others: dl.others || 0, limit: dl.limit || require('./_devices').limitFor(L.tierOf(data), data.plan, data) };
     }
     const active = state === 'active';
     const messages = {
@@ -70,6 +73,9 @@ module.exports = async (req, res) => {
       trialUntil: data.plan === 'trial' && data.trial_until ? new Date(data.trial_until).toISOString() : null,
       serverTime: new Date().toISOString(),
       ...(deviceLimit ? { deviceLimit } : {}),
+      // Сколько ЕЩЁ устройств работает с этим ключом и сколько можно всего (точек и устройств) — программа
+      // по этому спрашивает «объединить базу?» и ограничивает число точек.
+      ...(org && active ? { org } : {}),
       // Подписанный талон (если в Vercel задан LICENSE_SIGNING_KEY): без него программа 2.14+ не сохраняет «подписка активна».
       ...(active && device ? (() => { const tok = require('./_licenseToken').issue({ licenseKey: licenseKey.trim(), device, row: data, tier: L.tierOf(data) }); return tok ? { token: tok } : {}; })() : {})
     });

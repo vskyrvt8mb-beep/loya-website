@@ -142,6 +142,7 @@ async function data({ session }) {
       tier: tierOf(r), trialUntil: r.trial_until || '',
       freeUntil: r.free_until ? String(r.free_until).slice(0, 10) : '', created: r.created_at || '', lastSeen: r.last_seen_at || '', version: r.app_version || '',
       hasStripe: !!r.stripe_subscription_id, fromTrial: !!r.machine_hash, devices: devs[r.license_key] || 0,
+      deviceLimit: require('./_devices').limitFor(tierOf(r), r.plan, r), extraDevices: require('./_devices').extraOf(r), extraNote: r.extra_note || '',
       livemode: r.livemode === true ? true : r.livemode === false ? false : null };
   });
   const recent = (x) => x.lastSeen && now - new Date(x.lastSeen).getTime() < 7 * 86400e3;
@@ -202,6 +203,10 @@ async function client(key) {
     key, email: row.email || '', plan: row.plan, tier: tierOf(row), state: licenseState(row), created: row.created_at, lastSeen: row.last_seen_at, version: row.app_version || '',
     trialUntil: row.trial_until || '', freeUntil: row.free_until || '', note: row.note || '', hasStripe: !!row.stripe_subscription_id, livemode: row.livemode,
     fromTrial: !!row.machine_hash, sameEmail, logins,
+    devices: await safe(() => require('./_devices').list(key).then((l) => l.map(({ device, ...d }) => d)), []),
+    deviceLimit: require('./_devices').limitFor(tierOf(row), row.plan, row), deviceBase: require('./_devices').baseLimit(tierOf(row), row.plan),
+    extraDevices: require('./_devices').extraOf(row), extraNote: row.extra_note || '',
+    points: await safe(async () => { const p = await require('./_org').listPoints(key); return (p || []).map((x) => ({ point: x.point, devices: x.devices.length, updated: x.updated })); }, []),
     regsTotal: await count('online_registrations'), mail30: await count('mail_log', month), profile,
   } };
 }
@@ -227,7 +232,7 @@ async function cancelStripe(key, atPeriodEnd) {
 
 // Полное удаление ключа и всего, что к нему относится (пробные и тестовые ключи). Необратимо.
 // Подписку в Stripe это НЕ отменяет — для этого есть отдельное действие «Отменить подписку».
-const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins', 'wallet_designs', 'license_devices'];
+const LINKED_TABLES = ['owner_commands', 'owner_access', 'online_registrations', 'business_profiles', 'pos_events', 'pos_keys', 'mail_log', 'sync_entities', 'sync_devices', 'sync_applied', 'owner_logins', 'wallet_designs', 'license_devices', 'org_points', 'org_shared'];
 async function deleteKeys(keys) {
   const deleted = [], failed = [];
   for (const k of keys) {
@@ -244,18 +249,18 @@ async function deleteKeys(keys) {
   return { deleted, failed };
 }
 
-async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code }, ip) {
+async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code, extra, device }, ip) {
   if (!(await check(session))) return { status: 401, error: 'session' };
-  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code });
+  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device });
   if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test'].includes(op)) {
     await log(op, ip, { key: KEY_RE.test(String(key || '')) ? key : undefined, keys: Array.isArray(keys) ? keys.slice(0, 50) : undefined,
       email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' ? Number(days) : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
-      deleted: res.deleted });
+      deleted: res.deleted, extra: op === 'set_extra_devices' ? Number(extra) : undefined, device: op === 'remove_device' ? str(device, 12) : undefined });
   }
   return res;
 }
 
-async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code }) {
+async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device }) {
   const until = /^\d{4}-\d{2}-\d{2}$/.test(String(freeUntil || '')) ? freeUntil : null;
   if (op === 'logout_all') {
     const { error } = await supabase.from('admin_settings').upsert({ key: 'sessions_after', value: String(Date.now()) });
@@ -296,6 +301,18 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
   if (!KEY_RE.test(k)) return { status: 400, error: 'key' };
   if (op === 'client') return client(k);
   if (op === 'reset_devices') return (await require('./_devices').reset(k)) ? { status: 200, ok: true } : { status: 500, error: 'db_error' };
+  if (op === 'remove_device') return (await require('./_devices').removeOne(k, str(device, 12))) ? { status: 200, ok: true } : { status: 400, error: 'device' };
+  // Доп. устройства сверх тарифа (2.17): бесплатно или за доплату — note пишется в заметку к ключу.
+  if (op === 'set_extra_devices') {
+    const n = Math.round(Number(extra));
+    if (!(n >= 0 && n <= 200)) return { status: 400, error: 'extra' };
+    const patch = { extra_devices: n, updated_at: new Date().toISOString() };
+    const extraNote = str(note, 120);
+    patch.extra_note = extraNote || null;
+    let { error } = await supabase.from('licenses').update(patch).eq('license_key', k);
+    if (error) return { status: 500, error: 'need_schema_217', detail: String(error.message || '').slice(0, 140) };
+    return { status: 200, ok: true };
+  }
   if (op === 'cancel_stripe') return cancelStripe(k, !!atPeriodEnd);
   if (op === 'resend_key') {
     const { data: rows } = await supabase.from('licenses').select('email, plan, trial_until').eq('license_key', k).limit(1);

@@ -28,7 +28,8 @@ async function appleUpdate(licenseKey, card, brand) {
   const { data: row } = await supabase.from('apple_passes').select('serial, card, brand').eq('serial', serial).maybeSingle();
   if (!row) return { saved: false };   // в Apple Wallet эту карту не добавляли
   const next = { ...(row.card || {}), stamp_count: Number(card.stamp_count) || 0, stamp_target: Number(card.stamp_target) || 0, discount_percent: Number(card.discount_percent) || 0,
-    spend_accumulated: Number(card.spend_accumulated) || 0, spend_target: Number(card.spend_target) || 0, title: String(card.title || (row.card || {}).title || '').slice(0, 80) };
+    spend_accumulated: Number(card.spend_accumulated) || 0, spend_target: Number(card.spend_target) || 0,
+    bonus_balance: Math.max(0, Math.round(Number(card.bonus_balance) || 0)), spend_bonus_points: Math.max(1, Math.round(Number(card.spend_bonus_points) || 1)), title: String(card.title || (row.card || {}).title || '').slice(0, 80) };
   await supabase.from('apple_passes').update({ card: next, updated_at: new Date().toISOString() }).eq('serial', serial);
   const { data: regs } = await supabase.from('apple_registrations').select('device_id, push_token').eq('serial', serial);
   const tokens = [...new Set((regs || []).map(r => r.push_token).filter(Boolean))];

@@ -42,12 +42,13 @@ async function collect(body) {
   // из дома и счётчика писем работать не будут — показываем, каких именно не хватает.
   out.tablesMissing = [];
   if (out.db) {
-    for (const t of ['licenses', 'mail_log', 'business_profiles', 'online_registrations', 'owner_access', 'owner_commands', 'apple_passes', 'apple_registrations', 'pos_keys', 'pos_events', 'sync_devices', 'sync_entities', 'sync_applied', 'owner_logins', 'wallet_designs', 'license_devices']) {
+    for (const t of ['licenses', 'mail_log', 'business_profiles', 'online_registrations', 'owner_access', 'owner_commands', 'apple_passes', 'apple_registrations', 'pos_keys', 'pos_events', 'sync_devices', 'sync_entities', 'sync_applied', 'owner_logins', 'wallet_designs', 'license_devices', 'org_points', 'org_shared']) {
       try { const { error } = await supabase.from(t).select('*').limit(1); if (error) out.tablesMissing.push(t); } catch (e) { out.tablesMissing.push(t); }
     }
     // Новые колонки для админки (бесплатный доступ, блокировка, «последний вход»).
     if (!out.tablesMissing.includes('licenses')) {
       try { const { error } = await supabase.from('licenses').select('plan, banned, note, free_until, last_seen_at, app_version, livemode').limit(1); if (error) out.tablesMissing.push('licenses (новые колонки)'); } catch (e) { out.tablesMissing.push('licenses (новые колонки)'); }
+      try { const { error } = await supabase.from('licenses').select('extra_devices, extra_note').limit(1); if (error) out.tablesMissing.push('licenses (колонки 2.17 — schema_2_17.sql)'); } catch (e) { out.tablesMissing.push('licenses (колонки 2.17 — schema_2_17.sql)'); }
     }
   }
   out.siteVersion = SITE_VERSION;

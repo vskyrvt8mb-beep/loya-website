@@ -184,7 +184,10 @@ async function data({ token, session }) {
   const g = await guard(token, session); if (!g.ok) return g;
   const { count } = await supabase.from('owner_commands').select('id', { count: 'exact', head: true }).eq('license_key', g.row.license_key).eq('status', 'pending');
   const { data: recent } = await supabase.from('owner_commands').select('id, cmd, status, result, created_at').eq('license_key', g.row.license_key).order('id', { ascending: false }).limit(8);
-  return { status: 200, ok: true, snapshot: g.row.snapshot || null, at: g.row.snapshot_at, pending: count || 0, recent: recent || [], logins: await recentLogins(g.row.license_key) };
+  // Сеть точек (2.17): статистика каждой точки и общая. Если таблицы ещё нет — просто без вкладки «Точки».
+  let points = null, total = null;
+  try { const O = require('./_org'); points = await O.listPoints(g.row.license_key); total = points ? O.totalOf(points) : null; } catch (e) { points = null; }
+  return { status: 200, ok: true, snapshot: g.row.snapshot || null, at: g.row.snapshot_at, pending: count || 0, recent: recent || [], logins: await recentLogins(g.row.license_key), points, total };
 }
 
 const str = (v, max) => String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
