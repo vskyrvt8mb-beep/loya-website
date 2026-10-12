@@ -1,12 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /download
 Disallow: /admin
 Disallow: /owner
 Disallow: /manage
-Disallow: /success.html
-Disallow: /pricing.html
 Disallow: /r/
 Disallow: /j/
 Disallow: /scripts/
