@@ -57,6 +57,7 @@
     }
     document.querySelectorAll('.lang-select').forEach(s => { s.value = lang; });
     updateTour(); updateCalc();
+    document.dispatchEvent(new Event('loya:lang'));
   }
   document.querySelectorAll('.lang-select').forEach(sel => sel.addEventListener('change', () => {
     const next = sel.value;
@@ -287,6 +288,24 @@
   const planParam = new URLSearchParams(location.search).get('plan');
   if (planParam === 'pro' || planParam === 'starter') pickTier(planParam, false);
 
+  // 2.19: оплата за месяц или за год (год = 10 месяцев, «2 месяца в подарок»)
+  let period = new URLSearchParams(location.search).get('period') === 'year' ? 'year' : 'month';
+  const setPeriod = (p) => {
+    period = p === 'year' ? 'year' : 'month';
+    document.querySelectorAll('.ps-btn').forEach(b => { const on = b.dataset.period === period; b.classList.toggle('active', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    document.querySelectorAll('.plan-price[data-pm]').forEach(el => {
+      const b = el.querySelector('b'); const sp = el.querySelector('span');
+      if (b) b.textContent = period === 'year' ? el.dataset.py : el.dataset.pm;
+      if (sp) { sp.dataset.i18n = period === 'year' ? 'perYear' : 'perMonth'; sp.textContent = t(sp.dataset.i18n); }
+      const note = el.nextElementSibling;
+      if (note && note.classList.contains('plan-year-note')) { note.hidden = period !== 'year'; note.textContent = period === 'year' ? t('yearNote').replace('{m}', el.dataset.pym) : ''; }
+    });
+    document.querySelectorAll('.tier-switch span[data-pm]').forEach(sp => { sp.textContent = period === 'year' ? sp.dataset.py : sp.dataset.pm; });
+  };
+  document.querySelectorAll('.ps-btn').forEach(b => b.addEventListener('click', () => setPeriod(b.dataset.period)));
+  setPeriod(period);
+  document.addEventListener('loya:lang', () => setPeriod(period));
+
   // оформление подписки (Stripe Checkout через /api/create-checkout-session)
   document.querySelectorAll('form.checkout').forEach(form => {
     form.addEventListener('submit', async (e) => {
@@ -303,9 +322,10 @@
       try {
         const tierEl = form.querySelector('input[name=tier]:checked');
         const tier = tierEl ? tierEl.value : 'starter';
-        const res = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang, tier }) });
+        const res = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang, tier, period }) });
         const data = await res.json().catch(() => ({}));
         if (data.url) { location.href = data.url; return; }
+        if (data.error === 'year_not_ready') { err.textContent = t('errYearSoon'); err.style.display = 'block'; btn.disabled = false; label.textContent = t('priceCta'); setPeriod('month'); return; }
         if (res.status === 429) { err.textContent = t('errTooMany'); err.style.display = 'block'; btn.disabled = false; label.textContent = t('priceCta'); return; }
         throw new Error(data.error || 'error');
       } catch (ex) {

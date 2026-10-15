@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.min.css?v=0512e5ed">
+<link rel="stylesheet" href="/style.min.css?v=38cce91d">
 </head>
 <body class="page" data-page="pricing">
 <!--SITE-HEADER-->
@@ -54,6 +54,7 @@
   <div class="pricing-page">
       <h1 class="h2" data-i18n="priceTitle" style="text-align:center"></h1>
       <div class="plans-trial reveal"><b data-i18n="plansTrial"></b><span data-i18n="plansTrialSub"></span></div>
+      <div class="period-switch reveal" role="radiogroup"><button type="button" class="ps-btn active" data-period="month" role="radio" aria-checked="true" data-i18n="perMonthly"></button><button type="button" class="ps-btn" data-period="year" role="radio" aria-checked="false"><span data-i18n="perYearly"></span> <b class="ps-save" data-i18n="perYearSave"></b></button></div>
       <div class="plans">
         <div class="plan pcard reveal">
           <div class="plan-name" data-i18n="planFreeName"></div>
@@ -64,20 +65,20 @@
         <div class="plan pcard featured reveal">
           <div class="plan-badge" data-i18n="planStarterBadge"></div>
           <div class="plan-name">Starter</div>
-          <div class="plan-price"><b>€9.99</b><span data-i18n="perMonth"></span></div>
+          <div class="plan-price" data-pm="€9.99" data-py="€99.90" data-pym="€8.33"><b>€9.99</b><span data-i18n="perMonth"></span></div><div class="plan-year-note" data-i18n-year="yearNote" hidden></div>
           <ul class="plan-list"><li data-i18n="planStarterF1"></li><li data-i18n="planStarterF2"></li><li data-i18n="planStarterF3"></li><li data-i18n="planStarterF4"></li><li data-i18n="planStarterF5"></li></ul>
           <button type="button" class="btn btn-primary pick-tier" data-tier="starter" data-i18n="planStarterCta"></button>
         </div>
         <div class="plan pcard reveal">
           <div class="plan-badge plan-badge-pro" data-i18n="planProBadge"></div>
           <div class="plan-name">Pro</div>
-          <div class="plan-price"><b>€19.99</b><span data-i18n="perMonth"></span></div>
+          <div class="plan-price" data-pm="€19.99" data-py="€199.90" data-pym="€16.66"><b>€19.99</b><span data-i18n="perMonth"></span></div><div class="plan-year-note" data-i18n-year="yearNote" hidden></div>
           <ul class="plan-list"><li data-i18n="planProF0"></li><li data-i18n="planProF1"></li><li data-i18n="planProF2"></li><li data-i18n="planProF3"></li><li data-i18n="planProF4"></li></ul>
           <button type="button" class="btn btn-ghost pick-tier" data-tier="pro" data-i18n="planProCta"></button>
         </div>
       </div>
       <form class="checkout plans-checkout reveal" novalidate>
-        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span>Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span>Pro · €19.99</span></label></div>
+        <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span class="ts-starter" data-pm="Starter · €9.99" data-py="Starter · €99.90">Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span class="ts-pro" data-pm="Pro · €19.99" data-py="Pro · €199.90">Pro · €19.99</span></label></div>
         <input type="email" autocomplete="email" data-i18n-ph="emailPh" placeholder="Email" required>
         <button type="submit" class="btn btn-primary">💳 <span data-i18n="priceCta"></span></button>
         <div class="checkout-err"></div>
@@ -101,7 +102,7 @@
   <div class="container">
     <div class="foot">
       <div><a href="/" data-lp="" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a><p class="foot-tag" data-i18n="footTag">The loyalty program for small businesses.</p></div>
-      <div><h4 data-i18n="footProduct">Product</h4><a href="/#features" data-lp="#features" data-i18n="navFeatures">Features</a><a href="/#pricing" data-lp="#pricing" data-i18n="navPricing">Pricing</a><a href="/#download" data-lp="#download" data-i18n="footDownload">Download for Windows</a></div>
+      <div><h4 data-i18n="footProduct">Product</h4><a href="/#features" data-lp="#features" data-i18n="navFeatures">Features</a><a href="/#pricing" data-lp="#pricing" data-i18n="navPricing">Pricing</a><a href="/#download" data-lp="#download" data-i18n="footDownload">Download for Windows</a><a href="/blog/" data-i18n="footBlog">Articles</a></div>
       <div><h4 data-i18n="footSupport">Support</h4><a href="/#faq" data-lp="#faq" data-i18n="navFaq">FAQ</a><a href="mailto:loya.loyalty.send@gmail.com" data-i18n="footContact">Contact us</a><a href="mailto:loya.loyalty.send@gmail.com">loya.loyalty.send@gmail.com</a><a href="/privacy.html" data-i18n="footPrivacy">Privacy policy</a><a href="/terms.html" data-i18n="footTerms">Terms &amp; refunds</a></div>
       <div><h4 data-i18n="footSolutions">Solutions</h4><a href="/cafe/" data-lp="cafe/">Cafés &amp; coffee shops</a><a href="/beauty-salon/" data-lp="beauty-salon/">Salons &amp; barbershops</a><a href="/shop/" data-lp="shop/">Retail shops</a><a href="/travel-agency/" data-lp="travel-agency/">Travel agencies</a><a href="/photo-studio/" data-lp="photo-studio/">Photo studios</a><a href="/pet-grooming/" data-lp="pet-grooming/">Pet grooming</a></div>
     </div>
@@ -113,7 +114,7 @@
   <div class="msg-fab-menu" id="msg-fab-menu"><b data-i18n="msgTitle">Message us</b><a href="https://t.me/loya_admin_bot" target="_blank" rel="noopener" class="msg-tg"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21.9 4.6l-3.1 14.6c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-7.9c.4-.3-.1-.5-.6-.2L6.7 13.1 2 11.6c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.6z"/></svg><span>Telegram</span></a><a href="https://wa.me/qr/VDESJYHZGRVKG1?s=r" target="_blank" rel="noopener" class="msg-wa"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.5-.2z"/></svg><span>WhatsApp</span></a><a href="mailto:loya.loyalty.send@gmail.com" class="msg-mail"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18v12H3z"/><path d="M3 7l9 6 9-6"/></svg><span>Email</span></a></div>
 </div>
 <!--/SITE-FOOTER-->
-<script src="/i18n.js?v=329a456d"></script>
-<script src="/site.js?v=329a456d"></script>
+<script src="/i18n.js?v=afa8fdb9"></script>
+<script src="/site.js?v=afa8fdb9"></script>
 </body>
 </html>

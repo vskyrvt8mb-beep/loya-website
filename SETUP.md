@@ -272,3 +272,18 @@ Vercel → проект → Settings → Domains → Add `loya-loyalty.com` и `
 `MAIL_FROM` и `SUPPORT_EMAIL` (адрес отправителя на своём домене и адрес для ответов),
 необязательно `STRIPE_COLLECT_TAX_ID=1`. После обновления выполните весь `schema.sql` в Supabase
 (колонка `livemode` и защита от дубликатов ключа).
+
+## 2.19–2.20: облачная копия, годовая оплата, онлайн-запись, отзывы, «Приведи друга», Dotykačka
+
+1. Supabase → SQL Editor: выполнить по очереди `schema_2_19.sql` и `schema_2_20.sql` (повторный запуск ничего не ломает).
+2. Годовая оплата: в Stripe создать две цены с интервалом «год» (Starter 99,90 €, Pro 199,90 €) и добавить в Vercel
+   `STRIPE_PRICE_ID_YEAR` и `STRIPE_PRICE_ID_PRO_YEAR` (значения — ID цен `price_…`).
+3. Напоминания об онлайн-записи накануне шлёт Vercel Cron (`/api/book-remind`, раз в день, уже в `vercel.json`).
+   Желательно добавить в Vercel переменную `CRON_SECRET` (любая длинная случайная строка) — тогда запускать
+   напоминания сможет только сам Vercel.
+4. Касса Dotykačka: заполнить заявку на клиентское приложение на docs.api.dotypos.com (Getting started → форма регистрации),
+   в качестве адреса возврата указать `https://loya-loyalty.com/api/dk-callback`. Dotykačka пришлёт Client ID и Client Secret —
+   добавить их в Vercel как `DOTYKACKA_CLIENT_ID` и `DOTYKACKA_CLIENT_SECRET`. Пока их нет, кнопка в программе честно
+   пишет, что подключение скоро будет доступно.
+5. Необязательно: `BOOK_DAILY_PER_BUSINESS` — сколько онлайн-записей в сутки принимает одно заведение (по умолчанию 200).
+6. Проверка: `/api/health` → в `tablesMissing` не должно быть `bookings`, `booking_busy`, `feedback`, `pos_connectors`.

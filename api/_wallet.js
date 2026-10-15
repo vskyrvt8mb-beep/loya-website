@@ -45,12 +45,12 @@ function ids(licenseKey, cardCode) {
 }
 
 const TEXT = {
-  ru: { discount: 'Скидочная карта', stamp: 'Карта лояльности', spend: 'Накопительная карта', hDiscount: 'Скидка', hProgress: 'Штампы', hSpent: 'Накоплено', hBonus: 'Бонусы', hRule: 'Правило' },
-  uk: { discount: 'Знижкова картка', stamp: 'Картка лояльності', spend: 'Накопичувальна картка', hDiscount: 'Знижка', hProgress: 'Штампи', hSpent: 'Накопичено', hBonus: 'Бонуси', hRule: 'Правило' },
-  sk: { discount: 'Zľavová karta', stamp: 'Vernostná karta', spend: 'Vernostná karta na nákupy', hDiscount: 'Zľava', hProgress: 'Pečiatky', hSpent: 'Nazbierané', hBonus: 'Bonusy', hRule: 'Pravidlo' },
-  en: { discount: 'Discount card', stamp: 'Loyalty card', spend: 'Spend card', hDiscount: 'Discount', hProgress: 'Stamps', hSpent: 'Collected', hBonus: 'Bonuses', hRule: 'How it works' }
+  ru: { hInvite: 'Пригласите друга', inviteDesc: 'Вам обоим — подарок', gift: 'Подарочный сертификат', hBalance: 'Остаток', hTier: 'Уровень', hUntil: 'Действует до', discount: 'Скидочная карта', stamp: 'Карта лояльности', spend: 'Накопительная карта', hDiscount: 'Скидка', hProgress: 'Штампы', hSpent: 'Накоплено', hBonus: 'Бонусы', hRule: 'Правило' },
+  uk: { hInvite: 'Запросіть друга', inviteDesc: 'Вам обом — подарунок', gift: 'Подарунковий сертифікат', hBalance: 'Залишок', hTier: 'Рівень', hUntil: 'Діє до', discount: 'Знижкова картка', stamp: 'Картка лояльності', spend: 'Накопичувальна картка', hDiscount: 'Знижка', hProgress: 'Штампи', hSpent: 'Накопичено', hBonus: 'Бонуси', hRule: 'Правило' },
+  sk: { hInvite: 'Pozvite priateľa', inviteDesc: 'Darček pre vás oboch', gift: 'Darčeková poukážka', hBalance: 'Zostatok', hTier: 'Úroveň', hUntil: 'Platí do', discount: 'Zľavová karta', stamp: 'Vernostná karta', spend: 'Vernostná karta na nákupy', hDiscount: 'Zľava', hProgress: 'Pečiatky', hSpent: 'Nazbierané', hBonus: 'Bonusy', hRule: 'Pravidlo' },
+  en: { hInvite: 'Invite a friend', inviteDesc: 'A gift for you both', gift: 'Gift card', hBalance: 'Balance', hTier: 'Tier', hUntil: 'Valid until', discount: 'Discount card', stamp: 'Loyalty card', spend: 'Spend card', hDiscount: 'Discount', hProgress: 'Stamps', hSpent: 'Collected', hBonus: 'Bonuses', hRule: 'How it works' }
 };
-const CUR = { EUR: '€', USD: '$', RUB: '₽', UAH: '₴' };
+const CUR = { EUR: '€', USD: '$', RUB: '₽', UAH: '₴', CZK: 'Kč', PLN: 'zł', HUF: 'Ft', GBP: '£', CHF: 'CHF' };
 
 function clean(v, max) { return String(v == null ? '' : v).slice(0, max); }
 
@@ -71,6 +71,7 @@ function heroImageUrl(card, brand, lang, design) {
   if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
   else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); if (Number(card.bonus_balance) > 0) q.set('bonus', Math.round(Number(card.bonus_balance))); }
   else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
+  else if (card.type === 'gift') { q.set('gb', card.gift_balance || 0); q.set('v', String(card.gift_balance || 0)); }
   // Свой баннер заведения: картинка берётся из wallet_designs по «отпечатку» бизнеса и версии дизайна.
   if (design && design.hasHero) { q.set('b', design.biz); q.set('dv', String(design.ver)); if (!design.heroStamps) q.set('hs', '0'); }
   q.set('action', 'hero');
@@ -82,6 +83,11 @@ function progress(card, lang, currency) {
   const W = TEXT[lang] || TEXT.en;
   const cur = CUR[currency] || '€';
   const money = (v) => { const n = Math.round((Number(v) || 0) * 100) / 100; let t = Number.isInteger(n) ? String(n) : n.toFixed(2); if (lang !== 'en') t = t.replace('.', ','); return lang === 'en' ? cur + t : `${t} ${cur}`; };
+  // 2.19: сертификат — остаток из номинала; срок — отдельной строкой.
+  if (card.type === 'gift') {
+    const until = /^\d{4}-\d{2}-\d{2}/.test(String(card.expires_at || '')) ? String(card.expires_at).slice(0, 10).split('-').reverse().join('.') : '';
+    return { header: W.hBalance, body: `${money(card.gift_balance)} / ${money(card.gift_amount)}`, rule: until ? { header: W.hUntil, body: until } : null };
+  }
   if (card.type === 'discount') return { header: W.hDiscount, body: `-${Number(card.discount_percent) || 0}%` };
   if (card.type === 'spend') {
     const acc = money(card.spend_accumulated);
@@ -95,6 +101,31 @@ function progress(card, lang, currency) {
   return { header: W.hProgress, body: `${Number(card.stamp_count) || 0} / ${Number(card.stamp_target) || 0}` };
 }
 
+// Уровень клиента (2.19, если у заведения включены привилегии уровней).
+function tierLabel(t) { return t === 'gold' ? '🥇 GOLD' : t === 'silver' ? '🥈 SILVER' : t === 'basic' ? 'BASIC' : ''; }
+// Координаты заведения для «Wallet рядом» (2.19).
+function cleanGeo(g) {
+  if (!g || typeof g !== 'object') return null;
+  const lat = Number(g.lat), lng = Number(g.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+  return { lat: Math.round(lat * 1e6) / 1e6, lng: Math.round(lng * 1e6) / 1e6, text: clean(String(g.text || '').replace(/[\u0000-\u001f<>]/g, ' ').trim(), 120) };
+}
+// Текст для экрана блокировки iPhone рядом с заведением: свой или прогресс карты.
+function nearText(card, lang, geo, currency) {
+  if (geo && geo.text) return geo.text;
+  const N = { ru: { st: (n) => `Ещё ${n} до подарка — заходите!`, ready: 'Подарок ждёт вас — заходите!', bonus: (n) => `У вас ${n} бонусов — заходите!`, gift: (m) => `На сертификате ${m} — заходите!`, any: 'Вы рядом — заходите!' },
+    uk: { st: (n) => `Ще ${n} до подарунка — заходьте!`, ready: 'Подарунок чекає — заходьте!', bonus: (n) => `У вас ${n} бонусів — заходьте!`, gift: (m) => `На сертифікаті ${m} — заходьте!`, any: 'Ви поруч — заходьте!' },
+    sk: { st: (n) => `Ešte ${n} do darčeka — zastavte sa!`, ready: 'Darček na vás čaká — zastavte sa!', bonus: (n) => `Máte ${n} bodov — zastavte sa!`, gift: (m) => `Na poukážke máte ${m} — zastavte sa!`, any: 'Ste blízko — zastavte sa!' },
+    en: { st: (n) => `${n} more to your reward — drop in!`, ready: 'Your reward is waiting — drop in!', bonus: (n) => `You have ${n} points — drop in!`, gift: (m) => `${m} on your gift card — drop in!`, any: 'You are nearby — drop in!' } }[lang] || null;
+  const T = N || { st: (n) => `${n} more to your reward`, ready: 'Your reward is waiting', bonus: (n) => `${n} points`, gift: (m) => m, any: 'You are nearby' };
+  if (card.type === 'stamp') { const left = (Number(card.stamp_target) || 0) - (Number(card.stamp_count) || 0); return left > 0 ? T.st(left) : T.ready; }
+  if (card.type === 'spend' && Number(card.bonus_balance) > 0) return T.bonus(Math.round(Number(card.bonus_balance)));
+  if (card.type === 'gift') { const cur = CUR[currency] || '€'; return T.gift(lang === 'en' ? cur + (Number(card.gift_balance) || 0) : `${Number(card.gift_balance) || 0} ${cur}`); }
+  return T.any;
+}
+
+// 2.20: «Приведи друга» — личная ссылка гостя (только на страницу регистрации этого сайта).
+function cleanInvite(u) { const s = String(u || ''); return /^https:\/\/[a-z0-9.-]+\/[jr]\/[a-z0-9-]{3,48}\?ref=[A-Z0-9]{4,12}$/.test(s) && (s.startsWith(SITE_URL + '/j/') || s.startsWith(SITE_URL + '/r/')) ? s : ''; }
 // design — из _walletDesign.getDesignInfo(): свой логотип, баннер и цвет фона заведения (если есть).
 function buildObject(licenseKey, card, brand, design) {
   const lang = TEXT[card.lang] ? card.lang : 'en';
@@ -106,7 +137,8 @@ function buildObject(licenseKey, card, brand, design) {
   const D = require('./_walletDesign');
   const logoUri = design && design.hasLogo ? D.assetUrl(design, 'logo') : `${SITE_URL}/logo.png`;
   const p = progress(card, lang, brand.currency);
-  const typeName = card.type === 'discount' ? W.discount : card.type === 'spend' ? W.spend : W.stamp;
+  const typeName = card.type === 'gift' ? W.gift : card.type === 'discount' ? W.discount : card.type === 'spend' ? W.spend : W.stamp;
+  const tier = tierLabel(card.tier);
   return {
     classId,
     object: {
@@ -119,7 +151,8 @@ function buildObject(licenseKey, card, brand, design) {
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },
       header: { defaultValue: { language: lang, value: clean(card.client_name || typeName, 60) } },
-      textModulesData: [{ id: 'progress', header: p.header, body: p.body }].concat(p.bonus ? [{ id: 'bonus', header: p.bonus.header, body: p.bonus.body }] : [], p.rule ? [{ id: 'rule', header: p.rule.header, body: p.rule.body }] : []),
+      textModulesData: [{ id: 'progress', header: p.header, body: p.body }].concat(p.bonus ? [{ id: 'bonus', header: p.bonus.header, body: p.bonus.body }] : [], tier ? [{ id: 'tier', header: W.hTier, body: tier }] : [], p.rule ? [{ id: 'rule', header: p.rule.header, body: p.rule.body }] : []),
+      ...(cleanInvite(card.invite_url) ? { linksModuleData: { uris: [{ id: 'invite', uri: cleanInvite(card.invite_url), description: `🤝 ${W.hInvite} — ${W.inviteDesc}` }] } } : {}),
       barcode: { type: 'QR_CODE', value: clean(card.code, 80), alternateText: clean(card.code, 80) }
     }
   };
@@ -174,4 +207,12 @@ async function putClass(token, classId) {
   return r.status === 409 ? { ok: true, status: 200, message: '' } : r;   // класс уже есть — это нормально
 }
 
-module.exports = { progress, TEXT, putObject, putClass, serviceAccount, signJwt, checkLicense, buildObject, accessToken };
+// Google Wallet: места заведения на классе карт — Google сам покажет карту рядом (если поддерживает для этого типа).
+// Ошибку не считаем фатальной: карта без мест всё равно работает.
+async function putClassLocations(token, classId, geo) {
+  if (!geo) return { skipped: true };
+  try { return await gcall(token, 'PATCH', `genericClass/${encodeURIComponent(classId)}`, { id: classId, merchantLocations: [{ latitude: geo.lat, longitude: geo.lng }] }); }
+  catch (e) { return { ok: false }; }
+}
+
+module.exports = { progress, TEXT, putObject, putClass, putClassLocations, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };

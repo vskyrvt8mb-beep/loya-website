@@ -24,11 +24,12 @@ function tierOf(row) {
   if (TIERS.includes(row.tier)) return row.tier;
   return row.plan === 'free' ? 'pro' : 'starter';
 }
-// Цена Stripe → тариф (STRIPE_PRICE_ID — Starter, STRIPE_PRICE_ID_PRO — Pro).
+// Цена Stripe → тариф (STRIPE_PRICE_ID / _YEAR — Starter, STRIPE_PRICE_ID_PRO / _PRO_YEAR — Pro; с 2.19 есть годовые цены).
 function tierForPrice(priceId) {
   if (!priceId) return null;
-  if (process.env.STRIPE_PRICE_ID_PRO && priceId === process.env.STRIPE_PRICE_ID_PRO) return 'pro';
-  if (process.env.STRIPE_PRICE_ID && priceId === process.env.STRIPE_PRICE_ID) return 'starter';
+  const e = process.env;
+  if ((e.STRIPE_PRICE_ID_PRO && priceId === e.STRIPE_PRICE_ID_PRO) || (e.STRIPE_PRICE_ID_PRO_YEAR && priceId === e.STRIPE_PRICE_ID_PRO_YEAR)) return 'pro';
+  if ((e.STRIPE_PRICE_ID && priceId === e.STRIPE_PRICE_ID) || (e.STRIPE_PRICE_ID_YEAR && priceId === e.STRIPE_PRICE_ID_YEAR)) return 'starter';
   return null;
 }
 function isActive(row) { return licenseState(row) === 'active'; }

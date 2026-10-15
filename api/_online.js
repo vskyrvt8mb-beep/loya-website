@@ -39,7 +39,12 @@ function cleanProfile(p, prev) {
     bonusPercent: clamp(p.bonusPercent, 1, 100, 100),
     bonusDays: clamp(p.bonusDays, 1, 90, 14),
     welcome: str(p.welcome, 160),
-    currency: str(p.currency, 6) || 'EUR'
+    currency: str(p.currency, 6) || 'EUR',
+    // 2.20: «Приведи друга» — подарок другу (текст для страницы), ссылка на отзывы Google, онлайн-запись.
+    refOn: !!p.refOn,
+    refFriend: str(p.refFriend, 60),
+    reviewUrl: /^https:\/\/[^\s<>"']{4,300}$/.test(String(p.reviewUrl || '')) ? String(p.reviewUrl) : '',
+    book: require('./_book').cleanBook(p.book)
   };
 }
 
@@ -99,6 +104,8 @@ async function register(body, ip) {
   if (!name) return { status: 400, error: 'name' };
   if (!phoneKey) return { status: 400, error: 'phone' };
   if (email && !EMAIL_RE.test(email)) return { status: 400, error: 'email' };
+  // 2.20: код пригласившего друга (из ссылки ?ref=…) — программа на кассе свяжет нового гостя с ним.
+  const ref = prof.refOn && /^[A-Z0-9]{4,12}$/.test(String(body.ref || '').toUpperCase()) ? String(body.ref).toUpperCase() : '';
   const birthdayRaw = str(body.birthday, 10);
   const birthday = /^\d{4}-\d{2}-\d{2}$/.test(birthdayRaw) ? birthdayRaw : '';
 
@@ -118,16 +125,17 @@ async function register(body, ip) {
 
   const rec = join ? {
     // Постоянная карта: код в том же формате, что и в программе (LC-…); процент 0 — признак онлайн-регистрации.
-    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent,
+    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
     bonus_code: 'LC-' + crypto.randomBytes(6).toString('hex').toUpperCase(), bonus_title: '', bonus_percent: 0, bonus_expires: dateISO(3650), kind: 'join'
   } : {
-    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent,
+    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
     bonus_code: 'LB-' + crypto.randomBytes(5).toString('hex').toUpperCase(),
     bonus_title: prof.bonusTitle || DEFAULT_BONUS[lang], bonus_percent: clamp(prof.bonusPercent, 1, 100, 100),
     bonus_expires: dateISO(clamp(prof.bonusDays, 1, 90, 14)), kind: 'promo'
   };
   let { data: saved, error } = await supabase.from('online_registrations').insert(rec).select().single();
   if (error && /kind/i.test(String(error.message))) { const { kind, ...noKind } = rec; ({ data: saved, error } = await supabase.from('online_registrations').insert(noKind).select().single()); }   // колонку ещё не добавили
+  if (error && /\bref\b/i.test(String(error.message))) { const { ref: _r, ...noRef } = rec; ({ data: saved, error } = await supabase.from('online_registrations').insert(noRef).select().single()); }   // schema_2_20.sql ещё не выполнен
   if (error || !saved) return { status: 500, error: 'save_failed' };
   const reply = await asReply(saved, false);
 
@@ -158,7 +166,7 @@ async function pull({ licenseKey, ack }) {
   if (ids.length) await supabase.from('online_registrations').update({ delivered_at: new Date().toISOString() }).eq('license_key', key).in('id', ids);
   const { data, error: pullErr } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
   if (pullErr) return { status: 500, error: 'db_error', detail: String(pullErr.message || '').slice(0, 140) };
-  return { status: 200, ok: true, items: (data || []).map(r => ({ id: r.id, kind: r.kind || (Number(r.bonus_percent) === 0 ? 'join' : 'promo'), name: r.name, phone: r.phone, email: r.email, birthday: r.birthday, lang: r.lang, consent: !!r.consent, code: r.bonus_code, title: r.bonus_title, percent: r.bonus_percent, expires: String(r.bonus_expires).slice(0, 10), createdAt: r.created_at })) };
+  return { status: 200, ok: true, items: (data || []).map(r => ({ id: r.id, kind: r.kind || (Number(r.bonus_percent) === 0 ? 'join' : 'promo'), name: r.name, phone: r.phone, email: r.email, birthday: r.birthday, lang: r.lang, consent: !!r.consent, ref: r.ref || '', code: r.bonus_code, title: r.bonus_title, percent: r.bonus_percent, expires: String(r.bonus_expires).slice(0, 10), createdAt: r.created_at })) };
 }
 
 module.exports = { publishProfile, loadProfileBySlug, register, pull, SITE_URL, esc, cleanProfile, slugify, DEFAULT_BONUS };

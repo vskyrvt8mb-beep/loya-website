@@ -47,10 +47,10 @@ function iconSvg(niche, x, y, size, opacity) {
 // бизнеса плюс «пилюля» с типом карты, ниже — штампы (цветные с галочкой, пустые
 // пунктиром, последний — подарок), накопленная сумма или крупная скидка.
 const TXT = {
-  ru: { stamp: 'Штамп-карта', discount: 'Скидочная', spend: 'Накопительная', left: (n) => `Ещё ${n} до подарка`, ready: '🎁 Подарок ждёт вас!', every: 'На каждую покупку', toBonus: (m) => `Ещё ${m} до бонуса`, saved: 'Накоплено', bonusN: (n) => `Бонусов: ${n}` },
-  uk: { stamp: 'Штамп-картка', discount: 'Знижкова', spend: 'Накопичувальна', left: (n) => `Ще ${n} до подарунка`, ready: '🎁 Подарунок чекає!', every: 'На кожну покупку', toBonus: (m) => `Ще ${m} до бонусу`, saved: 'Накопичено', bonusN: (n) => `Бонусів: ${n}` },
-  sk: { stamp: 'Pečiatková karta', discount: 'Zľavová', spend: 'Na nákupy', left: (n) => `Ešte ${n} do darčeka`, ready: '🎁 Darček na vás čaká!', every: 'Na každý nákup', toBonus: (m) => `Ešte ${m} do bonusu`, saved: 'Nazbierané', bonusN: (n) => `Bonusy: ${n}` },
-  en: { stamp: 'Stamp card', discount: 'Discount', spend: 'Spend card', left: (n) => `${n} more to a reward`, ready: '🎁 Your reward is ready!', every: 'On every purchase', toBonus: (m) => `${m} more to a bonus`, saved: 'Collected', bonusN: (n) => `Bonuses: ${n}` }
+  ru: { gift: 'Сертификат', balance: 'Остаток на сертификате', stamp: 'Штамп-карта', discount: 'Скидочная', spend: 'Накопительная', left: (n) => `Ещё ${n} до подарка`, ready: '🎁 Подарок ждёт вас!', every: 'На каждую покупку', toBonus: (m) => `Ещё ${m} до бонуса`, saved: 'Накоплено', bonusN: (n) => `Бонусов: ${n}` },
+  uk: { gift: 'Сертифікат', balance: 'Залишок на сертифікаті', stamp: 'Штамп-картка', discount: 'Знижкова', spend: 'Накопичувальна', left: (n) => `Ще ${n} до подарунка`, ready: '🎁 Подарунок чекає!', every: 'На кожну покупку', toBonus: (m) => `Ще ${m} до бонусу`, saved: 'Накопичено', bonusN: (n) => `Бонусів: ${n}` },
+  sk: { gift: 'Poukážka', balance: 'Zostatok na poukážke', stamp: 'Pečiatková karta', discount: 'Zľavová', spend: 'Na nákupy', left: (n) => `Ešte ${n} do darčeka`, ready: '🎁 Darček na vás čaká!', every: 'Na každý nákup', toBonus: (m) => `Ešte ${m} do bonusu`, saved: 'Nazbierané', bonusN: (n) => `Bonusy: ${n}` },
+  en: { gift: 'Gift card', balance: 'Gift card balance', stamp: 'Stamp card', discount: 'Discount', spend: 'Spend card', left: (n) => `${n} more to a reward`, ready: '🎁 Your reward is ready!', every: 'On every purchase', toBonus: (m) => `${m} more to a bonus`, saved: 'Collected', bonusN: (n) => `Bonuses: ${n}` }
 };
 const INK = '#0e141b';       // цвет галочек и подарка на закрашенном кружке
 const MUTED = 'rgba(255,255,255,.62)';
@@ -132,11 +132,14 @@ function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress }) {
   const accent = /^#[0-9a-fA-F]{6}$/.test(brand.color || '') ? brand.color : '#d4a24a';
   const name = String(brand.name || 'Loya').slice(0, 32);
   const nameW = Math.min(560, textWidth(name, 34));
-  const pill = card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
+  const pill = card.type === 'gift' ? T.gift : card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
   const pillX = 102 + nameW + 16, pillW = textWidth(pill, 22) + 36;
 
   let body = '';
-  if (card.type === 'discount') {
+  if (card.type === 'gift') {
+    body = `<text x="48" y="228" font-family="Carlito" font-weight="700" font-size="104" fill="${accent}" letter-spacing="-1">${esc(moneyFmt(Number(card.gift_balance) || 0, brand.currency, lang))}</text>
+      <text x="52" y="282" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(T.balance)}</text>`;
+  } else if (card.type === 'discount') {
     body = `<text x="48" y="228" font-family="Carlito" font-weight="700" font-size="112" fill="${accent}" letter-spacing="-2">−${Number(card.discount_percent) || 0}%</text>
       <text x="52" y="282" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(T.every)}</text>`;
   } else if (card.type === 'spend') {

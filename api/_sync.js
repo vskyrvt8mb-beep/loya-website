@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const L = require('./_license');
 const { supabase } = L;
 
-const ENTITIES = ['client', 'card', 'scan'];
+const ENTITIES = ['client', 'card', 'scan', 'appt'];   // appt — записи (2.20)
 const MAX_DEVICES = 20;
 const MAX_PUSH = 100;
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');

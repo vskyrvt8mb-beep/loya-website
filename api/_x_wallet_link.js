@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
       const c = await W.putClass(token, classId);
       if (!c.ok) { if (c.status >= 400 && c.status < 500) rejected = `class: ${c.status} ${c.message}`; }
       else {
+        await W.putClassLocations(token, classId, W.cleanGeo((brand || {}).geo));   // 2.19: «Wallet рядом» (не обязательно)
         const o = await W.putObject(token, object);
         if (o.ok) { payload = { genericObjects: [{ id: object.id, classId }] }; heroDropped = !!o.heroDropped; }
         else if (o.status >= 400 && o.status < 500) rejected = `${o.status} ${o.message}`;

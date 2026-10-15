@@ -56,17 +56,19 @@ function safeEq(a, b) { const x = Buffer.from(String(a || '')), y = Buffer.from(
 // ---- содержимое карты ----
 function hexToRgb(h) { const n = parseInt(String(h || '').slice(1), 16); return /^#[0-9a-fA-F]{6}$/.test(h || '') ? `rgb(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255})` : 'rgb(212,175,55)'; }
 const BACK = {
-  ru: { client: 'Клиент', how: 'Как пользоваться', howText: 'Покажите QR-код на кассе — штампы и бонусы начислятся, а карта обновится сама.', by: 'Карта выпущена через Loya — loya-loyalty.com' },
-  uk: { client: 'Клієнт', how: 'Як користуватися', howText: 'Покажіть QR-код на касі — штампи й бонуси нарахуються, а картка оновиться сама.', by: 'Картку випущено через Loya — loya-loyalty.com' },
-  sk: { client: 'Klient', how: 'Ako používať', howText: 'Ukážte QR kód pri pokladni — pečiatky a bonusy sa pripíšu a karta sa sama aktualizuje.', by: 'Kartu vydal systém Loya — loya-loyalty.com' },
-  en: { client: 'Client', how: 'How to use', howText: 'Show the QR code at the till — stamps and bonuses are added and the card updates itself.', by: 'Card issued via Loya — loya-loyalty.com' }
+  ru: { invite: 'Пригласите друга', inviteText: 'Поделитесь ссылкой — другу подарок при регистрации, вам бонус после его первого визита:', client: 'Клиент', how: 'Как пользоваться', howText: 'Покажите QR-код на кассе — штампы и бонусы начислятся, а карта обновится сама.', by: 'Карта выпущена через Loya — loya-loyalty.com' },
+  uk: { invite: 'Запросіть друга', inviteText: 'Поділіться посиланням — другові подарунок під час реєстрації, вам бонус після його першого візиту:', client: 'Клієнт', how: 'Як користуватися', howText: 'Покажіть QR-код на касі — штампи й бонуси нарахуються, а картка оновиться сама.', by: 'Картку випущено через Loya — loya-loyalty.com' },
+  sk: { invite: 'Pozvite priateľa', inviteText: 'Pošlite odkaz — priateľ dostane darček pri registrácii, vy bonus po jeho prvej návšteve:', client: 'Klient', how: 'Ako používať', howText: 'Ukážte QR kód pri pokladni — pečiatky a bonusy sa pripíšu a karta sa sama aktualizuje.', by: 'Kartu vydal systém Loya — loya-loyalty.com' },
+  en: { invite: 'Invite a friend', inviteText: 'Share the link — your friend gets a gift on sign-up, you get a bonus after their first visit:', client: 'Client', how: 'How to use', howText: 'Show the QR code at the till — stamps and bonuses are added and the card updates itself.', by: 'Card issued via Loya — loya-loyalty.com' }
 };
 function buildPassJson(cfg, serial, card, brand, design) {
   const lang = W.TEXT[card.lang] ? card.lang : 'en';
   const T = W.TEXT[lang], B = BACK[lang];
   const p = W.progress(card, lang, brand.currency);
-  const typeName = card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
+  const typeName = card.type === 'gift' ? T.gift : card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
   const name = String(brand.name || 'Loya').slice(0, 60);
+  const tier = W.tierLabel(card.tier);
+  const geo = W.cleanGeo(brand.geo);
   // Свой цвет фона заведения: на светлом фоне текст тёмный, иначе белый.
   const ownBg = design && /^#[0-9a-fA-F]{6}$/.test(design.bg_color || '') ? design.bg_color : '';
   const lum = ownBg ? (() => { const n = parseInt(ownBg.slice(1), 16); return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; })() : 0;
@@ -79,15 +81,20 @@ function buildPassJson(cfg, serial, card, brand, design) {
     webServiceURL: `${SITE_URL}/api/apple-ws`, authenticationToken: authTokenFor(serial),
     sharingProhibited: true,
     barcodes: [{ format: 'PKBarcodeFormatQR', message: String(card.code), messageEncoding: 'iso-8859-1', altText: String(card.code) }],
+    // 2.19: «Wallet рядом» — iPhone сам покажет карту на экране блокировки около заведения.
+    ...(geo ? { locations: [{ latitude: geo.lat, longitude: geo.lng, relevantText: W.nearText(card, lang, geo, brand.currency) }], maxDistance: 300 } : {}),
+    ...(card.type === 'gift' && card.expires_at ? { expirationDate: `${card.expires_at}T23:59:59Z` } : {}),
     storeCard: {
       headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }].concat(p.bonus ? [{ key: 'bonus', label: p.bonus.header, value: p.bonus.body, changeMessage: '%@' }] : []),
       secondaryFields: [
         { key: 'client', label: B.client, value: String(card.client_name || '—').slice(0, 60) },
+        ...(tier ? [{ key: 'tier', label: T.hTier, value: tier, changeMessage: '%@' }] : []),
         { key: 'type', label: typeName, value: String(card.title || '').slice(0, 60) || '—' }
       ],
       backFields: [
         { key: 'how', label: B.how, value: B.howText },
         ...(p.rule ? [{ key: 'rule', label: p.rule.header, value: p.rule.body }] : []),
+        ...(require('./_wallet').cleanInvite(card.invite_url) ? [{ key: 'invite', label: '🤝 ' + B.invite, value: `${B.inviteText} ${require('./_wallet').cleanInvite(card.invite_url)}`, dataDetectorTypes: ['PKDataDetectorTypeLink'] }] : []),
         { key: 'code', label: 'QR', value: String(card.code) },
         { key: 'by', label: 'Loya', value: B.by }
       ]

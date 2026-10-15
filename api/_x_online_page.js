@@ -4,22 +4,22 @@ const { loadProfileBySlug, esc, DEFAULT_BONUS } = require('./_online');
 const { dictJs } = require('./_dict');
 
 const TX = {
-  ru: { jHow: 'Заполните форму — карта лояльности появится сразу. Покажите её QR-код на кассе.', jBtn: 'Получить карту', jOk: 'Готово! Это ваша карта', jShow: 'Покажите этот QR-код на кассе — на карту копятся штампы и бонусы.', jTitle: 'Карта лояльности', gift: 'Подарок за регистрацию', free: 'Бесплатно', valid: (d) => `Действует ${d} дн. после регистрации`, how: 'Заполните форму — QR-купон появится сразу. Покажите его в заведении и получите подарок и постоянную карту лояльности.',
+  ru: { refBan: 'Вас пригласил друг 🤝', refGift: 'Ваш подарок от друга', jHow: 'Заполните форму — карта лояльности появится сразу. Покажите её QR-код на кассе.', jBtn: 'Получить карту', jOk: 'Готово! Это ваша карта', jShow: 'Покажите этот QR-код на кассе — на карту копятся штампы и бонусы.', jTitle: 'Карта лояльности', gift: 'Подарок за регистрацию', free: 'Бесплатно', valid: (d) => `Действует ${d} дн. после регистрации`, how: 'Заполните форму — QR-купон появится сразу. Покажите его в заведении и получите подарок и постоянную карту лояльности.',
     lName: 'Ваше имя', pName: 'Например, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Пришлём копию купона', opt: 'необязательно', lBday: 'День рождения', bdayHint: 'Иногда дарим подарки ко дню рождения',
     consent: 'Хочу получать новости и акции', btn: 'Получить подарок', wait: 'Секунду…', agree: 'Нажимая кнопку, вы соглашаетесь с', privacy: 'политикой конфиденциальности',
     errName: 'Введите имя', errPhone: 'Введите номер телефона', errEmail: 'Проверьте email', errGen: 'Не получилось. Попробуйте ещё раз.', errMany: 'Слишком много попыток — попробуйте позже.', closed: 'Регистрация сейчас закрыта.',
     okTitle: 'Готово! Ваш подарок', again: 'Вы уже регистрировались — вот ваш подарок', until: 'Действует до', show: 'Покажите этот QR-код в заведении — там вы получите подарок и постоянную карту лояльности.', shot: 'Совет: сделайте скриншот, чтобы купон был под рукой.', mailed: 'Копия отправлена на ваш email.' },
-  uk: { jHow: 'Заповніть форму — картка лояльності з’явиться одразу. Покажіть її QR-код на касі.', jBtn: 'Отримати картку', jOk: 'Готово! Це ваша картка', jShow: 'Покажіть цей QR-код на касі — на картку накопичуються штампи й бонуси.', jTitle: 'Картка лояльності', gift: 'Подарунок за реєстрацію', free: 'Безкоштовно', valid: (d) => `Діє ${d} дн. після реєстрації`, how: 'Заповніть форму — QR-купон з’явиться одразу. Покажіть його в закладі й отримайте подарунок і постійну картку лояльності.',
+  uk: { refBan: 'Вас запросив друг 🤝', refGift: 'Ваш подарунок від друга', jHow: 'Заповніть форму — картка лояльності з’явиться одразу. Покажіть її QR-код на касі.', jBtn: 'Отримати картку', jOk: 'Готово! Це ваша картка', jShow: 'Покажіть цей QR-код на касі — на картку накопичуються штампи й бонуси.', jTitle: 'Картка лояльності', gift: 'Подарунок за реєстрацію', free: 'Безкоштовно', valid: (d) => `Діє ${d} дн. після реєстрації`, how: 'Заповніть форму — QR-купон з’явиться одразу. Покажіть його в закладі й отримайте подарунок і постійну картку лояльності.',
     lName: 'Ваше ім’я', pName: 'Наприклад, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Надішлемо копію купона', opt: 'необов’язково', lBday: 'День народження', bdayHint: 'Іноді даруємо подарунки до дня народження',
     consent: 'Хочу отримувати новини й акції', btn: 'Отримати подарунок', wait: 'Секунду…', agree: 'Натискаючи кнопку, ви погоджуєтеся з', privacy: 'політикою конфіденційності',
     errName: 'Введіть ім’я', errPhone: 'Введіть номер телефону', errEmail: 'Перевірте email', errGen: 'Не вийшло. Спробуйте ще раз.', errMany: 'Забагато спроб — спробуйте пізніше.', closed: 'Реєстрація зараз закрита.',
     okTitle: 'Готово! Ваш подарунок', again: 'Ви вже реєструвалися — ось ваш подарунок', until: 'Діє до', show: 'Покажіть цей QR-код у закладі — там ви отримаєте подарунок і постійну картку лояльності.', shot: 'Порада: зробіть скриншот, щоб купон був під рукою.', mailed: 'Копію надіслано на ваш email.' },
-  sk: { jHow: 'Vyplňte formulár — vernostná karta sa zobrazí hneď. QR kód ukážte pri pokladnici.', jBtn: 'Získať kartu', jOk: 'Hotovo! Toto je vaša karta', jShow: 'Ukážte tento QR kód pri pokladnici — na kartu sa zbierajú pečiatky a bonusy.', jTitle: 'Vernostná karta', gift: 'Darček za registráciu', free: 'Zadarmo', valid: (d) => `Platí ${d} dní od registrácie`, how: 'Vyplňte formulár — QR kupón sa zobrazí hneď. Ukážte ho v prevádzke a získate darček aj stálu vernostnú kartu.',
+  sk: { refBan: 'Pozval vás priateľ 🤝', refGift: 'Váš darček od priateľa', jHow: 'Vyplňte formulár — vernostná karta sa zobrazí hneď. QR kód ukážte pri pokladnici.', jBtn: 'Získať kartu', jOk: 'Hotovo! Toto je vaša karta', jShow: 'Ukážte tento QR kód pri pokladnici — na kartu sa zbierajú pečiatky a bonusy.', jTitle: 'Vernostná karta', gift: 'Darček za registráciu', free: 'Zadarmo', valid: (d) => `Platí ${d} dní od registrácie`, how: 'Vyplňte formulár — QR kupón sa zobrazí hneď. Ukážte ho v prevádzke a získate darček aj stálu vernostnú kartu.',
     lName: 'Vaše meno', pName: 'Napríklad Anna', lPhone: 'Telefón', pPhone: '+421 900 000 000', lEmail: 'E-mail', pEmail: 'Pošleme kópiu kupónu', opt: 'nepovinné', lBday: 'Dátum narodenia', bdayHint: 'Občas dávame darčeky k narodeninám',
     consent: 'Chcem dostávať novinky a akcie', btn: 'Získať darček', wait: 'Moment…', agree: 'Kliknutím súhlasíte so', privacy: 'zásadami ochrany osobných údajov',
     errName: 'Zadajte meno', errPhone: 'Zadajte telefónne číslo', errEmail: 'Skontrolujte e-mail', errGen: 'Nepodarilo sa. Skúste znova.', errMany: 'Príliš veľa pokusov — skúste neskôr.', closed: 'Registrácia je momentálne zatvorená.',
     okTitle: 'Hotovo! Váš darček', again: 'Už ste sa registrovali — tu je váš darček', until: 'Platí do', show: 'Ukážte tento QR kód v prevádzke — dostanete darček aj stálu vernostnú kartu.', shot: 'Tip: urobte si snímku obrazovky, aby ste mali kupón po ruke.', mailed: 'Kópia bola odoslaná na váš e-mail.' },
-  en: { jHow: 'Fill in the form — your loyalty card appears right away. Show its QR code at the till.', jBtn: 'Get my card', jOk: 'Done! This is your card', jShow: 'Show this QR code at the till — stamps and bonuses are collected on the card.', jTitle: 'Loyalty card', gift: 'Sign-up gift', free: 'Free', valid: (d) => `Valid for ${d} days after sign-up`, how: 'Fill in the form — your QR coupon appears right away. Show it at the venue to get your gift and a permanent loyalty card.',
+  en: { refBan: 'A friend invited you 🤝', refGift: 'Your gift from a friend', jHow: 'Fill in the form — your loyalty card appears right away. Show its QR code at the till.', jBtn: 'Get my card', jOk: 'Done! This is your card', jShow: 'Show this QR code at the till — stamps and bonuses are collected on the card.', jTitle: 'Loyalty card', gift: 'Sign-up gift', free: 'Free', valid: (d) => `Valid for ${d} days after sign-up`, how: 'Fill in the form — your QR coupon appears right away. Show it at the venue to get your gift and a permanent loyalty card.',
     lName: 'Your name', pName: 'e.g. Anna', lPhone: 'Phone', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'We’ll send a copy of the coupon', opt: 'optional', lBday: 'Birthday', bdayHint: 'We sometimes give birthday treats',
     consent: 'I’d like news and offers', btn: 'Get my gift', wait: 'One moment…', agree: 'By tapping the button you agree to the', privacy: 'privacy policy',
     errName: 'Enter your name', errPhone: 'Enter your phone number', errEmail: 'Check the email', errGen: 'Something went wrong. Please try again.', errMany: 'Too many attempts — please try later.', closed: 'Registration is closed right now.',
@@ -63,7 +63,7 @@ function palette(color, niche) {
 
 function html(slug, p, mode) {
   const pal = palette(p.color, p.niche);
-  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo' };
+  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '' };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#0d0f14"><title>${esc(ctx.name)}</title>
 <style>
@@ -87,6 +87,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;colo
 .offer .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
 .badge{background:var(--onbg);color:var(--on);border-radius:999px;padding:7px 14px;font-weight:900;font-size:14px;backdrop-filter:blur(4px)}
 .offer .v{font-size:13px;font-weight:700}
+.refban{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:14px 16px;border-radius:18px;background:rgba(var(--ar),.16);border:1px solid rgba(var(--ar),.5);font-weight:700;line-height:1.35}.refban b{display:block;font-size:15.5px}.refban span{font-size:13.5px;color:var(--mut);font-weight:600}.refban i{font-style:normal;font-size:28px}
 .how{color:var(--mut);font-size:14.5px;line-height:1.55;margin:0 4px 16px}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:24px;padding:20px;position:relative}
 .card:before{content:"";position:absolute;left:24px;right:24px;top:-1px;height:3px;border-radius:0 0 6px 6px;background:linear-gradient(90deg,var(--a),var(--b))}
@@ -133,6 +134,7 @@ button.go[disabled]{opacity:.65;transform:none}
 <div class="top"><div class="logo">${esc(p.emoji || '🎁')}</div><div class="brand">${esc(ctx.name)}</div><div class="lang" id="lang"></div></div>
 <div id="form-box">
   <div class="offer"><span class="gift" aria-hidden="true">🎁</span><div class="k" id="o-k"></div><div class="t" id="o-t"></div><div class="row"><span class="badge" id="o-b"></span><span class="v" id="o-v"></span></div></div>
+  <div class="refban" id="refban" style="display:none"></div>
   <p class="how" id="how"></p>
   <div class="card">
     <div class="closed" id="closed" style="display:none"></div>
@@ -156,6 +158,7 @@ const TX=${dictJs(TX)};const CTX=${safeJson(ctx)};
 let lang=(function(){const q=new URLSearchParams(location.search).get('lang');if(TX[q])return q;try{const s=localStorage.getItem('loya_reg_lang');if(TX[s])return s}catch(e){}
 for(const l of (navigator.languages||[navigator.language||''])){const k=String(l).slice(0,2).toLowerCase();if(k==='cs')return'sk';if(TX[k])return k}return TX[CTX.lang]?CTX.lang:'en'})();
 const $=id=>document.getElementById(id);let coupon=null,repeat=false,mailed=false;
+const REF=(new URLSearchParams(location.search).get('ref')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmt(iso){const p=String(iso).split('-');return lang==='en'?p[1]+'/'+p[2]+'/'+p[0]:p[2]+'.'+p[1]+'.'+p[0]}
 function pct(n){return Number(n)>=100?TX[lang].free:'−'+n+'%'}
@@ -166,6 +169,7 @@ const title=CTX.title||CTX.defaults[lang];
 const J=CTX.mode==='join';
 if(J){$('o-k').closest('.offer').style.display='none'}else{$('o-k').textContent='🎁 '+T.gift;$('o-t').textContent=title;$('o-b').textContent=pct(CTX.percent);$('o-v').textContent=T.valid(CTX.days)}
 $('how').textContent=J?T.jHow:T.how;
+if(CTX.refOn&&REF){$('refban').style.display='flex';$('refban').innerHTML='<i>🤝</i><div><b>'+esc(T.refBan)+'</b>'+(CTX.refFriend?'<span>'+esc(T.refGift)+': '+esc(CTX.refFriend)+'</span>':'')+'</div>'}
 $('l-n').textContent=T.lName;$('n').placeholder=T.pName;$('l-p').textContent=T.lPhone;$('p').placeholder=T.pPhone;
 $('l-e').textContent=T.lEmail;$('o-e').textContent='· '+T.opt;$('e').placeholder=T.pEmail;$('l-b').textContent=T.lBday;$('o-b2').textContent='· '+T.opt;$('h-b').textContent=T.bdayHint;
 $('cl').textContent=T.consent;$('go-t').textContent=J?T.jBtn:T.btn;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
@@ -182,7 +186,7 @@ const name=$('n').value.trim(),phone=$('p').value.trim(),email=$('e').value.trim
 if(!name){$('err').textContent=T.errName;$('n').focus();return}if(phone.replace(/\\D/g,'').length<7){$('err').textContent=T.errPhone;$('p').focus();return}
 if(email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){$('err').textContent=T.errEmail;$('e').focus();return}
 $('go').disabled=true;$('go-t').textContent=T.wait;
-try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,mode:CTX.mode,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value})});
+try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,mode:CTX.mode,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value,ref:REF})});
 const j=await r.json();if(j.ok&&j.code){coupon=j;repeat=!!j.repeat;mailed=!!j.emailSent;render();window.scrollTo(0,0);if(!repeat)burst();return}
 $('err').textContent=j.error==='too_many'||j.error==='daily_limit'?T.errMany:j.error==='closed'?T.closed:j.error==='email'?T.errEmail:j.error==='phone'?T.errPhone:j.error==='name'?T.errName:T.errGen}catch(e){$('err').textContent=T.errGen}
 $('go').disabled=false;$('go-t').textContent=T.btn});
@@ -200,3 +204,7 @@ module.exports = async (req, res) => {
   } catch (e) { res.status(500).send('Error'); }
 };
 module.exports.html = html;
+// 2.20: те же цвета и словарь — для страниц отзыва и онлайн-записи.
+module.exports.palette = palette;
+module.exports.hexRgb = hexRgb;
+module.exports.safeJson = safeJson;

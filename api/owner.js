@@ -7,7 +7,8 @@ const h_data = require('./_x_owner_data');
 const h_command = require('./_x_owner_command');
 const h_page = require('./_x_owner_page');
 const h_auth = require('./_x_owner_auth');
-const ACTIONS = { 'sync': h_sync, 'login': h_login, 'data': h_data, 'command': h_command, 'page': h_page, 'auth': h_auth };
+const h_manifest = require('./_x_owner_manifest');
+const ACTIONS = { 'sync': h_sync, 'login': h_login, 'data': h_data, 'command': h_command, 'page': h_page, 'auth': h_auth, 'manifest': h_manifest };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }

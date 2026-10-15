@@ -44,12 +44,20 @@ const TX = {
 };
 const TX2 = require('./_owner_tx');
 for (const l of Object.keys(TX)) Object.assign(TX[l], TX2[l] || {});
+// 2.19: кабинет как приложение на телефоне (iPhone — «На экран Домой», Android — кнопка «Установить»).
+const INST = {
+  ru: { instIos: 'Сделайте кабинет приложением: нажмите «Поделиться» ⬆︎ внизу Safari → «На экран «Домой»». Иконка Loya появится рядом с другими приложениями.', instBtn: '📲 Установить как приложение', instAnd: 'Кабинет можно поставить на телефон как приложение — с иконкой Loya.', instHide: 'Скрыть' },
+  uk: { instIos: 'Зробіть кабінет застосунком: натисніть «Поділитися» ⬆︎ унизу Safari → «На початковий екран». Іконка Loya з’явиться поруч з іншими застосунками.', instBtn: '📲 Встановити як застосунок', instAnd: 'Кабінет можна встановити на телефон як застосунок — з іконкою Loya.', instHide: 'Сховати' },
+  sk: { instIos: 'Urobte si z kabinetu aplikáciu: v Safari ťuknite na „Zdieľať“ ⬆︎ → „Pridať na plochu“. Ikona Loya sa objaví medzi aplikáciami.', instBtn: '📲 Nainštalovať ako aplikáciu', instAnd: 'Kabinet si môžete nainštalovať do telefónu ako aplikáciu — s ikonou Loya.', instHide: 'Skryť' },
+  en: { instIos: 'Make the dashboard an app: tap “Share” ⬆︎ in Safari → “Add to Home Screen”. The Loya icon will appear next to your other apps.', instBtn: '📲 Install as an app', instAnd: 'You can install the dashboard on your phone as an app — with the Loya icon.', instHide: 'Hide' }
+};
+for (const l of Object.keys(TX)) Object.assign(TX[l], INST[l] || {});
 const crypto = require('crypto');
 const { dictJs: dictJsShared } = require('./_dict');
 function dictJs() { return dictJsShared(TX); }
 
 const PAGE = (token, nonce) => `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#07080b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Loya"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="icon" href="/favicon-96.png"><title>Loya</title>
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#07080b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Loya"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/api/owner?action=manifest&amp;t=${token}"><link rel="icon" href="/favicon-96.png"><title>Loya</title>
 <style>
 :root{--a:#d4af37;--ar:212,175,55;--bg:#0d0f14;--card:#151922;--line:rgba(255,255,255,.09);--mut:rgba(243,239,230,.62)}*{box-sizing:border-box;margin:0}
 body{font-family:Manrope,system-ui,-apple-system,'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),transparent 70%),var(--bg);color:#f3efe6;min-height:100vh;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
@@ -69,6 +77,7 @@ input,textarea{width:100%;height:48px;border-radius:12px;border:1px solid rgba(2
 .err{color:#fca5a5;font-size:14px;min-height:20px}.ok{color:#86efac;font-size:14px}.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:12px}
 .chip{display:inline-block;font-size:11px;font-weight:700;border-radius:8px;padding:2px 7px;margin-left:5px;background:rgba(var(--ar),.18);color:#f3efe6;border:1px solid rgba(var(--ar),.7)}.chip.r{background:rgba(239,68,68,.16);color:#fca5a5}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}.modal .in{background:#151922;border:1px solid var(--line);border-radius:20px;padding:20px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px}
+.inst{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:rgba(var(--ar),.1);border:1px solid rgba(var(--ar),.45);border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:13.5px}.inst span{flex:1;min-width:200px}.inst .btn{height:40px;font-size:14px}.inst .x{all:unset;cursor:pointer;color:var(--mut);font-size:13px;padding:4px 6px}
 .fine{margin-top:22px;text-align:center;font-size:12.5px}.fine a{color:var(--mut)}.hide{display:none!important}
 
 @font-face{font-family:Manrope;font-weight:200 800;font-display:swap;src:url(/fonts/manrope-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC}
@@ -100,7 +109,7 @@ body{background:radial-gradient(800px 420px at 90% -10%,rgba(var(--ar),.16),tran
 <form id="ef2" class="hide"><p id="e-sent" style="font-size:13px"></p><input type="text" id="ec" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><input type="password" id="epw" autocomplete="current-password"><div class="err" id="eerr2"></div><button class="btn" id="ebtn2" type="submit"></button><p style="margin-top:10px"><a href="#" id="e-back" style="color:var(--a)"></a></p></form>
 <div class="top" style="justify-content:center;margin-top:18px" id="lang2"></div></div>
 <div id="app" class="hide"><div class="top"><h1 id="ttl"></h1><span id="lang1" style="display:flex;gap:6px"></span><button class="pill" id="rf"></button><button class="pill" id="lo"></button><button class="pill" id="lall"></button></div>
-<div id="stale" class="warn hide"></div><div class="tabs"><button class="pill on" data-t="o" id="tab-o"></button><button class="pill" data-t="c" id="tab-c"></button><button class="pill hide" data-t="p" id="tab-p"></button></div>
+<div id="inst" class="inst hide"><span id="inst-t"></span><button class="btn hide" id="inst-b" type="button"></button><button class="x" id="inst-x" type="button"></button></div><div id="stale" class="warn hide"></div><div class="tabs"><button class="pill on" data-t="o" id="tab-o"></button><button class="pill" data-t="c" id="tab-c"></button><button class="pill hide" data-t="p" id="tab-p"></button></div>
 <div id="v-o"></div><div id="v-c" class="hide"></div><div id="v-p" class="hide"></div></div>
 <p class="fine"><a href="/privacy.html" target="_blank" rel="noopener" id="priv"></a></p></div>
 <div id="modal" class="modal hide"><div class="in" id="mbody"></div></div>
@@ -226,6 +235,16 @@ setInterval(()=>{const u=$('upd-ago');if(u&&info&&info.at)u.textContent=T().ago(
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&session&&snap&&Date.now()-lastLoad>30e3)load()});
 document.querySelectorAll('.tabs .pill').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 $('modal').addEventListener('mousedown',e=>{if(e.target===$('modal'))$('modal').classList.add('hide')});
+let instEvt=null;
+const instHidden=()=>{try{return localStorage.getItem('loya_owner_inst')==='0'}catch(e){return false}};
+const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function paintInst(){const b=$('inst');if(!b)return;const t=T();const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!/crios|fxios/i.test(navigator.userAgent);
+if(standalone()||instHidden()||!(ios||instEvt)){b.classList.add('hide');return}
+$('inst-t').textContent=ios?t.instIos:t.instAnd;$('inst-x').textContent=t.instHide;$('inst-b').textContent=t.instBtn;$('inst-b').classList.toggle('hide',!instEvt);b.classList.remove('hide')}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEvt=e;paintInst()});
+$('inst-b').onclick=async()=>{if(!instEvt)return;instEvt.prompt();try{await instEvt.userChoice}catch(e){}instEvt=null;paintInst()};
+$('inst-x').onclick=()=>{try{localStorage.setItem('loya_owner_inst','0')}catch(e){}paintInst()};
+const _paint=paint;paint=function(){_paint();paintInst()};
 paint();if(session)load();
 </script></body></html>`;
 
@@ -237,7 +256,7 @@ module.exports = async (req, res) => {
   // Без ссылки (/owner) — вход по email владельца: код на почту + пароль.
   if (token && !/^[a-f0-9]{48}$/.test(token)) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
   const nonce = crypto.randomBytes(16).toString('base64');
-  res.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`);
+  res.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`);
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.status(200).send(PAGE(token, nonce));

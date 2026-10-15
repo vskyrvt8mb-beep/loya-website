@@ -54,7 +54,16 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const priceId = tier === 'pro' ? process.env.STRIPE_PRICE_ID_PRO : process.env.STRIPE_PRICE_ID;
+    // 2.19: годовая оплата (10 месяцев по цене года — «2 месяца в подарок»). Цены — отдельные Price в Stripe
+    // с интервалом year: STRIPE_PRICE_ID_YEAR (Starter) и STRIPE_PRICE_ID_PRO_YEAR (Pro).
+    const period = (req.body || {}).period === 'year' ? 'year' : 'month';
+    const priceId = period === 'year'
+      ? (tier === 'pro' ? process.env.STRIPE_PRICE_ID_PRO_YEAR : process.env.STRIPE_PRICE_ID_YEAR)
+      : (tier === 'pro' ? process.env.STRIPE_PRICE_ID_PRO : process.env.STRIPE_PRICE_ID);
+    if (period === 'year' && !priceId && process.env.STRIPE_SECRET_KEY) {
+      res.status(200).json({ error: 'year_not_ready' });
+      return;
+    }
     if (!priceId || !process.env.STRIPE_SECRET_KEY) {
       res.status(503).json({ error: 'not_configured' });
       return;
@@ -66,13 +75,13 @@ module.exports = async (req, res) => {
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       // Язык — в данные сессии: по нему вебхук пришлёт письмо с ключом на языке клиента.
-      metadata: { lang: safeLang, tier },
+      metadata: { lang: safeLang, tier, period },
       // Для бизнес-клиентов: поле для налогового номера (VAT ID) в счёте. Включается переменной STRIPE_COLLECT_TAX_ID=1.
       ...(process.env.STRIPE_COLLECT_TAX_ID === '1' ? { tax_id_collection: { enabled: true } } : {}),
       ...(process.env.STRIPE_BILLING_ADDRESS === 'required' ? { billing_address_collection: 'required' } : {}),
       // Пробный период теперь выдаётся в самой программе (14 дней, без карты), поэтому здесь
       // оплата сразу. При желании можно вернуть дни Stripe переменной STRIPE_TRIAL_DAYS.
-      subscription_data: { ...(Number(process.env.STRIPE_TRIAL_DAYS) > 0 ? { trial_period_days: Math.min(30, Number(process.env.STRIPE_TRIAL_DAYS)) } : {}), metadata: { lang: safeLang, tier } },
+      subscription_data: { ...(Number(process.env.STRIPE_TRIAL_DAYS) > 0 ? { trial_period_days: Math.min(30, Number(process.env.STRIPE_TRIAL_DAYS)) } : {}), metadata: { lang: safeLang, tier, period } },
       // {CHECKOUT_SESSION_ID} — плейсхолдер, который Stripe сам подставит в ссылку редиректа.
       success_url: `${base}/success.html?session_id={CHECKOUT_SESSION_ID}&lang=${safeLang}`,
       cancel_url: `${base}/pricing.html?lang=${safeLang}`,

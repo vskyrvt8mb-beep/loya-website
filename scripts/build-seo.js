@@ -172,7 +172,7 @@ function buildHome(lang) {
   const t = tr(lang);
   let html = fillI18n(template, t);
   html = html.replace(new RegExp(`<option value="${lang}">`), `<option value="${lang}" selected>`);
-  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t, lang)).replace('{{NAV_FOR}}', navFor(lang, t)).replace('{{HERO_FOR}}', heroFor(lang, t)).replace('{{FOR_TILES}}', forTiles(lang)).replace('{{FOOT_NICHES}}', footNiches(lang));
+  html = html.replace(/\{\{ALT_DASH\}\}/g, esc(t('capDash'))).replace('{{PHOTOS}}', photos(t, lang)).replace('{{NAV_FOR}}', navFor(lang, t)).replace('{{HERO_FOR}}', heroFor(lang, t)).replace('{{FOR_TILES}}', forTiles(lang)).replace('{{FOOT_NICHES}}', footNiches(lang)).replace(/\{\{BLOG\}\}/g, pathOf(lang, 'blog'));
   html = html.replace('<p class="tour-cap" id="tour-cap"></p>', `<p class="tour-cap" id="tour-cap">${esc(t('capDash'))}</p>`);
   for (const [key, n] of Object.entries(NICHES)) {
     html = html.split(`{{NICHE_${key}_NAME}}`).join(esc(n[lang].name)).split(`{{NICHE_${key}}}`).join(pathOf(lang, n.slug));
@@ -289,6 +289,82 @@ function buildNiche(lang, key, home) {
   return headStart + headTags({ lang, title: d.metaTitle, desc: d.metaDesc, sub, ld }) + '\n' + headEnd + top + main + bottom;
 }
 
+// ---------- 2.19: статьи (блог) ----------
+const ARTICLES = require('./articles');
+// Шапка и подвал — с главной этого языка (как у страниц ниш); переключатель языка ведёт на ту же статью.
+function chrome(lang, home, sub, pageKind) {
+  const homePath = pathOf(lang);
+  const start = home.indexOf('<body'), mainStart = home.indexOf('<main id="main">'), mainEnd = home.indexOf('</main>');
+  const anchors = (x) => x.replace(/href="#(?!main")/g, `href="${homePath}#`);
+  let top = anchors(home.slice(start, mainStart)).replace('data-page="home"', `data-page="${pageKind}"`);
+  top = top.replace(/data-page-lang="[a-z]+"/, `data-page-lang="${lang}" data-page-sub="${sub}"`);
+  let bottom = anchors(home.slice(mainEnd));
+  bottom = bottom.replace(/<span class="foot-langs">[\s\S]*?<\/span><span>Windows/, '<span class="foot-langs">' +
+    LANGS.map((l) => `<a href="${pathOf(l, sub)}" hreflang="${l}" lang="${l}"${l === lang ? ' aria-current="true"' : ''}>${NAME[l]}</a>`).join(' · ') + '</span><span>Windows');
+  bottom = bottom.replace(/<div class="sticky-cta">[\s\S]*?<\/div>\n/, `<div class="sticky-cta"><a href="${homePath}#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">${esc(tr(lang)('heroCta'))}</span></a></div>\n`);
+  const headStart = home.slice(0, home.indexOf('<title>'));
+  const headEnd = home.slice(home.indexOf('<link rel="icon"'), start).replace(/<link rel="preload" as="image"[^>]*>\n/, '');
+  return { top, bottom, headStart, headEnd };
+}
+const DATE_FMT = { en: 'en-GB', ru: 'ru-RU', uk: 'uk-UA', sk: 'sk-SK' };
+const fmtDate = (d, lang) => new Date(d + 'T12:00:00Z').toLocaleDateString(DATE_FMT[lang], { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+function blockHtml([kind, v]) {
+  if (kind === 'h2') return `<h2>${esc(v)}</h2>`;
+  if (kind === 'ul') return `<ul>${v.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  if (kind === 'tip') return `<div class="art-tip">💡 ${esc(v)}</div>`;
+  return `<p>${esc(v)}</p>`;
+}
+function buildArticle(lang, art, home) {
+  const a = art[lang], t = tr(lang), homePath = pathOf(lang), sub = `blog/${art.slug}`;
+  const c = chrome(lang, home, sub, 'article');
+  const others = ARTICLES.filter((x) => x.slug !== art.slug).map((x) => `<a class="art-card" href="${pathOf(lang, 'blog/' + x.slug)}"><span class="art-ic">${x.icon}</span><b>${esc(x[lang].title)}</b></a>`).join('');
+  const main = `<main id="main">
+  <article class="section art">
+    <div class="container art-wrap">
+      <nav class="crumbs" aria-label="breadcrumb"><a href="${homePath}">Loya</a> <span aria-hidden="true">›</span> <a href="${pathOf(lang, 'blog')}">${esc(t('blogTitle'))}</a></nav>
+      <h1 class="h2 art-h1">${esc(a.title)}</h1>
+      <p class="art-meta">${esc(fmtDate(art.date, lang))} · Loya</p>
+      <p class="lead art-lead">${esc(a.lead)}</p>
+      <div class="art-body">${a.blocks.map(blockHtml).join('\n')}</div>
+      <div class="art-cta">
+        <a href="${homePath}#download" class="btn btn-primary">🎁 <span>${esc(t('heroCta'))}</span></a>
+        <a href="${homePath}#features" class="btn btn-ghost">${esc(t('navFeatures'))}</a>
+      </div>
+      <h3 class="art-more">${esc(t('blogMore'))}</h3>
+      <div class="art-grid">${others}</div>
+    </div>
+  </article>
+`;
+  const ld = [
+    ORG,
+    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Loya', item: urlOf(lang) },
+      { '@type': 'ListItem', position: 2, name: t('blogTitle'), item: urlOf(lang, 'blog') },
+      { '@type': 'ListItem', position: 3, name: a.title, item: urlOf(lang, sub) }] },
+    { '@context': 'https://schema.org', '@type': 'Article', headline: a.title, description: a.desc, inLanguage: lang, datePublished: art.date, dateModified: art.date,
+      author: { '@type': 'Organization', name: 'Loya', url: SITE + '/' }, publisher: { '@type': 'Organization', name: 'Loya', logo: { '@type': 'ImageObject', url: SITE + '/logo.png' } },
+      mainEntityOfPage: urlOf(lang, sub), image: `${SITE}/og-image_${lang}.png` }
+  ];
+  return c.headStart + headTags({ lang, title: `${a.title} — Loya`, desc: a.desc, sub, ld }) + '\n' + c.headEnd + c.top + main + c.bottom;
+}
+function buildBlogIndex(lang, home) {
+  const t = tr(lang), sub = 'blog';
+  const c = chrome(lang, home, sub, 'blog');
+  const cards = ARTICLES.map((x) => `<a class="art-card art-card-big reveal" href="${pathOf(lang, 'blog/' + x.slug)}"><span class="art-ic">${x.icon}</span><b>${esc(x[lang].title)}</b><span>${esc(x[lang].desc)}</span><em>${esc(t('blogRead'))} →</em></a>`).join('\n');
+  const main = `<main id="main">
+  <section class="section art">
+    <div class="container art-wrap art-wrap-wide">
+      <nav class="crumbs" aria-label="breadcrumb"><a href="${pathOf(lang)}">Loya</a> <span aria-hidden="true">›</span> <span>${esc(t('blogTitle'))}</span></nav>
+      <h1 class="h2 art-h1">${esc(t('blogTitle'))}</h1>
+      <p class="lead">${esc(t('blogSub'))}</p>
+      <div class="art-grid art-grid-big">${cards}</div>
+    </div>
+  </section>
+`;
+  const ld = [ORG, { '@context': 'https://schema.org', '@type': 'CollectionPage', name: t('blogTitle'), description: t('blogSub'), url: urlOf(lang, sub), inLanguage: lang }];
+  return c.headStart + headTags({ lang, title: `${t('blogTitle')} — Loya`, desc: t('blogSub'), sub, ld }) + '\n' + c.headEnd + c.top + main + c.bottom;
+}
+
 const pages = [];
 for (const lang of LANGS) {
   const home = buildHome(lang);
@@ -302,6 +378,16 @@ for (const lang of LANGS) {
     fs.writeFileSync(nOut, buildNiche(lang, key, home));
     pages.push(path.relative(ROOT, nOut));
   }
+  const bOut = path.join(ROOT, ...(lang === 'en' ? [] : [lang]), 'blog', 'index.html');
+  fs.mkdirSync(path.dirname(bOut), { recursive: true });
+  fs.writeFileSync(bOut, buildBlogIndex(lang, home));
+  pages.push(path.relative(ROOT, bOut));
+  for (const art of ARTICLES) {
+    const aOut = path.join(ROOT, ...(lang === 'en' ? [] : [lang]), 'blog', art.slug, 'index.html');
+    fs.mkdirSync(path.dirname(aOut), { recursive: true });
+    fs.writeFileSync(aOut, buildArticle(lang, art, home));
+    pages.push(path.relative(ROOT, aOut));
+  }
 }
 console.log('written', pages.join(', '));
 if (missing.size) console.warn('missing i18n keys (fallback used):', [...missing].join(', '));
@@ -313,7 +399,7 @@ const group = (sub) => {
     + `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${urlOf('en', sub)}"/>`;
   return LANGS.map((l) => `  <url>\n    <loc>${urlOf(l, sub)}</loc>\n    <lastmod>${today}</lastmod>\n${alt}\n  </url>`);
 };
-const entries = [...group(''), ...Object.values(NICHES).flatMap((n) => group(n.slug))];
+const entries = [...group(''), ...Object.values(NICHES).flatMap((n) => group(n.slug)), ...group('blog'), ...ARTICLES.flatMap((a) => group('blog/' + a.slug))];
 for (const p of ['privacy.html', 'terms.html']) entries.push(`  <url>\n    <loc>${SITE}/${p}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`);
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join('\n')}\n</urlset>\n`);

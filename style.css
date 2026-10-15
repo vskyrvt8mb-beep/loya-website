@@ -1063,3 +1063,36 @@ html.os-android .dl-grid .dl-card[data-os="android"] { order: -1; }
 @media (max-width: 640px) {
   .hero-ctas .btn { white-space: normal; height: auto; min-height: 54px; padding: 12px 18px; line-height: 1.25; text-align: center; }
 }
+/* 2.19: оплата за месяц / за год */
+.period-switch { display: inline-flex; gap: 4px; padding: 5px; margin: 6px auto 22px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
+.ps-btn { appearance: none; border: 0; background: transparent; color: var(--dim); font: inherit; font-weight: 700; font-size: 15px; padding: 10px 18px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.ps-btn.active { background: var(--grad); color: #1a1408; }
+.ps-save { font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: rgba(227,184,87,.18); color: var(--gold2); }
+.ps-btn.active .ps-save { background: rgba(26,20,8,.16); color: #1a1408; }
+.plan-year-note { margin: -6px 0 12px; font-size: 13.5px; font-weight: 700; color: var(--gold2); }
+@media (max-width: 640px) { .ps-btn { padding: 9px 11px; font-size: 14px; } .ps-save { font-size: 10.5px; padding: 2px 6px; } }
+/* 2.19: статьи */
+.art { padding-top: 120px; }
+.art-wrap { max-width: 760px; }
+.art-wrap-wide { max-width: 1040px; }
+.art-h1 { margin: 14px 0 10px; text-align: left; }
+.art-meta { color: var(--dim); font-size: 14px; margin-bottom: 18px; }
+.art-lead { text-align: left; margin-bottom: 26px; }
+.art-body h2 { font-size: 26px; line-height: 1.25; margin: 34px 0 12px; }
+.art-body p, .art-body li { font-size: 18px; line-height: 1.7; color: var(--text); opacity: .9; }
+.art-body p { margin: 0 0 14px; }
+.art-body ul { margin: 0 0 16px; padding-left: 22px; }
+.art-body li { margin: 6px 0; }
+.art-tip { margin: 30px 0 10px; padding: 18px 20px; border-radius: 18px; background: rgba(227,184,87,.09); border: 1px solid rgba(227,184,87,.35); font-size: 17px; line-height: 1.6; }
+.art-cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 26px 0 40px; }
+.art-more { font-size: 20px; margin-bottom: 14px; }
+.art-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.art-grid-big { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 26px; }
+.art-card { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.09); color: var(--text); transition: border-color .2s, transform .2s; }
+.art-card:hover { border-color: rgba(227,184,87,.5); transform: translateY(-2px); }
+.art-card b { font-size: 17px; line-height: 1.35; }
+.art-card span:not(.art-ic) { color: var(--dim); font-size: 15px; line-height: 1.5; }
+.art-card em { font-style: normal; color: var(--gold2); font-weight: 700; font-size: 14px; margin-top: auto; }
+.art-ic { font-size: 28px; }
+.art-card-big { padding: 24px; }
+@media (max-width: 640px) { .art { padding-top: 96px; } .art-body p, .art-body li { font-size: 17px; } .art-body h2 { font-size: 22px; } }

@@ -151,6 +151,78 @@
     {
       "source": "/api/send-guide",
       "destination": "/api/core?action=send-guide"
+    },
+    {
+      "source": "/b/:slug",
+      "destination": "/api/online?action=book-page&slug=:slug"
+    },
+    {
+      "source": "/f/:token",
+      "destination": "/api/online?action=fb-page&token=:token"
+    },
+    {
+      "source": "/dk/:state",
+      "destination": "/api/online?action=dk-page&state=:state"
+    },
+    {
+      "source": "/api/dk-callback",
+      "destination": "/api/online?action=dk-callback"
+    },
+    {
+      "source": "/api/dk-start",
+      "destination": "/api/online?action=dk-start"
+    },
+    {
+      "source": "/api/dk-status",
+      "destination": "/api/online?action=dk-status"
+    },
+    {
+      "source": "/api/dk-disconnect",
+      "destination": "/api/online?action=dk-disconnect"
+    },
+    {
+      "source": "/api/book-slots",
+      "destination": "/api/online?action=book-slots"
+    },
+    {
+      "source": "/api/book-info",
+      "destination": "/api/online?action=book-info"
+    },
+    {
+      "source": "/api/book-create",
+      "destination": "/api/online?action=book-create"
+    },
+    {
+      "source": "/api/book-cancel",
+      "destination": "/api/online?action=book-cancel"
+    },
+    {
+      "source": "/api/book-pull",
+      "destination": "/api/online?action=book-pull"
+    },
+    {
+      "source": "/api/book-update",
+      "destination": "/api/online?action=book-update"
+    },
+    {
+      "source": "/api/book-busy",
+      "destination": "/api/online?action=book-busy"
+    },
+    {
+      "source": "/api/book-remind",
+      "destination": "/api/online?action=book-remind"
+    },
+    {
+      "source": "/api/fb-new",
+      "destination": "/api/online?action=fb-new"
+    },
+    {
+      "source": "/api/fb-rate",
+      "destination": "/api/online?action=fb-rate"
+    },
+    {
+      "source": "/api/fb-pull",
+      "destination": "/api/online?action=fb-pull"
     }
   ],
   "functions": {
@@ -262,6 +334,12 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/book-remind",
+      "schedule": "0 15 * * *"
     }
   ]
 }
