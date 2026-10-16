@@ -439,6 +439,17 @@ const header = relink(enHome.slice(enHome.indexOf('<header class="nav">'), enHom
 const footerRaw = enHome.slice(enHome.indexOf('<footer>'), enHome.indexOf('</footer>') + 9);
 const fab = enHome.slice(enHome.indexOf('<div class="msg-fab"'), enHome.indexOf('<div class="sticky-cta">'));
 const footer = relink(footerRaw.replace(/<span class="foot-langs">[\s\S]*?<\/span><span>Windows/, '<span>Windows')) + '\n' + fab;
+// названия ниш в общей шапке/подвале/404 переводятся на лету (страницы без своего языка)
+const NN = {}; for (const l of LANGS) { NN[l] = {}; for (const k of Object.keys(NICHES)) NN[l][k] = [VIS[k][l].short, VIS[k][l].kind]; }
+const nicheMap = `<script>window.LOYA_NICHES=${JSON.stringify(NN)};</script>\n`;
+const tagNiches = (html) => { for (const [k, n] of Object.entries(NICHES)) {
+  const sh = esc(VIS[k].en.short), kd = esc(VIS[k].en.kind);
+  html = html.replace(new RegExp(`(data-lp="${n.slug}/"[^>]*>)([\\s\\S]*?)(</a>)`, 'g'), (m, a, inner, c) => {
+    if (inner === sh) inner = `<span data-nn="${k}">${sh}</span>`;
+    inner = inner.split(`<b>${sh}</b>`).join(`<b data-nn="${k}">${sh}</b>`).split(`<small>${kd}</small>`).join(`<small data-nk="${k}">${kd}</small>`);
+    return a + inner + c;
+  });
+} return html; };
 const HB = '<!--SITE-HEADER-->', HE = '<!--/SITE-HEADER-->', FB = '<!--SITE-FOOTER-->', FE = '<!--/SITE-FOOTER-->';
 function inject(file) {
   const f = path.join(ROOT, file);
@@ -447,6 +458,8 @@ function inject(file) {
   else s = s.replace(/<header class="nav scrolled">[\s\S]*?<\/header>/, HB + '\n' + header + '\n' + HE);
   if (s.includes(FB)) s = s.slice(0, s.indexOf(FB)) + FB + '\n' + footer + FE + s.slice(s.indexOf(FE) + FE.length);
   else s = s.replace(/<script src="\/i18n\.js[^"]*"><\/script>/, (m) => FB + '\n' + footer + FE + '\n' + m);
+  s = tagNiches(s);
+  if (!s.includes('window.LOYA_NICHES')) s = s.replace(/<script src="\/i18n\.js/, (m) => nicheMap + m);
   fs.writeFileSync(f, assets(s));
 }
 

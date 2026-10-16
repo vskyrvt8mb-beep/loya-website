@@ -74,7 +74,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;colo
 .wrap{max-width:460px;margin:0 auto;position:relative}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
 .logo{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(135deg,rgba(var(--ar),.35),rgba(var(--br),.28));border:1px solid rgba(var(--ar),.55);box-shadow:0 8px 22px rgba(var(--ar),.25)}
-.brand{font-size:20px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand{font-size:20px;font-weight:800;flex:1;min-width:0;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}@media(max-width:560px){.top{flex-wrap:wrap;row-gap:12px}.lang{order:-1;flex-basis:100%;justify-content:flex-end}}
 .lang{display:flex;gap:4px}.lang button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);color:#f6f2ea;border-radius:9px;padding:6px 9px;font-weight:800;font-size:11.5px;cursor:pointer;min-height:32px}
 .lang button.on{background:linear-gradient(135deg,var(--a),var(--b));border-color:transparent;color:var(--on)}
 .offer{position:relative;overflow:hidden;border-radius:26px;padding:24px 22px 20px;margin-bottom:16px;color:var(--on);

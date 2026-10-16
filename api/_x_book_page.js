@@ -50,7 +50,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;colo
 .wrap{max-width:560px;margin:0 auto}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .logo{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(135deg,rgba(var(--ar),.35),rgba(var(--br),.28));border:1px solid rgba(var(--ar),.55)}
-.brand{flex:1;min-width:0}.brand b{display:block;font-size:20px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.brand span{font-size:13px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.brand{flex:1;min-width:0}.brand b{font-size:20px;font-weight:800;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}@media(max-width:560px){.top{flex-wrap:wrap;row-gap:12px}.lang{order:-1;flex-basis:100%;justify-content:flex-end}}.brand span{font-size:13px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .lang{display:flex;gap:4px}.lang button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);color:#f6f2ea;border-radius:9px;padding:6px 9px;font-weight:800;font-size:11.5px;cursor:pointer;min-height:32px}
 .lang button.on{background:linear-gradient(135deg,var(--a),var(--b));border-color:transparent;color:var(--on)}
 .info{color:var(--mut);font-size:14px;line-height:1.5;margin:12px 2px 4px}

@@ -25,7 +25,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;colo
 .wrap{max-width:460px;margin:0 auto}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
 .logo{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(135deg,rgba(var(--ar),.35),rgba(var(--br),.28));border:1px solid rgba(var(--ar),.55)}
-.brand{font-size:20px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand{font-size:20px;font-weight:800;flex:1;min-width:0;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:26px;padding:26px 20px;text-align:center}
 h1{font-size:25px;line-height:1.25;font-weight:900;margin-bottom:8px}
 .sub{color:var(--mut);font-size:15px;margin-bottom:22px}
