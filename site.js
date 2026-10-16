@@ -55,6 +55,8 @@
       document.title = t('metaTitle');
       const md = document.querySelector('meta[name="description"]'); if (md) md.content = t('metaDesc');
     }
+    const NM = window.LOYA_NICHES && (window.LOYA_NICHES[lang] || window.LOYA_NICHES.en);
+    if (NM) { document.querySelectorAll('[data-nn]').forEach(el => { const v = NM[el.dataset.nn]; if (v) el.textContent = v[0]; }); document.querySelectorAll('[data-nk]').forEach(el => { const v = NM[el.dataset.nk]; if (v) el.textContent = v[1]; }); }
     document.querySelectorAll('.lang-select').forEach(s => { s.value = lang; });
     updateTour(); updateCalc();
     document.dispatchEvent(new Event('loya:lang'));
@@ -65,6 +67,38 @@
     if (pageLang) { location.href = pagePath(next) + location.hash; return; }
     lang = next; apply();
   }));
+
+  // выбор языка: своё меню в стиле сайта вместо системного списка (select остаётся внутри и получает change)
+  const LNAME = { ru: 'Русский', uk: 'Українська', sk: 'Slovenčina', en: 'English' };
+  const chev = '<svg class="dd-chev" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+  document.querySelectorAll('.lang-select').forEach(sel => {
+    const wrap = document.createElement('div'); wrap.className = 'lang-drop';
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'lang-drop-btn';
+    btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', sel.getAttribute('aria-label') || 'Language');
+    const menu = document.createElement('div'); menu.className = 'lang-drop-menu'; menu.setAttribute('role', 'listbox');
+    const set = (open) => { wrap.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); };
+    const paint = () => {
+      btn.innerHTML = '<span>' + String(sel.value).toUpperCase() + '</span>' + chev;
+      menu.querySelectorAll('[data-l]').forEach(b => { const on = b.dataset.l === sel.value; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+    };
+    [...sel.options].forEach(o => {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.l = o.value; b.setAttribute('role', 'option'); b.lang = o.value;
+      b.innerHTML = '<b>' + o.value.toUpperCase() + '</b><span>' + (LNAME[o.value] || o.text) + '</span><i aria-hidden="true">✓</i>';
+      b.addEventListener('click', () => { set(false); if (sel.value !== o.value) { sel.value = o.value; sel.dispatchEvent(new Event('change')); } paint(); btn.focus(); });
+      menu.appendChild(b);
+    });
+    sel.parentNode.insertBefore(wrap, sel); wrap.append(sel, btn, menu);
+    sel.classList.add('lang-native'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    btn.addEventListener('click', () => { const o = !wrap.classList.contains('open'); set(o); if (o) { const cur = menu.querySelector('.on') || menu.firstChild; cur && cur.focus(); } });
+    document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) set(false); });
+    wrap.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && wrap.classList.contains('open')) { set(false); btn.focus(); return; }
+      if (!wrap.classList.contains('open') || !['ArrowDown', 'ArrowUp'].includes(e.key)) return;
+      e.preventDefault(); const items = [...menu.children]; const i = items.indexOf(document.activeElement);
+      items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus();
+    });
+    document.addEventListener('loya:lang', paint); paint();
+  });
 
   // меню «Для кого»: открывается по нажатию (и наведению на компьютере), закрывается по Esc и клику мимо
   // и кнопка «Скачать» в шапке (выбор Windows / Android / Microsoft Store) — так же
@@ -94,7 +128,7 @@
   const burger = document.querySelector('.nav-burger');
   const links = document.querySelector('.nav-links');
   if (burger && links) {
-    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); document.documentElement.classList.toggle('menu-lock', open); };
+    const setOpen = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); if (nav) nav.classList.toggle('menu-open', open); document.documentElement.classList.toggle('menu-lock', open); burger.textContent = open ? '✕' : '☰'; };
     burger.addEventListener('click', () => setOpen(!links.classList.contains('open')));
     links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); burger.focus(); } });

@@ -898,6 +898,9 @@ main { position: relative; z-index: 0; }
   /* шторка занимает экран под шапкой и прокручивается сама; страница под ней не двигается */
   .nav-links.open { position: fixed; top: 76px; bottom: 0; left: 0; right: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: max(28px, env(safe-area-inset-bottom)); }
   html.menu-lock, html.menu-lock body { overflow: hidden; }
+  /* размытие шапки после прокрутки делает её «контейнером» для fixed-шторки — шторка сжималась до 0 и была невидимой */
+  .nav.menu-open, .nav.scrolled.menu-open { -webkit-backdrop-filter: none; backdrop-filter: none; background: #07080b; }
+  html.menu-lock .sticky-cta, html.menu-lock .msg-fab { display: none; }
 }
 
 /* ================= v6: демо-карта, «бумага или Loya», мессенджеры, инструкция, 404 ================= */
@@ -1096,3 +1099,45 @@ html.os-android .dl-grid .dl-card[data-os="android"] { order: -1; }
 .art-ic { font-size: 28px; }
 .art-card-big { padding: 24px; }
 @media (max-width: 640px) { .art { padding-top: 96px; } .art-body p, .art-body li { font-size: 17px; } .art-body h2 { font-size: 22px; } }
+
+/* 2.21 — шлифовка: длинные надписи на кнопках не обрезаются */
+@media (min-width: 641px) {
+  /* «Завантажити безкоштовно для Windows» длиннее, чем место рядом с «Відео» — переносим вторую кнопку на новую строку, а не режем текст */
+  .hero-ctas { flex-wrap: wrap; }
+  .hero-ctas .btn { flex: 0 0 auto; max-width: 100%; }
+}
+.sticky-cta .btn { padding: 0 16px; gap: 8px; }
+@media (max-width: 380px) { .sticky-cta .btn { font-size: 15px; } }
+
+/* выбор языка — своё меню в стиле сайта */
+.lang-drop { position: relative; }
+.lang-select.lang-native { display: none !important; }
+.lang-drop-btn { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 12px; background: rgba(255,255,255,.05); color: var(--text);
+  border: 1px solid var(--border2); font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+.lang-drop-btn:hover, .lang-drop.open .lang-drop-btn { border-color: rgba(227,184,87,.45); background: rgba(227,184,87,.08); }
+.lang-drop-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.lang-drop-btn .dd-chev { opacity: .75; transition: transform .2s; }
+.lang-drop.open .lang-drop-btn .dd-chev { transform: rotate(180deg); }
+.lang-drop-menu { position: absolute; left: 0; top: calc(100% + 12px); width: 220px; padding: 8px; border-radius: 18px; background: #0e1016; border: 1px solid var(--border2);
+  box-shadow: 0 30px 70px rgba(0,0,0,.6); display: flex; flex-direction: column; gap: 2px; z-index: 65;
+  opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .18s, transform .18s, visibility .18s; }
+.lang-drop.open .lang-drop-menu { opacity: 1; visibility: visible; transform: none; }
+.lang-drop-menu button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 12px; border: 0; border-radius: 12px; background: none; color: var(--text);
+  font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; transition: background .15s; }
+.lang-drop-menu button:hover, .lang-drop-menu button:focus-visible { background: rgba(227,184,87,.1); outline: none; }
+.lang-drop-menu b { display: inline-grid; place-items: center; min-width: 34px; height: 26px; border-radius: 8px; font-size: 12px; letter-spacing: .04em; color: var(--muted); background: rgba(255,255,255,.06); }
+.lang-drop-menu span { flex: 1; }
+.lang-drop-menu i { font-style: normal; color: var(--gold2); opacity: 0; font-weight: 800; }
+.lang-drop-menu .on b { background: var(--grad); color: #1a1204; }
+.lang-drop-menu .on i { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .lang-drop-menu { transition: none; } }
+
+/* крестик в окнах не наезжает на заголовок */
+.demo-in h3 { padding: 0 40px; }
+@media (max-width: 420px) { .demo-in h3 { padding: 0 34px; font-size: 18px; } }
+
+/* макет телефона на страницах ниш: пока всплывает «✓ Визит отмечен», подпись под ним прячется — текст не просвечивает */
+.nv-left { animation: nvLeftHide 4s ease-in-out infinite; }
+@keyframes nvLeftHide { 0%, 46% { opacity: 1; } 52%, 94% { opacity: 0; } 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nv-left { animation: none; opacity: 0; } }
+@media (max-width: 420px) { .art-cta .btn { width: 100%; padding: 0 16px; gap: 8px; font-size: 15px; } }
