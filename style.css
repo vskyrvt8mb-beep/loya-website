@@ -1141,3 +1141,8 @@ html.os-android .dl-grid .dl-card[data-os="android"] { order: -1; }
 @keyframes nvLeftHide { 0%, 46% { opacity: 1; } 52%, 94% { opacity: 0; } 100% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .nv-left { animation: none; opacity: 0; } }
 @media (max-width: 420px) { .art-cta .btn { width: 100%; padding: 0 16px; gap: 8px; font-size: 15px; } }
+/* 2.23: тарифы — больше пунктов, компактнее строки; строка «без комиссий» */
+.plans .plan-list{gap:11px}
+.plans .plan-list li{font-size:15px;line-height:1.42;font-weight:600}
+.plans .plan-list li::before{width:22px;height:22px;font-size:12px;border-radius:7px}
+.plans-nofees{max-width:760px;margin:18px auto 0;font-size:14.5px;opacity:.82;line-height:1.5}

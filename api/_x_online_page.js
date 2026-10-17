@@ -8,22 +8,22 @@ const TX = {
     lName: 'Ваше имя', pName: 'Например, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Пришлём копию купона', opt: 'необязательно', lBday: 'День рождения', bdayHint: 'Иногда дарим подарки ко дню рождения',
     consent: 'Хочу получать новости и акции', btn: 'Получить подарок', wait: 'Секунду…', agree: 'Нажимая кнопку, вы соглашаетесь с', privacy: 'политикой конфиденциальности',
     errName: 'Введите имя', errPhone: 'Введите номер телефона', errEmail: 'Проверьте email', errGen: 'Не получилось. Попробуйте ещё раз.', errMany: 'Слишком много попыток — попробуйте позже.', closed: 'Регистрация сейчас закрыта.',
-    okTitle: 'Готово! Ваш подарок', again: 'Вы уже регистрировались — вот ваш подарок', until: 'Действует до', show: 'Покажите этот QR-код в заведении — там вы получите подарок и постоянную карту лояльности.', shot: 'Совет: сделайте скриншот, чтобы купон был под рукой.', mailed: 'Копия отправлена на ваш email.' },
+    okTitle: 'Готово! Ваш подарок', again: 'Вы уже регистрировались — вот ваш подарок', until: 'Действует до', show: 'Покажите этот QR-код в заведении — там вы получите подарок и постоянную карту лояльности.', shot: 'Совет: сделайте скриншот, чтобы купон был под рукой.', mailed: 'Копия отправлена на ваш email.', wApple: 'Добавить в Apple Wallet', wGoogle: 'Добавить в Google Wallet', wMail: 'Получить карту на email', wOpen: 'Открываем Wallet…', reqd: 'обязательно', errEmailReq: 'Введите email — на него придёт карта', jMailed: 'Карта отправлена на ваш email. Откройте письмо на телефоне — карту можно добавить в Wallet.', addW: 'Добавить карту в телефон', pEmailJ: 'you@mail.com', welcomeB: 'Подарок за регистрацию', welcomeS: 'При первом визите — сразу два штампа' },
   uk: { refBan: 'Вас запросив друг 🤝', refGift: 'Ваш подарунок від друга', jHow: 'Заповніть форму — картка лояльності з’явиться одразу. Покажіть її QR-код на касі.', jBtn: 'Отримати картку', jOk: 'Готово! Це ваша картка', jShow: 'Покажіть цей QR-код на касі — на картку накопичуються штампи й бонуси.', jTitle: 'Картка лояльності', gift: 'Подарунок за реєстрацію', free: 'Безкоштовно', valid: (d) => `Діє ${d} дн. після реєстрації`, how: 'Заповніть форму — QR-купон з’явиться одразу. Покажіть його в закладі й отримайте подарунок і постійну картку лояльності.',
     lName: 'Ваше ім’я', pName: 'Наприклад, Анна', lPhone: 'Телефон', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'Надішлемо копію купона', opt: 'необов’язково', lBday: 'День народження', bdayHint: 'Іноді даруємо подарунки до дня народження',
     consent: 'Хочу отримувати новини й акції', btn: 'Отримати подарунок', wait: 'Секунду…', agree: 'Натискаючи кнопку, ви погоджуєтеся з', privacy: 'політикою конфіденційності',
     errName: 'Введіть ім’я', errPhone: 'Введіть номер телефону', errEmail: 'Перевірте email', errGen: 'Не вийшло. Спробуйте ще раз.', errMany: 'Забагато спроб — спробуйте пізніше.', closed: 'Реєстрація зараз закрита.',
-    okTitle: 'Готово! Ваш подарунок', again: 'Ви вже реєструвалися — ось ваш подарунок', until: 'Діє до', show: 'Покажіть цей QR-код у закладі — там ви отримаєте подарунок і постійну картку лояльності.', shot: 'Порада: зробіть скриншот, щоб купон був під рукою.', mailed: 'Копію надіслано на ваш email.' },
+    okTitle: 'Готово! Ваш подарунок', again: 'Ви вже реєструвалися — ось ваш подарунок', until: 'Діє до', show: 'Покажіть цей QR-код у закладі — там ви отримаєте подарунок і постійну картку лояльності.', shot: 'Порада: зробіть скриншот, щоб купон був під рукою.', mailed: 'Копію надіслано на ваш email.', wApple: 'Додати в Apple Wallet', wGoogle: 'Додати в Google Wallet', wMail: 'Отримати картку на email', wOpen: 'Відкриваємо Wallet…', reqd: 'обов’язково', errEmailReq: 'Введіть email — на нього прийде картка', jMailed: 'Картку надіслано на ваш email. Відкрийте лист на телефоні — картку можна додати у Wallet.', addW: 'Додати картку в телефон', pEmailJ: 'you@mail.com', welcomeB: 'Подарунок за реєстрацію', welcomeS: 'Під час першого візиту — одразу два штампи' },
   sk: { refBan: 'Pozval vás priateľ 🤝', refGift: 'Váš darček od priateľa', jHow: 'Vyplňte formulár — vernostná karta sa zobrazí hneď. QR kód ukážte pri pokladnici.', jBtn: 'Získať kartu', jOk: 'Hotovo! Toto je vaša karta', jShow: 'Ukážte tento QR kód pri pokladnici — na kartu sa zbierajú pečiatky a bonusy.', jTitle: 'Vernostná karta', gift: 'Darček za registráciu', free: 'Zadarmo', valid: (d) => `Platí ${d} dní od registrácie`, how: 'Vyplňte formulár — QR kupón sa zobrazí hneď. Ukážte ho v prevádzke a získate darček aj stálu vernostnú kartu.',
     lName: 'Vaše meno', pName: 'Napríklad Anna', lPhone: 'Telefón', pPhone: '+421 900 000 000', lEmail: 'E-mail', pEmail: 'Pošleme kópiu kupónu', opt: 'nepovinné', lBday: 'Dátum narodenia', bdayHint: 'Občas dávame darčeky k narodeninám',
     consent: 'Chcem dostávať novinky a akcie', btn: 'Získať darček', wait: 'Moment…', agree: 'Kliknutím súhlasíte so', privacy: 'zásadami ochrany osobných údajov',
     errName: 'Zadajte meno', errPhone: 'Zadajte telefónne číslo', errEmail: 'Skontrolujte e-mail', errGen: 'Nepodarilo sa. Skúste znova.', errMany: 'Príliš veľa pokusov — skúste neskôr.', closed: 'Registrácia je momentálne zatvorená.',
-    okTitle: 'Hotovo! Váš darček', again: 'Už ste sa registrovali — tu je váš darček', until: 'Platí do', show: 'Ukážte tento QR kód v prevádzke — dostanete darček aj stálu vernostnú kartu.', shot: 'Tip: urobte si snímku obrazovky, aby ste mali kupón po ruke.', mailed: 'Kópia bola odoslaná na váš e-mail.' },
+    okTitle: 'Hotovo! Váš darček', again: 'Už ste sa registrovali — tu je váš darček', until: 'Platí do', show: 'Ukážte tento QR kód v prevádzke — dostanete darček aj stálu vernostnú kartu.', shot: 'Tip: urobte si snímku obrazovky, aby ste mali kupón po ruke.', mailed: 'Kópia bola odoslaná na váš e-mail.', wApple: 'Pridať do Apple Wallet', wGoogle: 'Pridať do Google Wallet', wMail: 'Poslať kartu na e-mail', wOpen: 'Otvárame Wallet…', reqd: 'povinné', errEmailReq: 'Zadajte e-mail — príde naň karta', jMailed: 'Kartu sme poslali na váš e-mail. Otvorte ho v telefóne — kartu si môžete pridať do Wallet.', addW: 'Pridať kartu do telefónu', pEmailJ: 'vy@mail.sk', welcomeB: 'Darček za registráciu', welcomeS: 'Pri prvej návšteve hneď dve pečiatky' },
   en: { refBan: 'A friend invited you 🤝', refGift: 'Your gift from a friend', jHow: 'Fill in the form — your loyalty card appears right away. Show its QR code at the till.', jBtn: 'Get my card', jOk: 'Done! This is your card', jShow: 'Show this QR code at the till — stamps and bonuses are collected on the card.', jTitle: 'Loyalty card', gift: 'Sign-up gift', free: 'Free', valid: (d) => `Valid for ${d} days after sign-up`, how: 'Fill in the form — your QR coupon appears right away. Show it at the venue to get your gift and a permanent loyalty card.',
     lName: 'Your name', pName: 'e.g. Anna', lPhone: 'Phone', pPhone: '+421 900 000 000', lEmail: 'Email', pEmail: 'We’ll send a copy of the coupon', opt: 'optional', lBday: 'Birthday', bdayHint: 'We sometimes give birthday treats',
     consent: 'I’d like news and offers', btn: 'Get my gift', wait: 'One moment…', agree: 'By tapping the button you agree to the', privacy: 'privacy policy',
     errName: 'Enter your name', errPhone: 'Enter your phone number', errEmail: 'Check the email', errGen: 'Something went wrong. Please try again.', errMany: 'Too many attempts — please try later.', closed: 'Registration is closed right now.',
-    okTitle: 'Done! Your gift', again: 'You’ve already signed up — here’s your gift', until: 'Valid until', show: 'Show this QR code at the venue — you’ll get your gift and a permanent loyalty card.', shot: 'Tip: take a screenshot so the coupon is always at hand.', mailed: 'A copy was sent to your email.' }
+    okTitle: 'Done! Your gift', again: 'You’ve already signed up — here’s your gift', until: 'Valid until', show: 'Show this QR code at the venue — you’ll get your gift and a permanent loyalty card.', shot: 'Tip: take a screenshot so the coupon is always at hand.', mailed: 'A copy was sent to your email.', wApple: 'Add to Apple Wallet', wGoogle: 'Add to Google Wallet', wMail: 'Email me my card', wOpen: 'Opening Wallet…', reqd: 'required', errEmailReq: 'Enter your email — your card will be sent there', jMailed: 'Your card was sent to your email. Open it on your phone to add the card to Wallet.', addW: 'Add the card to your phone', pEmailJ: 'you@mail.com', welcomeB: 'A sign-up gift', welcomeS: 'Two stamps at once on your first visit' }
 };
 function safeJson(v) { return JSON.stringify(v).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029'); }
 function hexRgb(h) { const n = parseInt(String(h).slice(1), 16) || 0xd4af37; return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`; }
@@ -47,12 +47,13 @@ const NICHE_PALETTE = {
   travel: ['#0ea5e9', '#6366f1'], tattoo: ['#a855f7', '#ec4899'], fitness: ['#10b981', '#3b82f6'], petgroom: ['#f59e0b', '#ec4899'],
   photo: ['#6366f1', '#ec4899'], clothing: ['#d946ef', '#f43f5e'], other: ['#f5b83d', '#f97316']
 };
-function palette(color, niche) {
+function palette(color, niche, color2) {
   const base = /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null;
   let a, b;
   const hsl = base ? hexToHsl(base) : null;
   if (hsl && hsl[1] >= 0.35 && hsl[2] >= 0.28 && hsl[2] <= 0.68) { a = base; b = hslToHex(hsl[0] + 38, Math.max(0.6, hsl[1]), Math.min(0.62, Math.max(0.46, hsl[2] + 0.04))); }
   else { const pair = NICHE_PALETTE[niche] || NICHE_PALETTE.other; a = pair[0]; b = pair[1]; }
+  if (base && /^#[0-9a-fA-F]{6}$/.test(color2 || '')) { a = base; b = color2; }   // 2.23: два цвета страницы заданы явно (админка)
   // цвет текста на градиенте a→b: белый или тёмный — какой читается на обоих концах и посередине
   const ra = parseInt(a.slice(1), 16), rb = parseInt(b.slice(1), 16);
   const mid = '#' + [16, 8, 0].map(sh => Math.round((((ra >> sh) & 255) + ((rb >> sh) & 255)) / 2).toString(16).padStart(2, '0')).join('');   // середина градиента (смешение RGB)
@@ -61,9 +62,10 @@ function palette(color, niche) {
   return { a, b, on, onbg: on === '#ffffff' ? 'rgba(10,8,20,.34)' : 'rgba(255,255,255,.62)' };
 }
 
-function html(slug, p, mode) {
-  const pal = palette(p.color, p.niche);
-  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '' };
+function html(slug, p, mode, wal) {
+  const pal = palette(p.color, p.niche, p.page && p.page.color2);
+  const light = !!(p.page && p.page.bg === 'light');
+  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '', wal: wal || { g: false, a: false }, welcome: !!(p.card && p.card.welcomeDouble && (p.card.type || 'stamp') === 'stamp'), page: { title: (p.page && p.page.title) || '', text: (p.page && p.page.text) || '', button: (p.page && p.page.button) || '' } };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#0d0f14"><title>${esc(ctx.name)}</title>
 <style>
@@ -130,8 +132,26 @@ button.go[disabled]{opacity:.65;transform:none}
 @keyframes fall{to{transform:translate3d(var(--dx),105vh,0) rotate(var(--rot));opacity:.9}}
 @keyframes bob{50%{transform:translateY(-6px) rotate(6deg)}}
 @media (prefers-reduced-motion:reduce){.offer .gift{animation:none}.confetti{display:none}button.go{transition:none}}
-</style></head><body><div class="wrap">
-<div class="top"><div class="logo">${esc(p.emoji || '🎁')}</div><div class="brand">${esc(ctx.name)}</div><div class="lang" id="lang"></div></div>
+/* 2.23: кнопки Wallet, светлая страница, логотип */
+.logo.img{background:#fff;padding:4px;overflow:hidden}.logo.img img{width:100%;height:100%;object-fit:contain;border-radius:12px}
+.req{color:#ff6b6b;font-weight:900;margin-left:2px}
+.ptitle{font-size:24px;font-weight:900;line-height:1.2;margin:0 4px 8px}
+button.go.wal{background:#0b0b0b;color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18)}
+button.go.wal .wi{width:34px;height:26px;flex:0 0 auto}
+button.go.wal .wt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;text-align:left}button.go.wal .wt small{font-size:12px;font-weight:600;opacity:.85}button.go.wal .wt b{font-size:18px;font-weight:800}
+.wbtns{display:flex;flex-direction:column;gap:10px;margin:16px 0 4px}
+a.wbtn{display:flex;align-items:center;justify-content:center;gap:12px;height:56px;border-radius:16px;background:#0b0b0b;color:#fff;text-decoration:none;font-weight:800;font-size:16px;border:1px solid rgba(255,255,255,.18)}
+a.wbtn svg{width:30px;height:22px}
+body.light{--bg:#f4f1ea;--line:rgba(20,16,8,.12);--mut:rgba(30,26,20,.62);color:#1b1813}
+body.light .card{background:#fff;box-shadow:0 18px 40px rgba(20,16,8,.08)}
+body.light input[type=text],body.light input[type=tel],body.light input[type=email],body.light input[type=date]{background:#faf8f3;border-color:rgba(20,16,8,.16);color:#1b1813;color-scheme:light}
+body.light input::placeholder{color:rgba(30,26,20,.42)}
+body.light .chk{background:#faf8f3;color:#2a251c}
+body.light .lang button{color:#1b1813;border-color:rgba(20,16,8,.2);background:#fff}
+body.light .agree a{color:#1b1813}
+body.light .how{color:#4a4536}
+</style></head><body${light ? ' class="light"' : ''}><div class="wrap">
+<div class="top"><div class="logo${p.page && p.page.logo ? ' img' : ''}">${p.page && p.page.logo ? `<img src="${esc(p.page.logo)}" alt="">` : esc(p.emoji || '🎁')}</div><div class="brand">${esc(ctx.name)}</div><div class="lang" id="lang"></div></div>
 <div id="form-box">
   <div class="offer"><span class="gift" aria-hidden="true">🎁</span><div class="k" id="o-k"></div><div class="t" id="o-t"></div><div class="row"><span class="badge" id="o-b"></span><span class="v" id="o-v"></span></div></div>
   <div class="refban" id="refban" style="display:none"></div>
@@ -139,10 +159,10 @@ button.go[disabled]{opacity:.65;transform:none}
   <div class="card">
     <div class="closed" id="closed" style="display:none"></div>
     <form id="f" novalidate autocomplete="on">
-      <label class="f"><span class="lt"><i class="ic">👤</i><span id="l-n"></span></span><input type="text" id="n" autocomplete="name" maxlength="100"></label>
-      <label class="f"><span class="lt"><i class="ic">📱</i><span id="l-p"></span></span><input type="tel" id="p" autocomplete="tel" inputmode="tel" maxlength="30"></label>
-      <label class="f"><span class="lt"><i class="ic">✉️</i><span><span id="l-e"></span> <small id="o-e"></small></span></span><input type="email" id="e" autocomplete="email" inputmode="email" maxlength="120"></label>
+      <label class="f"><span class="lt"><i class="ic">👤</i><span><span id="l-n"></span><span class="req">*</span></span></span><input type="text" id="n" autocomplete="name" maxlength="100"></label>
+      <label class="f"><span class="lt"><i class="ic">✉️</i><span><span id="l-e"></span><span class="req" id="r-e">*</span> <small id="o-e"></small></span></span><input type="email" id="e" autocomplete="email" inputmode="email" maxlength="120"></label>
       <label class="f"><span class="lt"><i class="ic">🎂</i><span><span id="l-b"></span> <small id="o-b2"></small></span></span><input type="date" id="b" autocomplete="bday"><span class="hintf" id="h-b"></span></label>
+      <label class="f"><span class="lt"><i class="ic">📱</i><span><span id="l-p"></span> <small id="o-p"></small></span></span><input type="tel" id="p" autocomplete="tel" inputmode="tel" maxlength="30"></label>
       <input type="text" id="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <label class="chk"><input type="checkbox" id="c"><span id="cl"></span></label>
       <div class="err" id="err"></div>
@@ -159,6 +179,9 @@ let lang=(function(){const q=new URLSearchParams(location.search).get('lang');if
 for(const l of (navigator.languages||[navigator.language||''])){const k=String(l).slice(0,2).toLowerCase();if(k==='cs')return'sk';if(TX[k])return k}return TX[CTX.lang]?CTX.lang:'en'})();
 const $=id=>document.getElementById(id);let coupon=null,repeat=false,mailed=false;
 const REF=(new URLSearchParams(location.search).get('ref')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);
+const UA=navigator.userAgent||'';const DEV=/iPhone|iPad|iPod/.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'ios':/Android/i.test(UA)?'android':'pc';
+const WSVG='<svg viewBox="0 0 34 26" aria-hidden="true"><rect x="1" y="1" width="32" height="24" rx="5" fill="#e9e5dc"/><rect x="3" y="3.5" width="28" height="5" rx="2" fill="#4aa3df"/><rect x="3" y="6.5" width="28" height="5" rx="2" fill="#f2b233"/><rect x="3" y="9.5" width="28" height="5" rx="2" fill="#57b85a"/><path d="M1 14h11c1.6 0 2.4 3 5 3s3.4-3 5-3h11v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z" fill="#f1ede4"/><path d="M12 14c1.6 0 2.4 3 5 3s3.4-3 5-3" fill="none" stroke="#e46b5a" stroke-width="1.6"/></svg>';
+let wlink='';
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmt(iso){const p=String(iso).split('-');return lang==='en'?p[1]+'/'+p[2]+'/'+p[0]:p[2]+'.'+p[1]+'.'+p[0]}
 function pct(n){return Number(n)>=100?TX[lang].free:'−'+n+'%'}
@@ -168,28 +191,36 @@ $('lang').querySelectorAll('button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;
 const title=CTX.title||CTX.defaults[lang];
 const J=CTX.mode==='join';
 if(J){$('o-k').closest('.offer').style.display='none'}else{$('o-k').textContent='🎁 '+T.gift;$('o-t').textContent=title;$('o-b').textContent=pct(CTX.percent);$('o-v').textContent=T.valid(CTX.days)}
-$('how').textContent=J?T.jHow:T.how;
+$('how').textContent=J?T.jHow:T.how;if(J&&CTX.welcome){$('refban').style.display='flex';$('refban').innerHTML='<i>🎁</i><div><b>'+esc(T.welcomeB)+'</b><span>'+esc(T.welcomeS)+'</span></div>'}
 if(CTX.refOn&&REF){$('refban').style.display='flex';$('refban').innerHTML='<i>🤝</i><div><b>'+esc(T.refBan)+'</b>'+(CTX.refFriend?'<span>'+esc(T.refGift)+': '+esc(CTX.refFriend)+'</span>':'')+'</div>'}
 $('l-n').textContent=T.lName;$('n').placeholder=T.pName;$('l-p').textContent=T.lPhone;$('p').placeholder=T.pPhone;
-$('l-e').textContent=T.lEmail;$('o-e').textContent='· '+T.opt;$('e').placeholder=T.pEmail;$('l-b').textContent=T.lBday;$('o-b2').textContent='· '+T.opt;$('h-b').textContent=T.bdayHint;
-$('cl').textContent=T.consent;$('go-t').textContent=J?T.jBtn:T.btn;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
+$('l-e').textContent=T.lEmail;$('o-e').textContent='';$('e').placeholder=J?T.pEmailJ:T.pEmail;$('l-b').textContent=T.lBday;$('o-b2').textContent='· '+T.opt;$('h-b').textContent=T.bdayHint;$('o-p').textContent='· '+T.opt;
+$('cl').textContent=T.consent;goLabel();if(CTX.page&&CTX.page.title&&!$('ptitle')){const h=document.createElement('h1');h.id='ptitle';h.className='ptitle';$('how').before(h)}if($('ptitle'))$('ptitle').textContent=CTX.page.title;if(CTX.page&&CTX.page.text)$('how').textContent=CTX.page.text;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
 if(!CTX.enabled){$('f').style.display='none';$('closed').style.display='block';$('closed').textContent=T.closed}
 if(coupon){$('form-box').style.display='none';const d=$('done');d.style.display='block';
 d.innerHTML=J?'<div class="ticket"><div class="h"><b>💳 '+esc(T.jOk)+'</b><div>'+esc(CTX.name)+' · '+esc(T.jTitle)+'</div></div>'+
-'<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="small">'+esc(T.jShow)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'
+'<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="small">'+esc(T.jShow)+'</div></div></div>'+walletBtns()+(mailed?'<p class="tip">✉️ '+esc(T.jMailed)+'</p>':'<p class="tip">'+esc(T.shot)+'</p>')
 :'<div class="ticket"><div class="h"><b>🎁 '+esc(repeat?T.again:T.okTitle)+'</b><div>'+esc(coupon.title||CTX.defaults[lang])+'</div><span class="badge">'+esc(pct(coupon.percent))+'</span></div>'+
 '<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="until">'+esc(T.until)+' '+esc(fmt(coupon.expires))+'</div><div class="small">'+esc(T.show)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'}}
+function goLabel(){const T=TX[lang];const J=CTX.mode==='join';const g=$('go');
+if(J&&((DEV==='ios'&&CTX.wal.a)||(DEV==='android'&&CTX.wal.g))){g.classList.add('wal');g.innerHTML=WSVG.replace('<svg','<svg class="wi"')+'<span id="go-t">'+esc(DEV==='ios'?T.wApple:T.wGoogle)+'</span>'}
+else{g.classList.remove('wal');g.innerHTML='<span id="go-t">'+esc((CTX.page&&CTX.page.button)||(J?T.wMail:T.btn))+'</span><span aria-hidden="true">→</span>'}}
+function walletBtns(){const T=TX[lang];if(!coupon)return'';const L=[];
+if(coupon.awallet&&DEV!=='android')L.push('<a class="wbtn" href="'+esc(coupon.awallet)+'">'+WSVG+esc(T.wApple)+'</a>');
+if(coupon.gwallet&&DEV!=='ios')L.push('<a class="wbtn" href="'+esc(coupon.gwallet)+'" target="_blank" rel="noopener">'+WSVG+esc(T.wGoogle)+'</a>');
+return L.length?'<div class="wbtns">'+L.join('')+'</div>':''}
 function burst(){try{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const cols=[getComputedStyle(document.documentElement).getPropertyValue('--a').trim(),getComputedStyle(document.documentElement).getPropertyValue('--b').trim(),'#fbbf24','#34d399','#60a5fa','#f472b6'];
 const box=document.createElement('div');box.className='confetti';for(let i=0;i<46;i++){const e=document.createElement('i');e.style.left=(Math.random()*100)+'%';e.style.background=cols[i%cols.length];e.style.setProperty('--dx',((Math.random()-.5)*160)+'px');e.style.setProperty('--rot',(Math.random()*720-360)+'deg');e.style.animationDelay=(Math.random()*.5)+'s';e.style.animationDuration=(2+Math.random()*1.6)+'s';box.appendChild(e)}document.body.appendChild(box);setTimeout(()=>box.remove(),4600)}catch(e){}}
 $('f').addEventListener('submit',async ev=>{ev.preventDefault();const T=TX[lang];$('err').textContent='';
 const name=$('n').value.trim(),phone=$('p').value.trim(),email=$('e').value.trim();
-if(!name){$('err').textContent=T.errName;$('n').focus();return}if(phone.replace(/\\D/g,'').length<7){$('err').textContent=T.errPhone;$('p').focus();return}
-if(email&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){$('err').textContent=T.errEmail;$('e').focus();return}
-$('go').disabled=true;$('go-t').textContent=T.wait;
+if(!name){$('err').textContent=T.errName;$('n').focus();return}if(!email){$('err').textContent=T.errEmailReq;$('e').focus();return}
+if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){$('err').textContent=T.errEmail;$('e').focus();return}if(phone&&phone.replace(/\\D/g,'').length<7){$('err').textContent=T.errPhone;$('p').focus();return}
+$('go').disabled=true;$('go').querySelector('#go-t').textContent=T.wait;
 try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,mode:CTX.mode,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value,ref:REF})});
-const j=await r.json();if(j.ok&&j.code){coupon=j;repeat=!!j.repeat;mailed=!!j.emailSent;render();window.scrollTo(0,0);if(!repeat)burst();return}
+const j=await r.json();if(j.ok&&j.code){coupon=j;repeat=!!j.repeat;mailed=!!j.emailSent;render();window.scrollTo(0,0);if(!repeat)burst();
+wlink=CTX.mode==='join'?(DEV==='ios'?j.awallet:DEV==='android'?j.gwallet:''):'';if(wlink)setTimeout(()=>{location.href=wlink},700);return}
 $('err').textContent=j.error==='too_many'||j.error==='daily_limit'?T.errMany:j.error==='closed'?T.closed:j.error==='email'?T.errEmail:j.error==='phone'?T.errPhone:j.error==='name'?T.errName:T.errGen}catch(e){$('err').textContent=T.errGen}
-$('go').disabled=false;$('go-t').textContent=T.btn});
+$('go').disabled=false;goLabel()});
 render();
 </script></body></html>`;
 }
@@ -200,7 +231,8 @@ module.exports = async (req, res) => {
     if (!row) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
-    res.status(200).send(html(row.slug, row.profile || {}, req.query && req.query.mode));
+    const wal = { g: (() => { try { require('./_wallet').serviceAccount(); return true; } catch (e) { return false; } })(), a: (() => { try { return !!require('./_apple').configured(); } catch (e) { return false; } })() };
+    res.status(200).send(html(row.slug, row.profile || {}, req.query && req.query.mode, wal));
   } catch (e) { res.status(500).send('Error'); }
 };
 module.exports.html = html;

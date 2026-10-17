@@ -66,7 +66,8 @@ async function loadBySlug(slug) {
   const { data } = await supabase.from('business_profiles').select('license_key, slug, profile').eq('slug', slug).maybeSingle();
   if (!data) return null;
   const book = cleanBook((data.profile || {}).book);
-  return { ...data, book };
+  const { key, loc } = require('./_online').splitKey(data.license_key);   // 2.23: профиль точки «КЛЮЧ#точка»
+  return { ...data, license_key: key, loc, book };
 }
 
 function staffFor(book, serviceId) {
@@ -218,7 +219,7 @@ async function cancel(body) {
   const b = await byToken(body.token);
   if (!b) return { status: 404, error: 'not_found' };
   if (b.status !== 'booked') return { status: 200, ok: true, already: true };
-  const { data: prof } = await supabase.from('business_profiles').select('profile').eq('license_key', b.license_key).maybeSingle();
+  const prof = await require('./_online').profileByLicense(b.license_key);
   const tz = cleanBook(((prof || {}).profile || {}).book).tz;
   const now = nowLocal(tz);
   if (b.date < now.date || (b.date === now.date && b.start_min <= now.min)) return { status: 400, error: 'past' };
@@ -276,7 +277,7 @@ async function remind(req) {
   for (const b of data || []) {
     if (!b.email) continue;
     if (!profiles.has(b.license_key)) {
-      const { data: p } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', b.license_key).maybeSingle();
+      const p = await require('./_online').profileByLicense(b.license_key);
       profiles.set(b.license_key, p ? { ...(p.profile || {}), slug: p.slug, book: cleanBook((p.profile || {}).book) } : null);
     }
     const prof = profiles.get(b.license_key);

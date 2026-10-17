@@ -44,21 +44,63 @@ function cleanProfile(p, prev) {
     refOn: !!p.refOn,
     refFriend: str(p.refFriend, 60),
     reviewUrl: /^https:\/\/[^\s<>"']{4,300}$/.test(String(p.reviewUrl || '')) ? String(p.reviewUrl) : '',
-    book: require('./_book').cleanBook(p.book)
+    book: require('./_book').cleanBook(p.book),
+    // 2.23: какую постоянную карту получит гость при регистрации (чтобы сразу выдать её в Google/Apple Wallet)
+    card: cleanCard(p.card),
+    // 2.23: оформление страницы регистрации (можно задать и из админки)
+    page: cleanPage(p.page)
   };
 }
+function cleanCard(c) {
+  c = c || {};
+  const type = ['stamp', 'discount', 'spend'].includes(c.type) ? c.type : 'stamp';
+  return { type, stampTarget: clamp(c.stampTarget, 2, 50, 10), title: str(c.title, 60), discount: clamp(c.discount, 1, 90, 5), spendTarget: clamp(c.spendTarget, 1, 100000, 100), spendTitle: str(c.spendTitle, 60), spendPoints: clamp(c.spendPoints, 1, 1000, 1), welcomeDouble: !!c.welcomeDouble };
+}
+function cleanPage(pg) {
+  pg = pg || {};
+  const hex = (v) => (/^#[0-9a-fA-F]{6}$/.test(v || '') ? v : '');
+  return { color2: hex(pg.color2), bg: ['dark', 'light'].includes(pg.bg) ? pg.bg : '', title: str(pg.title, 80), text: str(pg.text, 240), button: str(pg.button, 40),
+    logo: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]{20,}$/.test(String(pg.logo || '')) && String(pg.logo).length < 420000 ? String(pg.logo) : '' };
+}
+// 2.23: у каждой точки (устройства) своя страница регистрации. Профиль точки хранится под ключом «КЛЮЧ#точка».
+const LOC_RE = /^[a-z0-9]{6,32}$/;
+const splitKey = (k) => { const s = String(k || ''); const i = s.indexOf('#'); return i < 0 ? { key: s, loc: '' } : { key: s.slice(0, i), loc: s.slice(i + 1) }; };
+// Профиль бизнеса по ключу подписки: общий (старые версии программы) или любой из профилей точек.
+async function profileByLicense(key, loc) {
+  key = String(key || '').trim(); if (!key) return null;
+  if (loc && LOC_RE.test(loc)) { const { data } = await supabase.from('business_profiles').select('license_key, slug, profile').eq('license_key', `${key}#${loc}`).maybeSingle(); if (data) return data; }
+  const { data } = await supabase.from('business_profiles').select('license_key, slug, profile').eq('license_key', key).maybeSingle();
+  if (data) return data;
+  const { data: list } = await supabase.from('business_profiles').select('license_key, slug, profile').ilike('license_key', `${key}#%`).limit(1);
+  return (list && list[0]) || null;
+}
 
-async function publishProfile({ licenseKey, profile }) {
+async function publishProfile({ licenseKey, profile, loc }) {
   if (!(await licenseActive(licenseKey))) return { status: 403, error: 'license_inactive' };
-  const key = licenseKey.trim();
-  const { data: row, error: selErr } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', key).maybeSingle();
+  const base = licenseKey.trim();
+  const useLoc = LOC_RE.test(String(loc || '')) ? String(loc) : '';
+  const key = useLoc ? `${base}#${useLoc}` : base;
+  const { data: row0, error: selErr } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', key).maybeSingle();
   if (selErr) return { status: 500, error: 'db_error', detail: String(selErr.message || '').slice(0, 140) };
+  let row = row0;
   const clean = cleanProfile(profile, row && row.profile);
+  // Точка публикуется впервые, а у подписки уже есть общая страница (её ссылка могла быть напечатана на афише):
+  // её забирает та точка, чьё название совпадает со ссылкой (или кто публиковал её последним), остальные получают свою.
+  if (!row && useLoc) {
+    const { data: legacy } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', base).maybeSingle();
+    if (legacy && legacy.slug) {
+      const mine = legacy.slug.startsWith(slugify(clean.name) + '-') || legacy.slug === slugify(clean.name) || ((legacy.profile || {}).name === clean.name);
+      if (mine) {
+        const { error: mvErr } = await supabase.from('business_profiles').update({ license_key: key }).eq('license_key', base);
+        if (!mvErr) row = legacy;
+      }
+    }
+  }
   let slug = row && row.slug;
   if (!slug) {
-    const base = slugify(clean.name);
+    const base2 = slugify(clean.name);
     for (let i = 0; i < 5 && !slug; i++) {
-      const cand = `${base}-${randId(4)}`;
+      const cand = `${base2}-${randId(4)}`;
       const { data: taken } = await supabase.from('business_profiles').select('slug').eq('slug', cand).maybeSingle();
       if (!taken) slug = cand;
     }
@@ -72,7 +114,9 @@ async function publishProfile({ licenseKey, profile }) {
 async function loadProfileBySlug(slug) {
   if (!/^[a-z0-9-]{3,48}$/.test(String(slug || ''))) return null;
   const { data } = await supabase.from('business_profiles').select('license_key, slug, profile').eq('slug', slug).maybeSingle();
-  return data || null;
+  if (!data) return null;
+  const { key, loc } = splitKey(data.license_key);
+  return { ...data, license_key: key, loc };
 }
 
 const MAIL_TXT = {
@@ -90,6 +134,24 @@ const JOIN_MAIL = {
   sk: { subj: (n) => `Vaša vernostná karta — ${n}`, body: (n) => `Ste zaregistrovaný vo vernostnom programe „${n}“. Toto je vaša karta: ukážte QR kód pri pokladnici — pečiatky a bonusy sa budú zbierať na ňu.` },
   en: { subj: (n) => `Your loyalty card — ${n}`, body: (n) => `You’re registered in the ${n} loyalty programme. This is your card: show the QR code at the till — stamps and bonuses are collected on it.` }
 };
+const WAL_TXT = { ru: ['Добавить в Apple Wallet', 'Добавить в Google Wallet'], uk: ['Додати в Apple Wallet', 'Додати в Google Wallet'], sk: ['Pridať do Apple Wallet', 'Pridať do Google Wallet'], en: ['Add to Apple Wallet', 'Add to Google Wallet'] };
+function walletMailButtons(r, lang) {
+  const t = WAL_TXT[lang] || WAL_TXT.en, b = (href, label) => `<a href="${esc(href)}" style="display:inline-block;margin:4px;padding:12px 18px;border-radius:12px;background:#111;color:#fff;text-decoration:none;font-weight:bold">${esc(label)}</a>`;
+  const out = [r && r.awallet ? b(r.awallet, t[0]) : '', r && r.gwallet ? b(r.gwallet, t[1]) : ''].filter(Boolean);
+  return out.length ? `<p style="text-align:center">${out.join(' ')}</p>` : '';
+}
+// 2.23: ссылки «Добавить в Wallet» для постоянной карты гостя (Google — Android, Apple — iPhone).
+async function walletLinksFor(row, rec) {
+  try {
+    if (!(await licenseActive(row.license_key))) return {};
+    const WL = require('./_walletLinks');
+    const prof = row.profile || {};
+    const card = WL.joinCard(prof, rec.bonus_code, rec.name, rec.lang || prof.lang || 'ru');
+    const brand = { name: prof.name, color: prof.color, currency: prof.currency, niche: prof.niche };
+    const [g, a] = await Promise.all([WL.googleLink(row.license_key, card, brand), WL.appleLink(row.license_key, card, brand)]);
+    return { gwallet: g || '', awallet: a || '' };
+  } catch (e) { return {}; }
+}
 async function register(body, ip) {
   if (str(body.hp, 50)) return { status: 200, ok: true, fake: true }; // ловушка для ботов: поле не должен заполнять человек
   if (await RL.limited('online-ip:' + ip, 12, 3600 * 1000)) return { status: 429, error: 'too_many' };
@@ -101,9 +163,11 @@ async function register(body, ip) {
   const lang = ['ru', 'uk', 'sk', 'en'].includes(body.lang) ? body.lang : (prof.lang || 'ru');
   const name = str(body.name, 100), phone = str(body.phone, 30), email = str(body.email, 120).toLowerCase();
   const phoneKey = digitsKey(phone);
+  // 2.23: обязательны только имя и email (телефон — по желанию). Старая страница без поля email — как раньше, по телефону.
   if (!name) return { status: 400, error: 'name' };
-  if (!phoneKey) return { status: 400, error: 'phone' };
+  if (!email && !phoneKey) return { status: 400, error: 'email' };
   if (email && !EMAIL_RE.test(email)) return { status: 400, error: 'email' };
+  if (phone && !phoneKey) return { status: 400, error: 'phone' };
   // 2.20: код пригласившего друга (из ссылки ?ref=…) — программа на кассе свяжет нового гостя с ним.
   const ref = prof.refOn && /^[A-Z0-9]{4,12}$/.test(String(body.ref || '').toUpperCase()) ? String(body.ref).toUpperCase() : '';
   const birthdayRaw = str(body.birthday, 10);
@@ -113,11 +177,13 @@ async function register(body, ip) {
   const join = body.mode === 'join';
   const kindOf = (r) => r.kind || (Number(r.bonus_percent) === 0 ? 'join' : 'promo');
   // Один человек — один бонус (и одна карта): тот же номер уже регистрировался — показываем прежний код.
-  const { data: prevList } = await supabase.from('online_registrations').select('*').eq('license_key', row.license_key).eq('phone_key', phoneKey).order('id', { ascending: false }).limit(10);
+  const { data: prevList } = phoneKey
+    ? await supabase.from('online_registrations').select('*').eq('license_key', row.license_key).eq('phone_key', phoneKey).order('id', { ascending: false }).limit(10)
+    : await supabase.from('online_registrations').select('*').eq('license_key', row.license_key).ilike('email', email.replace(/[%_\\]/g, '\\$&')).order('id', { ascending: false }).limit(10);
   const prev = (prevList || []).find(r => kindOf(r) === (join ? 'join' : 'promo'));
   const QR = require('qrcode');
   const asReply = async (r, repeat) => ({ status: 200, ok: true, repeat, kind: kindOf(r), code: r.bonus_code, title: r.bonus_title, percent: r.bonus_percent, expires: String(r.bonus_expires).slice(0, 10), qr: await QR.toDataURL(r.bonus_code, { width: 360, margin: 2 }) });
-  if (prev) return asReply(prev, true);
+  if (prev) { const rr = await asReply(prev, true); if (kindOf(prev) === 'join') Object.assign(rr, await walletLinksFor(row, prev)); return rr; }
 
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
   const { count } = await supabase.from('online_registrations').select('id', { count: 'exact', head: true }).eq('license_key', row.license_key).gte('created_at', since);
@@ -125,19 +191,22 @@ async function register(body, ip) {
 
   const rec = join ? {
     // Постоянная карта: код в том же формате, что и в программе (LC-…); процент 0 — признак онлайн-регистрации.
-    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
+    license_key: row.license_key, name, phone: phone || null, phone_key: phoneKey || null, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
     bonus_code: 'LC-' + crypto.randomBytes(6).toString('hex').toUpperCase(), bonus_title: '', bonus_percent: 0, bonus_expires: dateISO(3650), kind: 'join'
   } : {
-    license_key: row.license_key, name, phone, phone_key: phoneKey, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
+    license_key: row.license_key, name, phone: phone || null, phone_key: phoneKey || null, email: email || null, birthday: birthday || null, lang, consent: !!body.consent, ...(ref ? { ref } : {}),
     bonus_code: 'LB-' + crypto.randomBytes(5).toString('hex').toUpperCase(),
     bonus_title: prof.bonusTitle || DEFAULT_BONUS[lang], bonus_percent: clamp(prof.bonusPercent, 1, 100, 100),
     bonus_expires: dateISO(clamp(prof.bonusDays, 1, 90, 14)), kind: 'promo'
   };
+  if (row.loc) rec.loc = row.loc;   // 2.23: заявка уходит той точке, чья это страница
   let { data: saved, error } = await supabase.from('online_registrations').insert(rec).select().single();
+  if (error && /\bloc\b/i.test(String(error.message))) { const { loc: _l, ...noLoc } = rec; ({ data: saved, error } = await supabase.from('online_registrations').insert(noLoc).select().single()); }   // schema_2_23.sql ещё не выполнен
   if (error && /kind/i.test(String(error.message))) { const { kind, ...noKind } = rec; ({ data: saved, error } = await supabase.from('online_registrations').insert(noKind).select().single()); }   // колонку ещё не добавили
   if (error && /\bref\b/i.test(String(error.message))) { const { ref: _r, ...noRef } = rec; ({ data: saved, error } = await supabase.from('online_registrations').insert(noRef).select().single()); }   // schema_2_20.sql ещё не выполнен
   if (error || !saved) return { status: 500, error: 'save_failed' };
   const reply = await asReply(saved, false);
+  if (join) Object.assign(reply, await walletLinksFor(row, saved));
 
   // Купон на email — сразу, не дожидаясь программы на кассе. Не получилось — не страшно: купон виден на странице.
   reply.emailSent = false;
@@ -148,7 +217,7 @@ async function register(body, ip) {
       const J = JOIN_MAIL[lang];
       const r = await sendMail({
         licenseKey: row.license_key, fromName: prof.name, to: email, subject: join ? J.subj(prof.name) : T.subj(prof.name),
-        html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#222"><p>${esc(T.hi(name))}</p><p>${join ? esc(J.body(prof.name)) : T.body(esc(prof.name), esc(rec.bonus_title), rec.bonus_percent, fmtDate(rec.bonus_expires, lang))}</p><p style="text-align:center"><img src="cid:coupon" width="240" height="240" alt="QR"><br><b style="letter-spacing:2px">${esc(rec.bonus_code)}</b></p><p style="color:#666;font-size:13px">${T.after}</p></div>`,
+        html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#222"><p>${esc(T.hi(name))}</p><p>${join ? esc(J.body(prof.name)) : T.body(esc(prof.name), esc(rec.bonus_title), rec.bonus_percent, fmtDate(rec.bonus_expires, lang))}</p><p style="text-align:center"><img src="cid:coupon" width="240" height="240" alt="QR"><br><b style="letter-spacing:2px">${esc(rec.bonus_code)}</b></p>${walletMailButtons(reply, lang)}<p style="color:#666;font-size:13px">${join ? '' : T.after}</p></div>`,
         attachments: [{ filename: 'coupon.png', contentBase64: png.toString('base64'), cid: 'coupon', contentType: 'image/png' }]
       });
       reply.emailSent = !!r.ok;   // для join: карта на email; в программе она появится при следующем обмене (раз в минуту)
@@ -157,16 +226,19 @@ async function register(body, ip) {
   return reply;
 }
 
-async function pull({ licenseKey, ack }) {
+async function pull({ licenseKey, ack, loc }) {
   if (!(await licenseActive(licenseKey))) return { status: 403, error: 'license_inactive' };
   const key = licenseKey.trim();
   // Храним заявки недолго: после передачи программе — 90 дней (для защиты от повторных бонусов), затем удаляем.
   await supabase.from('online_registrations').delete().eq('license_key', key).lt('delivered_at', new Date(Date.now() - 90 * 86400000).toISOString());
   const ids = Array.isArray(ack) ? ack.map(Number).filter(Number.isInteger).slice(0, 200) : [];
   if (ids.length) await supabase.from('online_registrations').update({ delivered_at: new Date().toISOString() }).eq('license_key', key).in('id', ids);
-  const { data, error: pullErr } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
+  let { data, error: pullErr } = await supabase.from('online_registrations').select('*').eq('license_key', key).is('delivered_at', null).order('id', { ascending: true }).limit(50);
+  // 2.23: точка забирает свои заявки и общие (без точки); если колонки loc ещё нет — всё, как раньше
+  const myLoc = LOC_RE.test(String(loc || '')) ? String(loc) : '';
+  if (!pullErr && myLoc) data = (data || []).filter(r => !r.loc || r.loc === myLoc);
   if (pullErr) return { status: 500, error: 'db_error', detail: String(pullErr.message || '').slice(0, 140) };
   return { status: 200, ok: true, items: (data || []).map(r => ({ id: r.id, kind: r.kind || (Number(r.bonus_percent) === 0 ? 'join' : 'promo'), name: r.name, phone: r.phone, email: r.email, birthday: r.birthday, lang: r.lang, consent: !!r.consent, ref: r.ref || '', code: r.bonus_code, title: r.bonus_title, percent: r.bonus_percent, expires: String(r.bonus_expires).slice(0, 10), createdAt: r.created_at })) };
 }
 
-module.exports = { publishProfile, loadProfileBySlug, register, pull, SITE_URL, esc, cleanProfile, slugify, DEFAULT_BONUS };
+module.exports = { publishProfile, loadProfileBySlug, profileByLicense, splitKey, register, pull, SITE_URL, esc, cleanProfile, slugify, DEFAULT_BONUS };

@@ -68,23 +68,36 @@ async function handleDesign(req, res) {
     res.status(200).json({ ok: true, ...info, logoUrl: info.hasLogo ? assetUrl(info, 'logo') : '', heroUrl: info.hasHero ? assetUrl(info, 'hero') : '' });
     return;
   }
-  const b = req.body;
+  const r = await saveDesign(licenseKey, req.body, cur);
+  const { status, ...rest } = r; res.status(status).json(rest);
+}
+
+// Сохранить дизайн (программа или админка). body: { logo?, hero?, bgColor?, heroStamps? }
+async function saveDesign(licenseKey, b, curRow) {
+  const biz = bizOf(licenseKey);
+  let cur = curRow;
+  if (cur === undefined) {
+    const { data, error: readErr } = await supabase.from('wallet_designs').select('*').eq('biz', biz).maybeSingle();
+    if (readErr) return { status: 500, error: 'db_error', detail: String(readErr.message || '').slice(0, 140) };
+    cur = data;
+  }
+  b = b || {};
   const row = { biz, license_key: licenseKey.trim(), logo: cur ? cur.logo : null, logo_mime: cur ? cur.logo_mime : null, hero: cur ? cur.hero : null, hero_mime: cur ? cur.hero_mime : null,
     bg_color: cur ? cur.bg_color : null, hero_stamps: cur ? cur.hero_stamps !== false : true, ver: (cur ? Number(cur.ver) || 1 : 0) + 1, updated_at: new Date().toISOString() };
   for (const kind of ['logo', 'hero']) {
     if (!(kind in b)) continue;
     if (b[kind] === null || b[kind] === '') { row[kind] = null; row[kind + '_mime'] = null; continue; }
     const img = parseImage(b[kind], kind);
-    if (img.error) { res.status(400).json({ error: img.error, field: kind }); return; }
+    if (img.error) return { status: 400, error: img.error, field: kind };
     row[kind] = img.b64; row[kind + '_mime'] = img.mime;
   }
   row.has_logo = !!row.logo; row.has_hero = !!row.hero;
   if ('bgColor' in b) row.bg_color = validColor(b.bgColor) ? b.bgColor : null;
   if ('heroStamps' in b) row.hero_stamps = b.heroStamps !== false;
   const { error } = await supabase.from('wallet_designs').upsert(row);
-  if (error) { res.status(500).json({ error: 'db_error', detail: String(error.message || '').slice(0, 140) }); return; }
+  if (error) return { status: 500, error: 'db_error', detail: String(error.message || '').slice(0, 140) };
   const info = publicInfo(row);
-  res.status(200).json({ ok: true, ...info, logoUrl: info.hasLogo ? assetUrl(info, 'logo') : '', heroUrl: info.hasHero ? assetUrl(info, 'hero') : '' });
+  return { status: 200, ok: true, ...info, logoUrl: info.hasLogo ? assetUrl(info, 'logo') : '', heroUrl: info.hasHero ? assetUrl(info, 'hero') : '' };
 }
 
 // GET /api/wallet?action=asset&b=<бизнес>&k=logo|hero&v=<версия> — картинка для Google Wallet.
@@ -100,4 +113,4 @@ async function handleAsset(req, res) {
   res.status(200).send(Buffer.from(row[kind], 'base64'));
 }
 
-module.exports = { bizOf, getDesignInfo, getDesignFull, handleDesign, handleAsset, assetUrl, parseImage, MAX };
+module.exports = { bizOf, getDesignInfo, getDesignFull, handleDesign, saveDesign, handleAsset, assetUrl, parseImage, MAX };

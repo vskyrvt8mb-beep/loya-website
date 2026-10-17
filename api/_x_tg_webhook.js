@@ -85,7 +85,9 @@ module.exports = async (req, res) => {
   // Telegram повторяет запрос, если не получил 200, — поэтому отвечаем 200 всегда, ошибки только в лог
   try {
     if (m && m.chat && m.chat.type === 'private') {
+      if (/^\/start\s+[a-f0-9]{12}\b/.test(String(m.text || '')) && await TG.linkFinish(m)) { res.status(200).json({ ok: true }); return; }   // 2.23: подключение из админки
       const owner = String(await TG.chatId());
+      if (!owner && /^\/start\b/.test(String(m.text || ''))) await TG.rememberCandidate(m);
       if (owner && String(m.chat.id) === owner) await fromOwner(m, owner);
       else if (owner) await fromClient(m, owner);
     }

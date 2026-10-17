@@ -70,6 +70,7 @@ async function connect() {
   } catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
   const chats = (updates || []).map((u) => u.message && u.message.chat).filter((c) => c && c.type === 'private');
   let chat = chats[chats.length - 1];
+  if (!chat) { try { const p = JSON.parse(await getKV('tg_pending') || '{}'); if (p.id && Date.now() - Number(p.at || 0) < 24 * 3600e3) chat = { id: p.id, first_name: p.first_name, last_name: p.last_name, username: p.username }; } catch (e) { /* нет */ } }
   let saved = false;
   if (chat) {
     try {
@@ -93,6 +94,40 @@ async function connect() {
   return { status: 200, ok: true, name, chat: String(chat.id), saved, hook };
 }
 
+// 2.23: надёжное подключение: админка даёт ссылку t.me/<бот>?start=<код>. Человек нажимает «Запустить» —
+// Telegram присылает «/start <код>» на webhook, и именно этот чат становится чатом владельца.
+// (Раньше /start забирал webhook, а кнопка «Подключить» потом ничего не находила через getUpdates.)
+async function setKV(key, value) { try { const { error } = await supabase.from('admin_settings').upsert({ key, value: String(value) }); return !error; } catch (e) { return false; } }
+async function getKV(key) { try { const { data } = await supabase.from('admin_settings').select('value').eq('key', key).limit(1); return data && data[0] ? String(data[0].value || '') : ''; } catch (e) { return ''; } }
+async function linkStart() {
+  if (!token()) return { status: 400, error: 'tg_no_token' };
+  let me;
+  try { me = await call('getMe', {}); await setWebhook(); } catch (e) { return { status: 502, error: 'tg_error', detail: e.message }; }
+  const code = require('crypto').randomBytes(6).toString('hex');
+  if (!(await setKV('tg_link', JSON.stringify({ code, exp: Date.now() + 20 * 60e3 })))) return { status: 500, error: 'db_error', detail: 'admin_settings' };
+  return { status: 200, ok: true, link: `https://t.me/${me.username}?start=${code}`, bot: me.username };
+}
+// Вызывается из webhook: «/start <код>» из ссылки админки → этот чат становится чатом владельца.
+async function linkFinish(m) {
+  const code = (String(m.text || '').match(/^\/start\s+([a-f0-9]{12})\b/) || [])[1];
+  if (!code) return false;
+  let pend = {}; try { pend = JSON.parse(await getKV('tg_link') || '{}'); } catch (e) { pend = {}; }
+  if (!pend.code || pend.code !== code || Date.now() > Number(pend.exp || 0)) {
+    await call('sendMessage', { chat_id: m.chat.id, text: 'Ссылка для подключения устарела. Откройте админку Loya и нажмите «Подключить Telegram» ещё раз.' }).catch(() => {});
+    return true;
+  }
+  await setKV('tg_chat', String(m.chat.id));
+  await setKV('tg_link', '{}');
+  chatCache = { at: 0, id: '' };
+  await send(m.chat.id, '✅ <b>Loya подключена.</b> Сюда будут приходить: новые подписки и оплаты, пробные периоды, отмены, продления, неудачные оплаты, заявки с сайта и входы в админку.\n\n💬 Сообщения, которые люди пишут боту, тоже будут приходить сюда. Чтобы ответить — нажмите «Ответить» (Reply) на сообщение клиента.').catch(() => {});
+  return true;
+}
+// Чат владельца ещё не подключён, а кто-то нажал /start без кода — запомним: старая кнопка «Подключить» его найдёт.
+async function rememberCandidate(m) {
+  const u = m.from || {};
+  await setKV('tg_pending', JSON.stringify({ id: m.chat.id, first_name: u.first_name || '', last_name: u.last_name || '', username: u.username || '', at: Date.now() }));
+}
+
 async function test() {
   if (!token()) return { status: 400, error: 'tg_no_token' };
   const chat = await chatId();
@@ -113,4 +148,4 @@ const money = (amount, currency) => (amount == null ? '' : `${(Number(amount) / 
 const LANG_FLAG = { ru: '🇷🇺', uk: '🇺🇦', sk: '🇸🇰', en: '🇬🇧' };
 const lang = (l) => LANG_FLAG[l] ? `${LANG_FLAG[l]} ${l}` : esc(l || '');
 
-module.exports = { notify, connect, test, state, esc, money, lang, call, chatId, token, webhookSecret, setWebhook };
+module.exports = { notify, connect, linkStart, linkFinish, rememberCandidate, test, state, esc, money, lang, call, chatId, token, webhookSecret, setWebhook };

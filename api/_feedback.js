@@ -26,7 +26,7 @@ async function load(token) {
   if (!TOKEN.test(String(token || ''))) return null;
   const { data } = await supabase.from('feedback').select('*').eq('token', token).maybeSingle();
   if (!data) return null;
-  const { data: prof } = await supabase.from('business_profiles').select('profile').eq('license_key', data.license_key).maybeSingle();
+  const prof = await require('./_online').profileByLicense(data.license_key);
   return { fb: data, profile: (prof && prof.profile) || {} };
 }
 

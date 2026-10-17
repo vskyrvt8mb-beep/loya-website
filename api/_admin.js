@@ -195,10 +195,14 @@ async function client(key) {
     const { count: c, error } = await q; return error ? null : c;
   }, null);
   const month = new Date(Date.now() - 30 * 86400e3).toISOString();
-  const profile = await safe(async () => {
-    const { data } = await supabase.from('business_profiles').select('slug, profile').eq('license_key', key).limit(1);
-    const p = data && data[0]; return p ? { slug: p.slug, name: (p.profile && (p.profile.name || p.profile.title)) || '' } : null;
-  }, null);
+  // 2.23: у каждой точки своя страница регистрации («КЛЮЧ#точка») — показываем все
+  const profiles = await safe(async () => {
+    const [{ data: a }, { data: b }] = await Promise.all([
+      supabase.from('business_profiles').select('license_key, slug, profile').eq('license_key', key).limit(1),
+      supabase.from('business_profiles').select('license_key, slug, profile').ilike('license_key', `${key}#%`).limit(20)]);
+    return [...(a || []), ...(b || [])].map(p => ({ slug: p.slug, name: (p.profile && (p.profile.name || p.profile.title)) || '', loc: String(p.license_key).split('#')[1] || '' }));
+  }, []);
+  const profile = profiles[0] || null;
   return { status: 200, ok: true, client: {
     key, email: row.email || '', plan: row.plan, tier: tierOf(row), state: licenseState(row), created: row.created_at, lastSeen: row.last_seen_at, version: row.app_version || '',
     trialUntil: row.trial_until || '', freeUntil: row.free_until || '', note: row.note || '', hasStripe: !!row.stripe_subscription_id, livemode: row.livemode,
@@ -207,7 +211,7 @@ async function client(key) {
     deviceLimit: require('./_devices').limitFor(tierOf(row), row.plan, row), deviceBase: require('./_devices').baseLimit(tierOf(row), row.plan),
     extraDevices: require('./_devices').extraOf(row), extraNote: row.extra_note || '',
     points: await safe(async () => { const p = await require('./_org').listPoints(key); return (p || []).map((x) => ({ point: x.point, devices: x.devices.length, updated: x.updated })); }, []),
-    regsTotal: await count('online_registrations'), mail30: await count('mail_log', month), profile,
+    regsTotal: await count('online_registrations'), mail30: await count('mail_log', month), profile, profiles,
   } };
 }
 
@@ -243,16 +247,18 @@ async function deleteKeys(keys) {
       await supabase.from('apple_passes').delete().eq('license_key', k);
     } catch (e) { /* таблиц ещё нет — нечего удалять */ }
     for (const t of LINKED_TABLES) { try { await supabase.from(t).delete().eq('license_key', k); } catch (e) { /* таблицы нет */ } }
+    try { await supabase.from('business_profiles').delete().ilike('license_key', `${k}#%`); } catch (e) { /* нет */ }   // 2.23: страницы точек
+    try { await supabase.from('admin_settings').delete().in('key', [`ccfg:${k}`, `csnap:${k}`]); } catch (e) { /* нет */ }   // 2.23: настройки клиента из админки
     const { error } = await supabase.from('licenses').delete().eq('license_key', k);
     if (error) failed.push(k); else deleted.push(k);
   }
   return { deleted, failed };
 }
 
-async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code, extra, device }, ip) {
+async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code, extra, device, cfg, wallet }, ip) {
   if (!(await check(session))) return { status: 401, error: 'session' };
-  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device });
-  if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test'].includes(op)) {
+  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet });
+  if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test', 'tg_link', 'client_cfg_get'].includes(op)) {
     await log(op, ip, { key: KEY_RE.test(String(key || '')) ? key : undefined, keys: Array.isArray(keys) ? keys.slice(0, 50) : undefined,
       email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' ? Number(days) : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
       deleted: res.deleted, extra: op === 'set_extra_devices' ? Number(extra) : undefined, device: op === 'remove_device' ? str(device, 12) : undefined });
@@ -260,7 +266,7 @@ async function action({ session, op, key, keys, email, note, freeUntil, tier, da
   return res;
 }
 
-async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device }) {
+async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet }) {
   const until = /^\d{4}-\d{2}-\d{2}$/.test(String(freeUntil || '')) ? freeUntil : null;
   if (op === 'logout_all') {
     const { error } = await supabase.from('admin_settings').upsert({ key: 'sessions_after', value: String(Date.now()) });
@@ -277,6 +283,10 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
     return { status: 200, ok: true, secret: sec, uri, svg };
   }
   if (op === 'tg_connect') return require('./_tg').connect();
+  if (op === 'tg_link') return require('./_tg').linkStart();
+  // 2.23: настройки клиента из админки (оформление, регистрация, Wallet, акции)
+  if (op === 'client_cfg_get') { if (!KEY_RE.test(String(key || ''))) return { status: 400, error: 'bad_request' }; return require('./_clientCfg').adminGet(String(key)); }
+  if (op === 'client_cfg_save') { if (!KEY_RE.test(String(key || ''))) return { status: 400, error: 'bad_request' }; return require('./_clientCfg').adminSave(String(key), cfg, wallet); }
   if (op === 'tg_test') return require('./_tg').test();
   if (op === 'totp_test') {
     const sec = String(setupSecret || '').toUpperCase();
