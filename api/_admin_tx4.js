@@ -1,6 +1,8 @@
 // 2.24: тексты админки — полная настройка клиента (онлайн-запись, Wallet рядом, все настройки, предпросмотр).
 module.exports = {
   ru: {
+    fPageBg: 'Фон страниц для гостей', fPageBgHint: 'Фото заведения или фирменный фон. Обрежется до 3:2.', fPageBgDim: 'Затемнение фона',
+    ctCombo: 'Штампы + скидка', wShowTitle: 'Что показывать на карте', wShowTier: 'Уровень гостя (Basic / Silver / Gold)', wShowNext: 'Сколько визитов до следующего уровня', wShowHint: 'Пороги уровней задаются в программе клиента. Карты обновятся сами.', bkNoSvc: 'Добавьте хотя бы одну услугу слева — и здесь появится страница записи, как её увидит гость.', edLeave: 'Есть несохранённые изменения. Закрыть без сохранения?', pvClient: 'Клиент',
     etReg2: 'Карта и регистрация', etBook: 'Онлайн-запись', etGeo: 'Wallet рядом', etAll: 'Все настройки',
     edDirty: (n) => `Не сохранено: ${n}`, fLogoHint2: 'Квадратный PNG/JPG. Показывается в программе, на странице регистрации, в акции и на странице записи.',
     sVenue: 'Заведение', sFeatures: 'Разделы программы', sFeaturesH: 'Что видно у клиента в меню. Лишнее можно скрыть — данные не удаляются.',
@@ -26,6 +28,8 @@ module.exports = {
     pvCardTitle: 'Карта лояльности', pvStamps: 'Штампы', pvHello: 'Добрый день 👋', pvScan: '📷 Сканировать'
   },
   uk: {
+    fPageBg: 'Фон сторінок для гостей', fPageBgHint: 'Фото закладу або фірмовий фон. Обріжеться до 3:2.', fPageBgDim: 'Затемнення фону',
+    ctCombo: 'Штампи + знижка', wShowTitle: 'Що показувати на картці', wShowTier: 'Рівень гостя (Basic / Silver / Gold)', wShowNext: 'Скільки візитів до наступного рівня', wShowHint: 'Пороги рівнів задаються в програмі клієнта. Картки оновляться самі.', bkNoSvc: 'Додайте хоча б одну послугу ліворуч — і тут з’явиться сторінка запису, як її побачить гість.', edLeave: 'Є незбережені зміни. Закрити без збереження?', pvClient: 'Клієнт',
     etReg2: 'Картка і реєстрація', etBook: 'Онлайн-запис', etGeo: 'Wallet поруч', etAll: 'Усі налаштування',
     edDirty: (n) => `Не збережено: ${n}`, fLogoHint2: 'Квадратний PNG/JPG. Показується в програмі, на сторінці реєстрації, в акції та на сторінці запису.',
     sVenue: 'Заклад', sFeatures: 'Розділи програми', sFeaturesH: 'Що видно в меню клієнта. Зайве можна сховати — дані не видаляються.',
@@ -51,6 +55,8 @@ module.exports = {
     pvCardTitle: 'Картка лояльності', pvStamps: 'Штампи', pvHello: 'Добрий день 👋', pvScan: '📷 Сканувати'
   },
   sk: {
+    fPageBg: 'Pozadie stránok pre hostí', fPageBgHint: 'Fotka prevádzky alebo firemné pozadie. Oreže sa na 3:2.', fPageBgDim: 'Stmavenie pozadia',
+    ctCombo: 'Pečiatky + zľava', wShowTitle: 'Čo zobraziť na karte', wShowTier: 'Úroveň hosťa (Basic / Silver / Gold)', wShowNext: 'Koľko návštev do ďalšej úrovne', wShowHint: 'Hranice úrovní sa nastavujú v programe klienta. Karty sa aktualizujú samy.', bkNoSvc: 'Pridajte vľavo aspoň jednu službu — tu sa zobrazí rezervačná stránka tak, ako ju uvidí hosť.', edLeave: 'Máte neuložené zmeny. Zavrieť bez uloženia?', pvClient: 'Klient',
     etReg2: 'Karta a registrácia', etBook: 'Online rezervácia', etGeo: 'Wallet v blízkosti', etAll: 'Všetky nastavenia',
     edDirty: (n) => `Neuložené: ${n}`, fLogoHint2: 'Štvorcové PNG/JPG. Zobrazuje sa v programe, na registračnej stránke, v akcii aj na rezervačnej stránke.',
     sVenue: 'Prevádzka', sFeatures: 'Časti programu', sFeaturesH: 'Čo klient vidí v menu. Nepotrebné sa dá skryť — údaje sa nemažú.',
@@ -76,6 +82,8 @@ module.exports = {
     pvCardTitle: 'Vernostná karta', pvStamps: 'Pečiatky', pvHello: 'Dobrý deň 👋', pvScan: '📷 Skenovať'
   },
   en: {
+    fPageBg: 'Background of guest pages', fPageBgHint: 'A photo of the venue or a branded background. Cropped to 3:2.', fPageBgDim: 'Darken background',
+    ctCombo: 'Stamps + discount', wShowTitle: 'What to show on the card', wShowTier: 'Guest tier (Basic / Silver / Gold)', wShowNext: 'Visits left to the next tier', wShowHint: 'Tier thresholds are set in the client’s app. Cards update by themselves.', bkNoSvc: 'Add at least one service on the left — the booking page will appear here as guests see it.', edLeave: 'You have unsaved changes. Close without saving?', pvClient: 'Client',
     etReg2: 'Card & sign-up', etBook: 'Online booking', etGeo: 'Wallet nearby', etAll: 'All settings',
     edDirty: (n) => `Unsaved: ${n}`, fLogoHint2: 'Square PNG/JPG. Shown in the app, on the sign-up page, the promo and the booking page.',
     sVenue: 'Venue', sFeatures: 'App sections', sFeaturesH: 'What the client sees in the menu. Hiding a section keeps its data.',

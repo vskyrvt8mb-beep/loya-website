@@ -32,7 +32,7 @@ function adminEditorClient() {
     sel: (k, l, opts, rp) => '<label class="fld"><span>' + E(l) + '</span><select data-k="' + k + '"' + (rp ? ' data-rp="1"' : '') + '>' + opts.map(o => '<option value="' + E(o[0]) + '"' + (v(k) === String(o[0]) ? ' selected' : '') + '>' + E(o[1]) + '</option>').join('') + '</select></label>',
     chk: (k, l, sub, rp) => '<label class="chk2"><input type="checkbox" data-k="' + k + '" data-b="1"' + (rp ? ' data-rp="1"' : '') + (v(k) === '1' ? ' checked' : '') + '><span>' + E(l) + (sub ? '<small>' + E(sub) + '</small>' : '') + '</span></label>',
     col: (k, l, def) => '<label class="fld col"><span>' + E(l) + '</span><input type="color" data-k="' + k + '" value="' + E(/^#[0-9a-fA-F]{6}$/.test(v(k)) ? v(k) : (def || '#d4af37')) + '"></label>',
-    sec: (title, body, hint) => '<section class="es"><h4>' + E(title) + '</h4>' + (hint ? '<p class="es-h">' + E(hint) + '</p>' : '') + body + '</section>'
+    sec: (title, body, hint, wide) => '<section class="es' + (wide ? ' es-wide' : '') + '"><h4>' + E(title) + '</h4>' + (hint ? '<p class="es-h">' + E(hint) + '</p>' : '') + body + '</section>'
   };
 
   // ---------- редактор ----------
@@ -41,17 +41,18 @@ function adminEditorClient() {
     const t = T(); const c = ED.r.client;
     const tabs = [['info', t.etInfo], ['venue', t.etVenue], ['reg', t.etReg2 || t.etReg], ['wallet', t.etWallet], ['promo', t.etPromo], ['book', t.etBook], ['geo', t.etGeo], ['all', t.etAll]];
     const pvTabs = { venue: 1, reg: 1, wallet: 1, promo: 1, book: 1, geo: 1 };
-    $('mb').innerHTML = '<div class="ed"><div class="ed-h"><div><b>' + E((ED.cur.brand_name || '') + (ED.cur.brand_name ? ' · ' : '') + (c.email || '—')) + '</b><small class="key">' + E(c.key) + '</small></div><button class="btn sec ed-x" id="ed-x">✕</button></div>' +
+    $('mb').innerHTML = '<div class="ed"><div class="ed-h"><div><b>' + E((ED.cur.brand_name || '') + (ED.cur.brand_name ? ' · ' : '') + (c.email || '—')) + '</b><small class="key">' + E(c.key) + '</small><div class="ed-chips">' + [c.plan + (c.tier ? ' · ' + c.tier : ''), c.version ? 'v' + c.version : '', c.lastSeen ? '● ' + dt(c.lastSeen) : ''].filter(Boolean).map(x => '<span>' + E(x) + '</span>').join('') + '</div></div><button class="btn sec ed-x" id="ed-x">✕</button></div>' +
       '<div class="ed-tabs">' + tabs.map(x => '<button class="tab' + (ED.tab === x[0] ? ' on' : '') + '" data-et="' + x[0] + '">' + E(x[1]) + '</button>').join('') + '</div>' +
       '<div class="ed-main' + (pvTabs[ED.tab] ? ' has-pv' : '') + '"><div class="ed-body" id="ed-body"></div>' + (pvTabs[ED.tab] ? '<aside class="ed-pv" id="ed-pv"><div class="pv-h" id="pv-h"></div><div class="pv-box" id="pv-box"></div><p class="pv-note" id="pv-note"></p></aside>' : '') + '</div>' +
       (ED.tab === 'info' || ED.tab === 'all' ? '' : '<div class="ed-f"><span id="ed-msg"></span><span class="ed-dirty" id="ed-dirty"></span><button class="btn" id="ed-save">' + E(t.edSave) + '</button></div>') + '</div>';
-    $('ed-x').onclick = () => $('modal').classList.add('hide');
+    $('ed-x').onclick = () => { if (dirtyCount() && !confirm(t.edLeave)) return; $('modal').classList.add('hide'); };
     $('mb').querySelectorAll('[data-et]').forEach(b => b.onclick = () => { ED.tab = b.dataset.et; paintEditor(); });
     if (ED.tab === 'info') { renderInfo(ED.key, ED.r); return; }
     const snap = ED.g.snap;
     let h = ED.tab === 'all' ? '' : '<div class="ed-note">' + (snap ? E(t.snapNow(dt(ED.g.snapAt), snap.version || '')) : E(t.snapNone)) + (ED.g.ver ? '<br>' + E(t.cfgVer(ED.g.ver, dt(ED.g.at))) : '') + '</div>';
     h += ({ venue: tabVenue, reg: tabReg, wallet: tabWallet, promo: tabPromo, book: tabBook, geo: tabGeo, all: tabAll })[ED.tab](t);
     $('ed-body').innerHTML = h;
+    $('ed-body').classList.toggle('cols', ['venue', 'promo', 'book', 'reg', 'wallet', 'geo'].includes(ED.tab));
     bindCommon();
     ({ venue: bindVenue, reg: bindReg, wallet: bindWallet, promo: () => {}, book: bindBook, geo: bindGeo, all: bindAll })[ED.tab]();
     if ($('ed-save')) $('ed-save').onclick = saveEditor;
@@ -75,9 +76,12 @@ function adminEditorClient() {
     for (const k of Object.keys(ED.cur)) if (String(ED.cur[k] ?? '') !== String(ED.init[k] ?? '')) cfg[k] = ED.cur[k];
     return cfg;
   }
+  function dirtyCount() { return ED ? Object.keys(changed()).length + (ED.logo !== undefined ? 1 : 0) + (ED.pageBg !== undefined ? 1 : 0) + Object.keys(ED.wal).length : 0; }
+  // Ctrl+S / Cmd+S — сохранить настройки клиента
+  document.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && $('ed-save') && !$('modal').classList.contains('hide')) { e.preventDefault(); saveEditor(); } });
   function markDirty() {
     const el = $('ed-dirty'); if (!el) return;
-    const n = Object.keys(changed()).length + (ED.logo !== undefined ? 1 : 0) + Object.keys(ED.wal).length;
+    const n = dirtyCount();
     el.textContent = n ? T().edDirty(n) : '';
   }
   function logoBlock(t) {
@@ -86,6 +90,13 @@ function adminEditorClient() {
     return '<div class="fld"><span>' + E(t.fLogo) + '</span><div class="logo-row"><div class="logo-prev">' + (src ? '<img src="' + E(src) + '" alt="">' : (has ? '✓' : '—')) + '</div><div><button class="act a-paid" data-logo-pick="1">' + E(t.fPick) + '</button> <button class="act a-copy" data-logo-rm="1">' + E(t.fRemove) + '</button><input type="file" id="lg-file" accept="image/png,image/jpeg,image/webp" hidden><small>' + E(t.fLogoHint2 || t.fLogoHint) + '</small></div></div></div>';
   }
 
+  // 2.25: фон страниц для гостей (фото) + затемнение
+  function bgBlock(t) {
+    const has = ED.pageBg === undefined ? (ED.g.snap && ED.g.snap.has_page_bg === '1') : !!ED.pageBg;
+    const src = ED.pageBg || '';
+    return '<div class="fld"><span>' + E(t.fPageBg) + '</span><div class="logo-row"><div class="logo-prev bg-prev"' + (src ? ' style="background-image:url(&quot;' + src + '&quot;)"' : '') + '>' + (src ? '' : (has ? '✓' : '—')) + '</div><div><button class="act a-paid" id="bg-pick">' + E(t.fPick) + '</button> <button class="act a-copy" id="bg-rm">' + E(t.fRemove) + '</button><input type="file" id="bg-file" accept="image/png,image/jpeg,image/webp" hidden><small>' + E(t.fPageBgHint) + '</small></div></div></div>' +
+      '<label class="fld"><span>' + E(t.fPageBgDim) + ' — <b id="bg-dim-v">' + E(v('reg_page_bg_dim') || '45') + '%</b></span><input type="range" min="0" max="85" step="5" data-k="reg_page_bg_dim" value="' + E(v('reg_page_bg_dim') || '45') + '"></label>';
+  }
   // ---------- вкладки ----------
   function tabVenue(t) {
     let h = F.sec(t.sVenue, '<div class="g2">' + F.txt('brand_name', t.fBrand, 60) + F.sel('business_niche', t.fNiche, [['', '—']].concat(Object.keys(NICHES).map(id => [id, nicheName(id)])), true) +
@@ -100,25 +111,33 @@ function adminEditorClient() {
 
   function tabReg(t) {
     const ct = v('selfreg_card_type') || 'stamp';
-    let rule = '<div class="g2">' + F.sel('selfreg_card_type', t.fCardType, [['stamp', t.ctStamp], ['discount', t.ctDiscount], ['spend', t.ctSpend]], true) + F.sel('selfreg_mode', t.fRegMode, [['', '—'], ['wifi', t.rmWifi], ['online', t.rmOnline]]) + '</div><div class="g2">';
-    if (ct === 'stamp') rule += F.num('selfreg_stamp_target', t.fStampTarget, 2, 50) + F.txt('selfreg_stamp_title', t.fStampTitle, 60, t.phStampTitle);
+    let rule = '<div class="g2">' + F.sel('selfreg_card_type', t.fCardType, [['stamp', t.ctStamp], ['combo', t.ctCombo], ['discount', t.ctDiscount], ['spend', t.ctSpend]], true) + F.sel('selfreg_mode', t.fRegMode, [['', '—'], ['wifi', t.rmWifi], ['online', t.rmOnline]]) + '</div><div class="g2">';
+    if (ct === 'stamp' || ct === 'combo') rule += F.num('selfreg_stamp_target', t.fStampTarget, 2, 50) + F.txt('selfreg_stamp_title', t.fStampTitle, 60, t.phStampTitle);
+    if (ct === 'combo') rule += F.num('selfreg_discount_percent', t.fDiscount, 1, 90) + '<div></div>';
     if (ct === 'discount') rule += F.num('selfreg_discount_percent', t.fDiscount, 1, 90) + '<div></div>';
     if (ct === 'spend') rule += F.num('selfreg_spend_target', t.fSpendTarget, 1, 100000) + F.txt('selfreg_spend_title', t.fSpendTitle, 60) + F.num('selfreg_spend_points', t.fSpendPoints, 1, 1000);
     rule += '</div>';
     let h = F.sec(t.sCardRule, rule, t.regHint);
-    h += F.sec(t.sRegPage, logoBlock(t) + '<div class="g1">' + F.txt('registration_heading', t.fRegHead, 80) + F.area('registration_subtitle', t.fRegText, 240) + F.txt('registration_button_text', t.fRegBtn, 40) + '</div><div class="g2">' + F.sel('reg_page_bg', t.fRegBg, [['', t.bgAuto], ['dark', t.bgDark], ['light', t.bgLight]]) + F.col('reg_page_color2', t.fColor2) + '</div>');
+    h += F.sec(t.sRegPage, logoBlock(t) + bgBlock(t) + '<div class="g1">' + F.txt('registration_heading', t.fRegHead, 80) + F.area('registration_subtitle', t.fRegText, 240) + F.txt('registration_button_text', t.fRegBtn, 40) + '</div><div class="g2">' + F.sel('reg_page_bg', t.fRegBg, [['', t.bgAuto], ['dark', t.bgDark], ['light', t.bgLight]]) + F.col('reg_page_color2', t.fColor2) + '</div>');
     const pr = (ED.r.client.profiles || []).filter(Boolean);
     if (pr.length) h += F.sec(t.fPages, pr.map(p => '<div class="pg"><b>' + E(p.name || p.slug) + '</b> <a href="/j/' + E(p.slug) + '" target="_blank" rel="noopener">/j/' + E(p.slug) + ' ↗</a> <a href="/r/' + E(p.slug) + '" target="_blank" rel="noopener">/r/' + E(p.slug) + ' ↗</a></div>').join(''));
     return h;
   }
-  function bindReg() {}
+  function bindReg() {
+    if (!$('bg-pick')) return;
+    $('bg-pick').onclick = () => $('bg-file').click();
+    $('bg-rm').onclick = () => { ED.pageBg = null; paintEditor(); };
+    $('bg-file').onchange = async (e) => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; let u = await fitImage(f, 1280, 860, 'cover', 'image/jpeg'); if (u && u.length > 600000) u = await fitImage(f, 1024, 688, 'cover', 'image/jpeg'); ED.pageBg = u; paintEditor(); };
+    const r = document.querySelector('[data-k="reg_page_bg_dim"]'); if (r) r.addEventListener('input', () => { $('bg-dim-v').textContent = r.value + '%'; });
+  }
 
   function tabWallet(t) {
     const w = ED.g.wallet || {}; const bg = ED.wal.bgColor !== undefined ? ED.wal.bgColor : (w.bg || '#20252d');
     return F.sec(t.etWallet, '<div class="fld"><span>' + E(t.fWLogo) + '</span><div class="logo-row"><div class="logo-prev round" id="wl-prev"></div><div><button class="act a-paid" id="wl-pick">' + E(t.fPick) + '</button> <button class="act a-copy" id="wl-rm">' + E(t.fRemove) + '</button><input type="file" id="wl-file" accept="image/png,image/jpeg,image/webp" hidden></div></div></div>' +
       '<div class="fld"><span>' + E(t.fWHero) + '</span><div class="hero-prev" id="wh-prev"></div><div style="margin-top:6px"><button class="act a-paid" id="wh-pick">' + E(t.fPick) + '</button> <button class="act a-copy" id="wh-rm">' + E(t.fRemove) + '</button><input type="file" id="wh-file" accept="image/png,image/jpeg,image/webp" hidden></div></div>' +
       '<div class="g2"><label class="fld col"><span>' + E(t.fWBg) + '</span><input type="color" id="wb" value="' + E(/^#[0-9a-fA-F]{6}$/.test(bg) ? bg : '#20252d') + '"></label><div class="wcols">' + ['#20252d', '#000000', '#1f2a44', '#2b1d15', '#163126', '#4a1730', '#7a5a2e', '#f4efe4', '#ffffff'].map(c => '<button type="button" class="wcol" data-wc="' + c + '" style="background:' + c + '"></button>').join('') + '</div></div>' +
-      '<label class="chk2"><input type="checkbox" id="ws"' + ((ED.wal.heroStamps !== undefined ? ED.wal.heroStamps : w.heroStamps !== false) ? ' checked' : '') + '><span>' + E(t.fWStamps) + '</span></label>', t.wHint);
+      '<label class="chk2"><input type="checkbox" id="ws"' + ((ED.wal.heroStamps !== undefined ? ED.wal.heroStamps : w.heroStamps !== false) ? ' checked' : '') + '><span>' + E(t.fWStamps) + '</span></label>', t.wHint) +
+      F.sec(t.wShowTitle, '<div class="g2">' + F.chk('wallet_show_tier', t.wShowTier) + F.chk('wallet_show_next', t.wShowNext) + '</div>', t.wShowHint);
   }
   function walSrc(k) { const w = ED.g.wallet || {}; return ED.wal[k] !== undefined ? ED.wal[k] : (k === 'logo' ? w.logoUrl : w.heroUrl) || ''; }
   function bindWallet() {
@@ -150,10 +169,10 @@ function adminEditorClient() {
   function tabBook(t) {
     const d = bookData();
     let h = F.sec(t.etBook, F.chk('book_on', t.bkOn, t.bkOnS), t.bkHint);
-    h += F.sec(t.bkServices, '<div class="bk-list" id="bk-svc">' + d.services.map((s, i) => '<div class="bk-row"><input data-sv="n" data-i="' + i + '" value="' + E(s.n) + '" placeholder="' + E(t.bkSvcName) + '" maxlength="60"><input type="number" data-sv="d" data-i="' + i + '" value="' + E(s.d || 60) + '" min="5" max="480" title="' + E(t.bkMin) + '"><span class="bk-u">' + E(t.bkMin) + '</span><input type="number" data-sv="p" data-i="' + i + '" value="' + E(s.p == null ? '' : s.p) + '" min="0" step="0.5" placeholder="' + E(t.bkPrice) + '"><button class="act a-ban" data-svdel="' + i + '">✕</button></div>').join('') + '</div><button class="act a-paid" id="bk-svc-add">+ ' + E(t.bkAddSvc) + '</button>');
+    h += F.sec(t.bkServices, '<div class="bk-list" id="bk-svc">' + d.services.map((s, i) => '<div class="bk-row"><input data-sv="n" data-i="' + i + '" value="' + E(s.n) + '" placeholder="' + E(t.bkSvcName) + '" maxlength="60"><input type="number" data-sv="d" data-i="' + i + '" value="' + E(s.d || 60) + '" min="5" max="480" title="' + E(t.bkMin) + '"><span class="bk-u">' + E(t.bkMin) + '</span><input type="number" data-sv="p" data-i="' + i + '" value="' + E(s.p == null ? '' : s.p) + '" min="0" step="0.5" placeholder="' + E(t.bkPrice) + '"><button class="act a-ban" data-svdel="' + i + '">✕</button></div>').join('') + '</div><button class="act a-paid" id="bk-svc-add">+ ' + E(t.bkAddSvc) + '</button>', '', true);
     h += F.sec(t.bkStaff, '<div class="bk-list">' + d.staff.map((m, i) => '<div class="bk-staff"><div class="bk-row"><input data-st="n" data-i="' + i + '" value="' + E(m.n) + '" placeholder="' + E(t.bkStaffName) + '" maxlength="40"><button class="act a-ban" data-stdel="' + i + '">✕</button></div><div class="days">' + d.services.map(s => '<label class="day"><input type="checkbox" data-stsv="' + i + '" data-sid="' + E(s.id) + '"' + ((m.s || []).includes(s.id) ? ' checked' : '') + '><span>' + E(s.n || '—') + '</span></label>').join('') + '</div></div>').join('') + '</div><button class="act a-paid" id="bk-st-add">+ ' + E(t.bkAddStaff) + '</button>', t.bkStaffH);
     const dn = (n) => new Date(2024, 0, 7 + n).toLocaleDateString(lang === 'en' ? 'en-GB' : lang, { weekday: 'short' });
-    h += F.sec(t.bkHours, '<div class="bk-hours">' + [1, 2, 3, 4, 5, 6, 0].map(n => { const r = (d.hours[n] || [])[0]; return '<div class="bk-h"><label class="day"><input type="checkbox" data-hon="' + n + '"' + (r ? ' checked' : '') + '><span>' + E(dn(n)) + '</span></label><input type="time" data-hf="' + n + '" value="' + E(r ? r[0] : '09:00') + '"' + (r ? '' : ' disabled') + '><span>—</span><input type="time" data-ht="' + n + '" value="' + E(r ? r[1] : '18:00') + '"' + (r ? '' : ' disabled') + '></div>'; }).join('') + '</div>');
+    h += F.sec(t.bkHours, '<div class="bk-hours">' + [1, 2, 3, 4, 5, 6, 0].map(n => { const r = (d.hours[n] || [])[0]; return '<div class="bk-h"><label class="day"><input type="checkbox" data-hon="' + n + '"' + (r ? ' checked' : '') + '><span>' + E(dn(n)) + '</span></label><input type="time" data-hf="' + n + '" value="' + E(r ? r[0] : '09:00') + '"' + (r ? '' : ' disabled') + '><span>—</span><input type="time" data-ht="' + n + '" value="' + E(r ? r[1] : '18:00') + '"' + (r ? '' : ' disabled') + '></div>'; }).join('') + '</div>', '', true);
     h += F.sec(t.bkMore, '<div class="g4">' + F.sel('book_step', t.bkStep, [['10', '10'], ['15', '15'], ['20', '20'], ['30', '30'], ['60', '60']]) + F.num('book_lead', t.bkLead, 0, 2880) + F.num('book_days', t.bkDays, 1, 90) + '<div></div></div><div class="g2">' + F.txt('book_address', t.bkAddr, 120) + F.txt('book_phone', t.bkPhone, 30) + '</div>' + F.area('book_note', t.bkNote, 300));
     return h;
   }
@@ -184,7 +203,7 @@ function adminEditorClient() {
     return F.sec(t.etGeo, F.chk('geo_on', t.geoOn, t.geoOnS) +
       '<div class="geo-l">' + (pts.length ? pts.map((p, i) => '<div class="bk-row"><span>📍</span><input data-gn="' + i + '" value="' + E(p.name || '') + '" placeholder="' + E(t.geoName) + '" maxlength="60"><small class="geo-c">' + E(Number(p.lat).toFixed(5) + ', ' + Number(p.lng).toFixed(5)) + '</small><a class="act a-copy" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=' + E(p.lat + ',' + p.lng) + '">↗</a><button class="act a-ban" data-gdel="' + i + '">✕</button></div>').join('') : '<p class="es-h">' + E(t.geoNone) + '</p>') + '</div>' +
       '<div class="bk-row"><input id="geo-in" placeholder="' + E(t.geoAddPh) + '"><input id="geo-nm" placeholder="' + E(t.geoName) + '" maxlength="60"><button class="act a-paid" id="geo-add">+ ' + E(t.geoAdd) + '</button></div><p class="es-h" id="geo-err"></p>' +
-      F.txt('geo_text', t.geoText, 120, t.geoTextPh), t.geoHint);
+      F.txt('geo_text', t.geoText, 120, t.geoTextPh), t.geoHint, true);
   }
   function bindGeo() {
     const body = $('ed-body'); const t = T();
@@ -221,12 +240,13 @@ function adminEditorClient() {
   async function renderPreview(first) {
     const box = $('pv-box'); if (!box) return; const t = T();
     const kind = PV_KIND[ED.tab];
+    if (kind === 'book' && !pj(v('book_services'), []).length) { $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span>' + E(t.pvK_book) + '</span>'; $('pv-note').textContent = ''; box.innerHTML = '<div class="pv-empty">' + E(t.bkNoSvc) + '</div>'; return; }
     if (kind) {
       $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span>' + E(t['pvK_' + kind]) + '</span>';
       $('pv-note').textContent = t.pvNote;
       if (first || !box.querySelector('iframe')) box.innerHTML = '<div class="pv-phone"><div class="pv-load">…</div></div>';
       const seq = ++ED.pvSeq;
-      const cfg = Object.assign({}, ED.cur); if (ED.logo !== undefined) cfg.brand_logo = ED.logo;
+      const cfg = Object.assign({}, ED.cur); if (ED.logo !== undefined) cfg.brand_logo = ED.logo; if (ED.pageBg !== undefined) cfg.page_bg = ED.pageBg;
       const r = await api('admin-action', { op: 'client_preview', key: ED.key, kind, cfg, emoji: nicheEmoji() });
       if (seq !== ED.pvSeq || !$('pv-box')) return;
       if (!r.ok) { box.innerHTML = '<div class="err">' + E(t.pvErr) + '</div>'; return; }
@@ -234,27 +254,61 @@ function adminEditorClient() {
       box.querySelector('iframe').srcdoc = PV_NONCE ? String(r.html).replace(/<script>/g, '<script nonce="' + PV_NONCE + '">') : r.html;
       return;
     }
-    if (ED.tab === 'wallet') { $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span>Google Wallet</span>'; $('pv-note').textContent = t.pvWalletNote; box.innerHTML = '<div class="wd-phone">' + passHtml() + '</div>'; return; }
+    if (ED.tab === 'wallet') {
+      $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span class="pv-seg">' + ['google', 'apple'].map(k => '<button type="button" data-pw="' + k + '" class="' + ((ED.pvWallet || 'google') === k ? 'on' : '') + '">' + (k === 'google' ? 'Google' : 'Apple') + '</button>').join('') + '</span>';
+      $('pv-h').querySelectorAll('[data-pw]').forEach(b => b.onclick = () => { ED.pvWallet = b.dataset.pw; renderPreview(); });
+      $('pv-note').textContent = t.pvWalletNote; box.innerHTML = '<div class="wd-phone">' + passHtml() + '</div>'; return;
+    }
     if (ED.tab === 'venue') { $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span>' + E(t.pvApp) + '</span>'; $('pv-note').textContent = t.pvAppNote; box.innerHTML = appMock(); return; }
     if (ED.tab === 'geo') { $('pv-h').innerHTML = '<b>' + E(t.pvTitle) + '</b><span>iPhone</span>'; $('pv-note').textContent = t.pvGeoNote; box.innerHTML = lockMock(); return; }
   }
-  // Карта — та же раскладка, что в программе («Дизайн карты»)
+  // Карта — по тому же модулю, что и настоящая карта (api/_cardModel.js → window.LoyaCard): один в один.
+  function showsTier() { return v('wallet_show_tier') === '1' || (v('wallet_show_tier') !== '0' && v('tier_perks_on') === '1'); }
+  function sampleCard() {
+    const ct = v('selfreg_card_type') || 'stamp'; const lg = ['ru', 'uk', 'sk', 'en'].includes(v('app_language')) ? v('app_language') : 'ru';
+    const c = { code: 'LC-PREVIEW', client_name: 'Anna K.', title: '', lang: lg };
+    if (ct === 'discount') Object.assign(c, { type: 'discount', discount_percent: Number(v('selfreg_discount_percent')) || 5 });
+    else if (ct === 'spend') { const tg = Number(v('selfreg_spend_target')) || 500; Object.assign(c, { type: 'spend', spend_target: tg, spend_accumulated: Math.round(tg * 0.4), bonus_balance: 0, spend_bonus_points: Number(v('selfreg_spend_points')) || 1, title: v('selfreg_spend_title') }); }
+    else { const tg = Math.max(2, Math.min(30, Number(v('selfreg_stamp_target')) || 10)); Object.assign(c, { type: 'stamp', stamp_target: tg, stamp_count: Math.min(3, tg - 1), title: v('selfreg_stamp_title'), discount_percent: ct === 'combo' ? (Number(v('selfreg_discount_percent')) || 5) : 0 }); }
+    if (showsTier()) c.tier = 'silver';
+    if (v('wallet_show_next') === '1') { c.tier_next = 'gold'; c.tier_next_left = 12; }
+    return c;
+  }
+  // Свою картинку-полосу переводим в data: (внутри SVG-картинки внешние ссылки не грузятся).
+  const HERO_DATA = {};
+  function heroData(url) {
+    if (!url || /^data:/.test(url)) return url || null;
+    if (HERO_DATA[url]) return HERO_DATA[url];
+    HERO_DATA[url] = null;
+    fetch(url).then(r => r.blob()).then(b => new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(b); })).then(d => { HERO_DATA[url] = d; if (ED && ED.tab === 'wallet') renderPreview(); }).catch(() => {});
+    return null;
+  }
   function passHtml() {
-    const w = ED.g.wallet || {};
+    if (!window.LoyaCard) return '';
+    const w = ED.g.wallet || {}; const t = T();
     const bg = (ED.wal.bgColor !== undefined ? ED.wal.bgColor : w.bg) || '#20252d';
     const n = parseInt(bg.slice(1), 16); const light = (0.2126 * (n >> 16 & 255) + 0.7152 * (n >> 8 & 255) + 0.0722 * (n & 255)) / 255 > 0.62;
     const fg = light ? '#141414' : '#fff', sub = light ? 'rgba(20,20,20,.62)' : 'rgba(255,255,255,.66)';
-    const name = E(ED.cur.brand_name || (ED.r.client.profile && ED.r.client.profile.name) || 'Loya');
+    const name = ED.cur.brand_name || (ED.r.client.profile && ED.r.client.profile.name) || 'Loya';
     const accent = /^#[0-9a-fA-F]{6}$/.test(v('theme_primary')) ? v('theme_primary') : '#d4af37';
-    const type = v('selfreg_card_type') || 'stamp';
-    const target = Math.max(2, Math.min(12, Number(v('selfreg_stamp_target')) || 8)), filled = Math.min(3, target - 1);
-    const prog = type === 'discount' ? (v('selfreg_discount_percent') || 5) + '%' : type === 'spend' ? '0 / ' + (v('selfreg_spend_target') || 500) : filled + ' / ' + (Number(v('selfreg_stamp_target')) || 8);
+    const card = sampleCard(); const brand = { name, color: accent, currency: v('spend_currency') || 'EUR' };
+    const M = LoyaCard.passModel(card, brand, card.lang);
     const logo = walSrc('logo'), hero = walSrc('hero'); const hs = ED.wal.heroStamps !== undefined ? ED.wal.heroStamps : w.heroStamps !== false;
-    const stamps = Array.from({ length: target }, (_, i) => '<i class="' + (i < filled ? 'on' : '') + (i === target - 1 ? ' gift' : '') + '" style="' + (i < filled ? 'background:' + accent : i === target - 1 ? 'border-color:' + accent + ';color:' + accent : '') + '">' + (i < filled ? '✓' : i === target - 1 ? '🎁' : '') + '</i>').join('');
-    const over = '<div class="wd-hero-over"><b>' + name + '</b><div class="wd-stamps">' + stamps + '</div></div>';
-    const heroH = hero ? '<div class="wd-hero" style="background-image:url(&quot;' + E(hero) + '&quot;)">' + (hs ? '<div class="wd-hero-shade"></div>' + over : '') + '</div>' : '<div class="wd-hero wd-hero-default">' + over + '</div>';
-    return '<div class="wd-pass" style="background:' + bg + ';color:' + fg + '"><div class="wd-g-top">' + (logo ? '<span class="wd-logo" style="background-image:url(&quot;' + E(logo) + '&quot;)"></span>' : '<span class="wd-logo wd-logo-loya">L</span>') + '<span>' + name + '</span></div>' +
-      '<div class="wd-g-sub" style="color:' + sub + '">' + E(T().pvCardTitle) + '</div><div class="wd-g-name">Anna K.</div><div class="wd-g-field"><small style="color:' + sub + '">' + E(type === 'stamp' ? T().pvStamps : type === 'discount' ? T().ctDiscount : T().ctSpend) + '</small><b>' + E(prog) + '</b></div><div class="wd-qr"><div class="wd-qr-in"></div></div>' + heroH + '</div>';
+    let svg = LoyaCard.buildHeroSvg({ card, brand, niche: v('business_niche') || 'other', lang: M.lang, bgImage: heroData(hero), showProgress: hs });
+    svg = svg.replace(/font-family="Carlito"/g, 'font-family="Carlito, Calibri, Arial, sans-serif"');
+    const heroImg = '<img class="wd-hero-img" alt="" src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '">';
+    const logoH = (cls) => logo ? '<span class="wd-logo ' + cls + '" style="background-image:url(&quot;' + E(logo) + '&quot;)"></span>' : '<span class="wd-logo wd-logo-loya ' + cls + '">L</span>';
+    const mod = (m, col) => '<span class="wd-mod"><small style="color:' + col + '">' + E(m.header) + '</small><b>' + E(m.body) + '</b></span>';
+    if (ED.pvWallet !== 'apple') {
+      return '<div class="wd-pass" style="background:' + bg + ';color:' + fg + '"><div class="wd-g-top">' + logoH('') + '<span>' + E(M.cardTitle) + '</span></div>' +
+        '<div class="wd-g-sub" style="color:' + sub + '">' + E(M.subheader) + '</div><div class="wd-g-name">' + E(M.header) + '</div>' +
+        '<div class="wd-mods">' + M.modules.filter(m => m.id !== 'rule').slice(0, 4).map(m => mod(m, sub)).join('') + '</div><div class="wd-qr"><div class="wd-qr-in"></div></div><div class="wd-hero-box">' + heroImg + '</div></div>';
+    }
+    const lab = light ? '#464646' : accent;
+    const heads = M.modules.filter(m => ['progress', 'discount', 'bonus'].includes(m.id)).slice(0, 2);
+    const sec = [{ header: t.pvClient || 'Client', body: M.header }].concat(M.tier ? [{ header: LoyaCard.TEXT[M.lang].hTier, body: M.tier }] : [], [{ header: M.typeName, body: card.title || '—' }]);
+    return '<div class="wd-pass wd-apple" style="background:' + bg + ';color:' + fg + '"><div class="wd-a-top">' + logoH('sq') + '<span class="wd-a-name">' + E(M.cardTitle) + '</span><span class="wd-a-heads">' + heads.map(m => mod(m, lab)).join('') + '</span></div>' +
+      '<div class="wd-hero-box">' + heroImg + '</div><div class="wd-a-fields">' + sec.map(m => mod(m, lab)).join('') + '</div>' + (M.next ? '<div class="wd-a-fields">' + mod(M.next, lab) + '</div>' : '') + '<div class="wd-qr"><div class="wd-qr-in"></div></div></div>';
   }
   function appMock() {
     const c = THEMES[v('theme_name')] || [v('theme_primary') || '#d4af37', v('theme_sidebar') || '#0d0f14', v('theme_screen') || '#0b0d12', v('theme_text') || '#f0ece0'];
@@ -271,7 +325,7 @@ function adminEditorClient() {
   // ---------- сохранение ----------
   async function saveEditor() {
     const t = T(); const cfg = changed();
-    if (ED.logo !== undefined) cfg.brand_logo = ED.logo; const wal = Object.assign({}, ED.wal);
+    if (ED.logo !== undefined) cfg.brand_logo = ED.logo; if (ED.pageBg !== undefined) cfg.page_bg = ED.pageBg; const wal = Object.assign({}, ED.wal);
     if (!Object.keys(cfg).length && !Object.keys(wal).length) { $('ed-msg').textContent = t.edNoChanges; return; }
     $('ed-save').disabled = true; $('ed-msg').textContent = t.edSaving;
     const r = await api('admin-action', { op: 'client_cfg_save', key: ED.key, cfg, wallet: Object.keys(wal).length ? wal : undefined }); $('ed-save').disabled = false;
@@ -322,8 +376,42 @@ const CSS = `
 .lk-t{text-align:center;font-size:60px;font-weight:700;padding-top:54px}.lk-n{position:absolute;left:12px;right:12px;bottom:30px;border-radius:18px;padding:10px 12px;color:#111;background:rgba(245,245,247,.9);display:flex;gap:10px;align-items:center;font-size:13px}
 .lk-i{width:38px;height:38px;border-radius:10px;background:#fff;display:grid;place-items:center;font-size:20px;overflow:hidden;flex:0 0 auto}.lk-i img{width:100%;height:100%;object-fit:contain}.lk-r{display:flex;justify-content:space-between;gap:8px}.lk-r small{opacity:.55}
 .lk-off{position:absolute;left:24px;right:24px;bottom:44px;text-align:center;font-size:12.5px;opacity:.75}
+/* 2.25: компактнее — меньше листать */
+:root{color-scheme:dark}
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+.ed-h{padding:10px 16px 6px}.ed-h b{font-size:15.5px}.ed-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.ed-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--mut)}
+.ed-tabs{gap:2px;padding:0 12px 8px}.ed-tabs .tab{font-size:12.5px;padding:6px 10px}
+.ed-main.has-pv{grid-template-columns:minmax(0,1fr) 360px}
+.ed-main .ed-body,.ed-pv{max-height:calc(92vh - 150px)}
+.ed-body{padding:12px 14px}
+.ed-body.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;align-content:start;align-items:start}
+.ed-body.cols>.es{margin:0}.ed-body.cols>.es-wide{grid-column:1/-1}.ed-body.cols>.ed-note{grid-column:1/-1;margin:0}
+.ed-body.cols .es .g2{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.ed-body.cols .es .g4{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+.ed-note{font-size:12px;padding:7px 10px;margin-bottom:10px}
+.es{padding:10px 12px;margin-bottom:10px;border-radius:12px}.es h4{margin:0 0 8px;font-size:13.5px}.es-h{font-size:12px;margin:-2px 0 8px}
+.fld{margin-bottom:8px;font-size:12px;gap:4px}.fld input,.fld select{height:36px;font-size:13.5px}.fld textarea{font-size:13.5px;padding:7px 9px}
+.fld.col input{height:34px;width:60px}
+.chk2{padding:7px 10px;margin-bottom:8px;font-size:13px;gap:8px}.chk2 input{width:18px;height:18px}
+.g2{gap:0 10px}.g4{gap:0 8px}
+.logo-prev{width:56px;height:56px;flex-basis:56px;border-radius:12px}.logo-row{gap:10px}.logo-row small{margin-top:4px}
+.hero-prev{height:64px}.logo-prev.bg-prev{width:96px;flex-basis:96px;background:#20252d center/cover no-repeat;color:#888}input[type=range]{accent-color:var(--a);height:auto!important}
+.themes{gap:6px}.th{width:54px;height:38px}
+.days{gap:4px}.day{padding:4px 8px;font-size:12px}
+.act{min-height:30px;font-size:12px;padding:0 10px}
+.bk-list{gap:6px}.bk-row{gap:6px}.bk-row input{height:34px}.bk-staff{padding:8px;gap:6px}
+.bk-hours{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 14px}.bk-h{gap:6px}.bk-h .day{min-width:64px}.bk-h input[type=time]{height:32px;width:118px}
+.pv-phone{width:320px;height:560px;border-radius:30px;padding:8px}.pv-phone iframe{border-radius:23px}
+.pv-seg{display:inline-flex;gap:2px;padding:2px;border-radius:9px;background:rgba(255,255,255,.07)}.pv-seg button{border:0;background:transparent;color:inherit;font:inherit;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:7px;cursor:pointer}.pv-seg button.on{background:var(--a);color:#16110a}
+.pv-empty{padding:28px 18px;text-align:center;border-radius:16px;border:1px dashed var(--line);color:var(--mut);font-size:13px;line-height:1.5}
+.ed-f{padding:8px 14px}
+.wd-mods{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding:10px 16px 0}.wd-mod{display:flex;flex-direction:column;gap:2px;min-width:0}.wd-mod small{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wd-mod b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wd-hero-box{line-height:0}.wd-hero-img{width:100%;display:block;aspect-ratio:1032/336}
+.wd-apple .wd-a-top{display:flex;align-items:center;gap:8px;padding:12px 14px}.wd-a-name{font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wd-a-heads{display:flex;gap:12px;text-align:right}.wd-a-heads .wd-mod{align-items:flex-end}
+.wd-a-fields{display:flex;justify-content:space-between;gap:10px;padding:10px 14px 0;flex-wrap:wrap}.wd-logo.sq{border-radius:7px;width:30px;height:30px}
+
 @media(max-width:980px){.ed-main.has-pv{grid-template-columns:1fr}.ed-pv{border-left:0;border-top:1px solid var(--line);max-height:none}.ed-main .ed-body{max-height:none}.ed-main{overflow:auto;max-height:calc(92vh - 170px)}}
 `;
 
 const src = adminEditorClient.toString();
-module.exports = { JS: src.slice(src.indexOf('{') + 1, src.lastIndexOf('}')), CSS };
+// 2.25: модуль карты (тот же, что рисует настоящую карту) — для превью Wallet «один в один»
+module.exports = { JS: require('./_cardModel').CLIENT_JS + '\n' + src.slice(src.indexOf('{') + 1, src.lastIndexOf('}')), CSS };

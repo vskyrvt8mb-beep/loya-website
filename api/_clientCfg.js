@@ -31,7 +31,7 @@ const FIELDS = {
   spend_currency: (v) => (/^[A-Z]{3}$/.test(String(v || '')) ? String(v) : null),
   theme_name: oneOf(['glossy', 'gold', 'coffee', 'mint', 'ocean', 'berry', 'graphite', 'custom']),
   theme_primary: hex, theme_sidebar: hex, theme_screen: hex, theme_text: hex,
-  selfreg_card_type: oneOf(['stamp', 'discount', 'spend']),
+  selfreg_card_type: oneOf(['stamp', 'discount', 'spend', 'combo']),
   selfreg_stamp_target: (v) => int(v, 2, 50), selfreg_stamp_title: (v) => str(v, 60),
   selfreg_discount_percent: (v) => int(v, 1, 90),
   selfreg_spend_target: (v) => int(v, 1, 100000), selfreg_spend_title: (v) => str(v, 60), selfreg_spend_points: (v) => int(v, 1, 1000),
@@ -50,7 +50,8 @@ const FIELDS = {
   book_note: (v) => str(v, 300), book_address: (v) => str(v, 120), book_phone: (v) => str(v, 30),
   geo_on: bool, geo_points: json(geoList), geo_text: (v) => str(v, 120),
   tier_perks_on: bool, auto_winback_enabled: bool, auto_near_enabled: bool, auto_welcome_enabled: bool, auto_birthday_enabled: bool,
-  feature_inventory: bool, feature_network: bool, feature_staff: bool, feature_weather: bool
+  feature_inventory: bool, feature_network: bool, feature_staff: bool, feature_weather: bool,
+  wallet_show_tier: bool, wallet_show_next: bool, reg_page_bg_dim: (v) => int(v, 0, 85)
 };
 const LOGO_RE = /^data:image\/png;base64,[A-Za-z0-9+/=]{20,}$/;
 const SECRET_KEY = /(pass|secret|token|json|_key$|^license|pin|hash|smtp_user|session|private|cookie|device_id|apikey|api_key)/i;
@@ -61,6 +62,11 @@ function clean(cfg) {
     if (!cfg || !(k in cfg)) continue;
     const v = fn(cfg[k]);
     if (v !== null && v !== undefined) out[k] = v;
+  }
+  // 2.25: фон страниц для гостей (JPEG до ~450 КБ) или null — убрать
+  if (cfg && 'page_bg' in cfg) {
+    if (cfg.page_bg === null || cfg.page_bg === '') out.page_bg = null;
+    else if (/^data:image\/jpeg;base64,[A-Za-z0-9+/=]{20,}$/.test(String(cfg.page_bg)) && String(cfg.page_bg).length < 630000) out.page_bg = String(cfg.page_bg);
   }
   // логотип заведения (PNG до ~400 КБ) или null — убрать
   if (cfg && 'brand_logo' in cfg) {
@@ -94,7 +100,7 @@ async function poll({ licenseKey, ver, snap }) {
   let cur = null;
   try { cur = await getKV('ccfg:' + key); } catch (e) { return { status: 200, ok: true, ver: 0, wallet: walletState() }; }   // таблицы admin_settings нет — просто без настроек
   if (snap && typeof snap === 'object') {
-    const s = clean(snap); s.has_logo = snap.has_logo ? '1' : '0'; s.version = str(snap.version, 20);
+    const s = clean(snap); delete s.page_bg; s.has_logo = snap.has_logo ? '1' : '0'; s.has_page_bg = snap.has_page_bg === '1' ? '1' : '0'; s.version = str(snap.version, 20);
     // 2.24: все остальные настройки программы (без паролей и ключей) — только для просмотра в админке
     if (snap.all && typeof snap.all === 'object') { const all = {}; let size = 0; for (const [k, v] of Object.entries(snap.all).slice(0, 600)) { if (!/^[a-z0-9_]{1,60}$/.test(k) || SECRET_KEY.test(k)) continue; const val = str(v, 4000); size += k.length + val.length; if (size > 120000) break; all[k] = val; } s.all = all; }
     try { await setKV('csnap:' + key, { at: new Date().toISOString(), s }); } catch (e) { /* не критично */ }
@@ -127,6 +133,7 @@ async function adminSave(key, cfg, wallet) {
   const merged = { ...prev, ...c };
   // логотип программа применяет, только когда он поменялся (номер logo_rev), а не при каждой правке
   if ('brand_logo' in c) merged.logo_rev = (Number(prev.logo_rev) || 0) + 1;
+  if ('page_bg' in c) merged.page_bg_rev = (Number(prev.page_bg_rev) || 0) + 1;
   const ver = (cur ? Number(cur.ver) || 0 : 0) + 1;
   try { await setKV('ccfg:' + key, { ver, at: new Date().toISOString(), cfg: merged }); } catch (e) { return { status: 500, error: 'db_error', detail: e.message }; }
   let walletRes = null;
@@ -162,6 +169,8 @@ async function preview(key, kind, cfg, emoji) {
   if (has('reg_page_color2')) p.page.color2 = c.reg_page_color2;
   if (has('reg_page_bg')) p.page.bg = c.reg_page_bg;
   if (has('brand_logo')) p.page.logo = c.brand_logo || '';
+  if (has('page_bg')) p.page.bgImg = c.page_bg || '';
+  if (has('reg_page_bg_dim')) p.page.bgDim = Number(c.reg_page_bg_dim);
   if (has('online_bonus_title')) p.bonusTitle = c.online_bonus_title;
   if (has('online_bonus_percent')) p.bonusPercent = Number(c.online_bonus_percent);
   if (has('online_bonus_days')) p.bonusDays = Number(c.online_bonus_days);
@@ -169,6 +178,7 @@ async function preview(key, kind, cfg, emoji) {
   p.enabled = true; p.join = true; p.promo = true;
   const slug = (row && row.slug) || 'preview';
   let html;
+  p.__pv = true;
   if (kind === 'book') {
     const B = require('./_book');
     const b = Object.assign({}, p.book || {});

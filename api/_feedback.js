@@ -27,7 +27,7 @@ async function load(token) {
   const { data } = await supabase.from('feedback').select('*').eq('token', token).maybeSingle();
   if (!data) return null;
   const prof = await require('./_online').profileByLicense(data.license_key);
-  return { fb: data, profile: (prof && prof.profile) || {} };
+  return { fb: data, profile: (prof && prof.profile) || {}, slug: (prof && prof.slug) || '' };
 }
 
 // Гость ставит оценку (один раз) и при желании пишет комментарий.

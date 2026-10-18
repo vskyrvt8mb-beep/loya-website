@@ -38,10 +38,11 @@ async function appleLink(licenseKey, card, brand) {
 // Карта, которую программа заведёт для гостя (тот же код, то же правило), — в формате /api/wallet-link.
 function joinCard(prof, code, name, lang) {
   const c = (prof && prof.card) || {};
-  const type = ['stamp', 'discount', 'spend'].includes(c.type) ? c.type : 'stamp';
+  const combo = c.type === 'combo';   // 2.25: «штампы + скидка» = штамп-карта с процентом
+  const type = combo ? 'stamp' : ['stamp', 'discount', 'spend'].includes(c.type) ? c.type : 'stamp';
   return {
     code, type, title: type === 'spend' ? (c.spendTitle || '') : (c.title || ''), client_name: String(name || '').slice(0, 100), lang,
-    stamp_count: 0, stamp_target: type === 'stamp' ? (Number(c.stampTarget) || 10) : 0, discount_percent: type === 'discount' ? (Number(c.discount) || 5) : 0,
+    stamp_count: 0, stamp_target: type === 'stamp' ? (Number(c.stampTarget) || 10) : 0, discount_percent: type === 'discount' || combo ? (Number(c.discount) || 5) : 0,
     spend_accumulated: 0, spend_target: type === 'spend' ? (Number(c.spendTarget) || 100) : 0, bonus_balance: 0, spend_bonus_points: Number(c.spendPoints) || 1
   };
 }

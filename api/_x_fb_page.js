@@ -2,7 +2,7 @@
 // 4–5 звёзд → просьба оставить отзыв в Google (если владелец указал ссылку), 1–3 → личное сообщение владельцу.
 const { esc } = require('./_online');
 const { dictJs } = require('./_dict');
-const { palette, hexRgb, safeJson } = require('./_x_online_page');
+const { palette, hexRgb, safeJson, bgStyle } = require('./_x_online_page');
 const F = require('./_feedback');
 
 const TX = {
@@ -12,7 +12,7 @@ const TX = {
   en: { q: (n) => n ? `${n}, how was your visit?` : 'How was your visit?', sub: 'Rate your visit — it takes a second.', stars: ['Bad', 'So-so', 'Okay', 'Good', 'Excellent!'], thx: 'Thank you! 💛', good: 'So glad you enjoyed it! Tell others on Google — it really helps a small business.', google: 'Leave a Google review', no: 'No, thanks', bad: 'We’re sorry 😔 What should we improve? Only the owner will see this.', ph: 'Write a few words…', send: 'Send', sent: 'Thank you! The owner will get your message.', more: 'Anything to add? (optional)', err: 'Something went wrong. Please try again.', gone: 'This link has expired.', nf: 'Link not found.' }
 };
 
-function page(token, fb, prof) {
+function page(token, fb, prof, slug) {
   const pal = palette(prof.color, prof.niche);
   const ctx = { t: token, name: String(fb.name || '').split(/\s+/)[0] || '', brand: prof.name || 'Loya', lang: fb.lang || prof.lang || 'en', rating: fb.rating || null, reviewUrl: fb.rating >= 4 ? (prof.reviewUrl || '') : '', expired: fb.rating == null && Date.now() - new Date(fb.created_at).getTime() > 30 * 86400e3 };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -43,7 +43,7 @@ textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 4px rgba(var(
 .ghost{background:none;border:0;color:var(--mut);font-size:14.5px;margin-top:14px;cursor:pointer;text-decoration:underline}
 .err{color:#ffd0d0;font-size:14px;margin-top:12px;min-height:18px}
 .g{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#fff;color:#4285f4;font-weight:900;align-items:center;justify-content:center;font-size:16px}
-</style></head><body><div class="wrap">
+</style>${bgStyle(prof, slug)}</head><body><div class="wrap">
 <div class="top"><div class="logo${prof.page && prof.page.logo ? ' img' : ''}">${prof.page && prof.page.logo ? `<img src="${esc(prof.page.logo)}" alt="">` : esc(prof.emoji || '⭐')}</div><div class="brand">${esc(ctx.brand)}</div></div>
 <div class="card" id="box"></div>
 </div>
@@ -81,6 +81,6 @@ module.exports = async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     if (!r) { res.status(404).setHeader('Content-Type', 'text/html; charset=utf-8'); res.send('<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;background:#0c0e13;color:#f6f2ea;text-align:center;padding:60px 20px">Link not found · Odkaz sa nenašiel · Ссылка не найдена</body>'); return; }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(page(token, r.fb, r.profile));
+    res.status(200).send(page(token, r.fb, r.profile, r.slug));
   } catch (e) { res.status(500).send('Error'); }
 };

@@ -2,7 +2,7 @@
 // /b/<slug>?c=<token> — просмотр и отмена своей записи (ссылка из письма).
 const { esc } = require('./_online');
 const { dictJs } = require('./_dict');
-const { palette, hexRgb, safeJson } = require('./_x_online_page');
+const { palette, hexRgb, safeJson, bgStyle } = require('./_x_online_page');
 const B = require('./_book');
 
 const TX = {
@@ -96,7 +96,7 @@ input:focus,textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 4
 .ticket table{width:100%;border-collapse:collapse}.ticket td{padding:11px 22px;border-bottom:1px solid #eee3cf;font-size:15px}.ticket td:first-child{color:#7a705c;width:34%}.ticket td:last-child{font-weight:800}
 .ticket .f{padding:14px 22px 18px;font-size:14px;line-height:1.5;color:#4a4536}
 .st{display:inline-block;padding:4px 10px;border-radius:999px;background:#efe5d2;font-size:13px;font-weight:800}
-</style></head><body><div class="wrap">
+</style>${bgStyle(prof, row.slug)}</head><body><div class="wrap">
 <div class="top"><div class="logo${prof.page && prof.page.logo ? ' img' : ''}">${prof.page && prof.page.logo ? `<img src="${esc(prof.page.logo)}" alt="">` : esc(prof.emoji || '📅')}</div><div class="brand"><b>${esc(ctx.brand)}</b><span id="ttl"></span></div><div class="lang" id="lang"></div></div>
 <div id="app"></div>
 </div>

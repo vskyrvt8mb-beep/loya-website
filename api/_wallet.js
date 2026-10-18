@@ -44,13 +44,9 @@ function ids(licenseKey, cardCode) {
   return { classId: `${issuer}.loya_${biz}`, objectId: `${issuer}.loya_${biz}_${code}` };
 }
 
-const TEXT = {
-  ru: { hInvite: 'Пригласите друга', inviteDesc: 'Вам обоим — подарок', gift: 'Подарочный сертификат', hBalance: 'Остаток', hTier: 'Уровень', hUntil: 'Действует до', discount: 'Скидочная карта', stamp: 'Карта лояльности', spend: 'Накопительная карта', hDiscount: 'Скидка', hProgress: 'Штампы', hSpent: 'Накоплено', hBonus: 'Бонусы', hRule: 'Правило' },
-  uk: { hInvite: 'Запросіть друга', inviteDesc: 'Вам обом — подарунок', gift: 'Подарунковий сертифікат', hBalance: 'Залишок', hTier: 'Рівень', hUntil: 'Діє до', discount: 'Знижкова картка', stamp: 'Картка лояльності', spend: 'Накопичувальна картка', hDiscount: 'Знижка', hProgress: 'Штампи', hSpent: 'Накопичено', hBonus: 'Бонуси', hRule: 'Правило' },
-  sk: { hInvite: 'Pozvite priateľa', inviteDesc: 'Darček pre vás oboch', gift: 'Darčeková poukážka', hBalance: 'Zostatok', hTier: 'Úroveň', hUntil: 'Platí do', discount: 'Zľavová karta', stamp: 'Vernostná karta', spend: 'Vernostná karta na nákupy', hDiscount: 'Zľava', hProgress: 'Pečiatky', hSpent: 'Nazbierané', hBonus: 'Bonusy', hRule: 'Pravidlo' },
-  en: { hInvite: 'Invite a friend', inviteDesc: 'A gift for you both', gift: 'Gift card', hBalance: 'Balance', hTier: 'Tier', hUntil: 'Valid until', discount: 'Discount card', stamp: 'Loyalty card', spend: 'Spend card', hDiscount: 'Discount', hProgress: 'Stamps', hSpent: 'Collected', hBonus: 'Bonuses', hRule: 'How it works' }
-};
-const CUR = { EUR: '€', USD: '$', RUB: '₽', UAH: '₴', CZK: 'Kč', PLN: 'zł', HUF: 'Ft', GBP: '£', CHF: 'CHF' };
+// 2.25: тексты, прогресс и рисунок баннера — в общем модуле (его же использует программа для превью карты 1:1).
+const CM = require('./_cardModel');
+const { TEXT, CUR, progress, tierLabel } = CM;
 
 function clean(v, max) { return String(v == null ? '' : v).slice(0, max); }
 
@@ -68,41 +64,17 @@ function heroImageUrl(card, brand, lang, design) {
     currency: brand.currency || 'EUR', lang: ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'ru',
     v: String(card.stamp_count || 0) + '.' + String(card.spend_accumulated || 0) + '.' + String(card.bonus_balance || 0) // меняет URL при каждом скане
   });
-  if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); }
+  if (card.type === 'stamp') { q.set('count', card.stamp_count || 0); q.set('target', card.stamp_target || 10); if (CM.comboPct(card)) q.set('pct', CM.comboPct(card)); }
   else if (card.type === 'spend') { q.set('acc', card.spend_accumulated || 0); q.set('target', card.spend_target || 0); if (Number(card.bonus_balance) > 0) q.set('bonus', Math.round(Number(card.bonus_balance))); }
   else if (card.type === 'discount') { q.set('pct', card.discount_percent || 0); }
   else if (card.type === 'gift') { q.set('gb', card.gift_balance || 0); q.set('v', String(card.gift_balance || 0)); }
   // Свой баннер заведения: картинка берётся из wallet_designs по «отпечатку» бизнеса и версии дизайна.
+  if (['basic', 'silver', 'gold'].includes(card.tier)) q.set('tier', card.tier);   // 2.25: уровень гостя на баннере
   if (design && design.hasHero) { q.set('b', design.biz); q.set('dv', String(design.ver)); if (!design.heroStamps) q.set('hs', '0'); }
   q.set('action', 'hero');
   return `${SITE_URL}/api/wallet?${q.toString()}`;
 }
 
-// Прогресс карты для строки на пассе.
-function progress(card, lang, currency) {
-  const W = TEXT[lang] || TEXT.en;
-  const cur = CUR[currency] || '€';
-  const money = (v) => { const n = Math.round((Number(v) || 0) * 100) / 100; let t = Number.isInteger(n) ? String(n) : n.toFixed(2); if (lang !== 'en') t = t.replace('.', ','); return lang === 'en' ? cur + t : `${t} ${cur}`; };
-  // 2.19: сертификат — остаток из номинала; срок — отдельной строкой.
-  if (card.type === 'gift') {
-    const until = /^\d{4}-\d{2}-\d{2}/.test(String(card.expires_at || '')) ? String(card.expires_at).slice(0, 10).split('-').reverse().join('.') : '';
-    return { header: W.hBalance, body: `${money(card.gift_balance)} / ${money(card.gift_amount)}`, rule: until ? { header: W.hUntil, body: until } : null };
-  }
-  if (card.type === 'discount') return { header: W.hDiscount, body: `-${Number(card.discount_percent) || 0}%` };
-  if (card.type === 'spend') {
-    const acc = money(card.spend_accumulated);
-    const bonus = Math.max(0, Math.round(Number(card.bonus_balance) || 0));
-    const pts = Math.max(1, Math.round(Number(card.spend_bonus_points) || 1));
-    // С 2.17: бонусы копятся — за каждые «порог» денег клиент получает N бонусов (2000 при пороге 500 → 4 × N).
-    return { header: W.hSpent, body: Number(card.spend_target) > 0 ? `${acc} / ${money(card.spend_target)}` : acc,
-      bonus: Number(card.spend_target) > 0 ? { header: W.hBonus, body: String(bonus) } : null,
-      rule: Number(card.spend_target) > 0 ? { header: W.hRule, body: `${money(card.spend_target)} → +${pts}` } : null };
-  }
-  return { header: W.hProgress, body: `${Number(card.stamp_count) || 0} / ${Number(card.stamp_target) || 0}` };
-}
-
-// Уровень клиента (2.19, если у заведения включены привилегии уровней).
-function tierLabel(t) { return t === 'gold' ? '🥇 GOLD' : t === 'silver' ? '🥈 SILVER' : t === 'basic' ? 'BASIC' : ''; }
 // Координаты заведения для «Wallet рядом» (2.19). С 2.24 — до 10 мест (все точки сети) и радиус для iPhone.
 function cleanGeoPoint(x) {
   const lat = Number(x && x.lat), lng = Number(x && x.lng);
@@ -163,7 +135,8 @@ function buildObject(licenseKey, card, brand, design) {
       cardTitle: { defaultValue: { language: lang, value: clean(brand.name || 'Loya', 60) } },
       subheader: { defaultValue: { language: lang, value: clean(card.title || typeName, 60) } },
       header: { defaultValue: { language: lang, value: clean(card.client_name || typeName, 60) } },
-      textModulesData: [{ id: 'progress', header: p.header, body: p.body }].concat(p.bonus ? [{ id: 'bonus', header: p.bonus.header, body: p.bonus.body }] : [], tier ? [{ id: 'tier', header: W.hTier, body: tier }] : [], p.rule ? [{ id: 'rule', header: p.rule.header, body: p.rule.body }] : []),
+      // 2.25: строки карты — из общего модуля (то же видит владелец в превью): прогресс, скидка на штамп-карте, бонусы, уровень, «до следующего уровня»
+      textModulesData: CM.passModel(card, brand, lang).modules.map(m => ({ id: m.id, header: clean(m.header, 60), body: clean(m.body, 120) })),
       ...(cleanInvite(card.invite_url) ? { linksModuleData: { uris: [{ id: 'invite', uri: cleanInvite(card.invite_url), description: `🤝 ${W.hInvite} — ${W.inviteDesc}` }] } } : {}),
       barcode: { type: 'QR_CODE', value: clean(card.code, 80), alternateText: clean(card.code, 80) }
     }
@@ -236,4 +209,4 @@ async function syncClassLocations(token, classId, geo) {
   return r;
 }
 
-module.exports = { progress, TEXT, putObject, putClass, putClassLocations, syncClassLocations, cleanGeoPoint, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };
+module.exports = { comboPct: CM.comboPct, nextLine: CM.nextLine, passModel: CM.passModel, progress, TEXT, putObject, putClass, putClassLocations, syncClassLocations, cleanGeoPoint, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };

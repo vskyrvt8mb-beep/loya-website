@@ -62,10 +62,23 @@ function palette(color, niche, color2) {
   return { a, b, on, onbg: on === '#ffffff' ? 'rgba(10,8,20,.34)' : 'rgba(255,255,255,.62)' };
 }
 
+// 2.25: свой фон страницы (фото заведения) с затемнением — чтобы текст читался на любой картинке.
+// 2.25: живые страницы берут фон по отдельной кэшируемой ссылке (HTML остаётся лёгким),
+// предпросмотр в админке (p.__pv) — встраивает картинку прямо в страницу.
+function bgVer(img) { return require('crypto').createHash('sha1').update(String(img)).digest('hex').slice(0, 12); }
+function bgStyle(p, slug) {
+  const pg = (p && p.page) || {};
+  if (!/^data:image\/(jpeg|png|webp);base64,/.test(String(pg.bgImg || ''))) return '';
+  const src = slug && !p.__pv && /^[a-z0-9-]{3,48}$/.test(slug) ? '/api/online?action=page-bg&slug=' + slug + '&v=' + bgVer(pg.bgImg) : pg.bgImg;
+  const d = Math.max(0, Math.min(85, Number(pg.bgDim) >= 0 ? Number(pg.bgDim) : 45)) / 100;
+  const light = pg.bg === 'light';
+  const ov = light ? `rgba(250,248,243,${d})` : `rgba(8,9,13,${d})`;
+  return `<style>body{background:linear-gradient(${ov},${ov}),url("${src}") center/cover no-repeat fixed!important}</style>`;
+}
 function html(slug, p, mode, wal) {
   const pal = palette(p.color, p.niche, p.page && p.page.color2);
   const light = !!(p.page && p.page.bg === 'light');
-  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '', wal: wal || { g: false, a: false }, welcome: !!(p.card && p.card.welcomeDouble && (p.card.type || 'stamp') === 'stamp'), page: { title: (p.page && p.page.title) || '', text: (p.page && p.page.text) || '', button: (p.page && p.page.button) || '' } };
+  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '', wal: wal || { g: false, a: false }, welcome: !!(p.card && p.card.welcomeDouble && ['stamp', 'combo'].includes(p.card.type || 'stamp')), page: { title: (p.page && p.page.title) || '', text: (p.page && p.page.text) || '', button: (p.page && p.page.button) || '' } };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#0d0f14"><title>${esc(ctx.name)}</title>
 <style>
@@ -150,7 +163,7 @@ body.light .chk{background:#faf8f3;color:#2a251c}
 body.light .lang button{color:#1b1813;border-color:rgba(20,16,8,.2);background:#fff}
 body.light .agree a{color:#1b1813}
 body.light .how{color:#4a4536}
-</style></head><body${light ? ' class="light"' : ''}><div class="wrap">
+</style>${bgStyle(p, slug)}</head><body${light ? ' class="light"' : ''}><div class="wrap">
 <div class="top"><div class="logo${p.page && p.page.logo ? ' img' : ''}">${p.page && p.page.logo ? `<img src="${esc(p.page.logo)}" alt="">` : esc(p.emoji || '🎁')}</div><div class="brand">${esc(ctx.name)}</div><div class="lang" id="lang"></div></div>
 <div id="form-box">
   <div class="offer"><span class="gift" aria-hidden="true">🎁</span><div class="k" id="o-k"></div><div class="t" id="o-t"></div><div class="row"><span class="badge" id="o-b"></span><span class="v" id="o-v"></span></div></div>
@@ -236,7 +249,21 @@ module.exports = async (req, res) => {
   } catch (e) { res.status(500).send('Error'); }
 };
 module.exports.html = html;
+// GET /api/online?action=page-bg&slug=..&v=.. — фон страниц гостя (картинка из профиля), долго кэшируется.
+module.exports.pageBg = async (req, res) => {
+  try {
+    const row = await loadProfileBySlug(String((req.query && req.query.slug) || ''));
+    const img = String((row && row.profile && row.profile.page && row.profile.page.bgImg) || '');
+    const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(img);
+    if (!m) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
+    const v = String((req.query && req.query.v) || '');
+    res.setHeader('Content-Type', m[1]);
+    res.setHeader('Cache-Control', v === bgVer(img) ? 'public, max-age=31536000, immutable' : 'public, max-age=300');
+    res.status(200).send(Buffer.from(m[2], 'base64'));
+  } catch (e) { res.status(500).send('Error'); }
+};
 // 2.20: те же цвета и словарь — для страниц отзыва и онлайн-записи.
 module.exports.palette = palette;
+module.exports.bgStyle = bgStyle;
 module.exports.hexRgb = hexRgb;
 module.exports.safeJson = safeJson;

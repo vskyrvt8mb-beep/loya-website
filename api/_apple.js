@@ -85,7 +85,10 @@ function buildPassJson(cfg, serial, card, brand, design) {
     ...(geo ? { locations: geo.points.slice(0, 10).map(pt => ({ latitude: pt.lat, longitude: pt.lng, relevantText: W.nearText(card, lang, geo, brand.currency) })), maxDistance: geo.radius || 200 } : {}),
     ...(card.type === 'gift' && card.expires_at ? { expirationDate: `${card.expires_at}T23:59:59Z` } : {}),
     storeCard: {
-      headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }].concat(p.bonus ? [{ key: 'bonus', label: p.bonus.header, value: p.bonus.body, changeMessage: '%@' }] : []),
+      headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }]
+        .concat(W.comboPct(card) ? [{ key: 'discount', label: T.hDiscount, value: `-${W.comboPct(card)}%` }] : [])   // 2.25: «скидка + штампы»
+        .concat(p.bonus ? [{ key: 'bonus', label: p.bonus.header, value: p.bonus.body, changeMessage: '%@' }] : []),
+      ...(W.nextLine(card, lang) ? { auxiliaryFields: [{ key: 'next', label: W.nextLine(card, lang).header, value: W.nextLine(card, lang).body, changeMessage: '%@' }] } : {}),
       secondaryFields: [
         { key: 'client', label: B.client, value: String(card.client_name || '—').slice(0, 60) },
         ...(tier ? [{ key: 'tier', label: T.hTier, value: tier, changeMessage: '%@' }] : []),

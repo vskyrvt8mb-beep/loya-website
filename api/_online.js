@@ -54,14 +54,17 @@ function cleanProfile(p, prev) {
 }
 function cleanCard(c) {
   c = c || {};
-  const type = ['stamp', 'discount', 'spend'].includes(c.type) ? c.type : 'stamp';
+  const type = ['stamp', 'discount', 'spend', 'combo'].includes(c.type) ? c.type : 'stamp';
   return { type, stampTarget: clamp(c.stampTarget, 2, 50, 10), title: str(c.title, 60), discount: clamp(c.discount, 1, 90, 5), spendTarget: clamp(c.spendTarget, 1, 100000, 100), spendTitle: str(c.spendTitle, 60), spendPoints: clamp(c.spendPoints, 1, 1000, 1), welcomeDouble: !!c.welcomeDouble };
 }
 function cleanPage(pg) {
   pg = pg || {};
   const hex = (v) => (/^#[0-9a-fA-F]{6}$/.test(v || '') ? v : '');
   return { color2: hex(pg.color2), bg: ['dark', 'light'].includes(pg.bg) ? pg.bg : '', title: str(pg.title, 80), text: str(pg.text, 240), button: str(pg.button, 40),
-    logo: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]{20,}$/.test(String(pg.logo || '')) && String(pg.logo).length < 420000 ? String(pg.logo) : '' };
+    logo: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]{20,}$/.test(String(pg.logo || '')) && String(pg.logo).length < 420000 ? String(pg.logo) : '',
+    // 2.25: свой фон страниц (фото) и насколько его затемнить, чтобы текст читался
+    bgImg: /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]{20,}$/.test(String(pg.bgImg || '')) && String(pg.bgImg).length < 640000 ? String(pg.bgImg) : '',
+    bgDim: clamp(pg.bgDim, 0, 85, 45) };
 }
 // 2.23: у каждой точки (устройства) своя страница регистрации. Профиль точки хранится под ключом «КЛЮЧ#точка».
 const LOC_RE = /^[a-z0-9]{6,32}$/;

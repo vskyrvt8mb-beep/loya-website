@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
       gift_amount: Math.max(0, Number(card.gift_amount) || 0), gift_balance: Math.max(0, Math.round((Number(card.gift_balance) || 0) * 100) / 100),
       expires_at: /^\d{4}-\d{2}-\d{2}/.test(String(card.expires_at || '')) ? String(card.expires_at).slice(0, 10) : '',
       tier: ['basic', 'silver', 'gold'].includes(card.tier) ? card.tier : '',
+      tier_next: ['silver', 'gold'].includes(card.tier_next) ? card.tier_next : '', tier_next_left: Math.max(0, Math.min(100000, Math.round(Number(card.tier_next_left) || 0))),
       invite_url: require('./_wallet').cleanInvite(card.invite_url)
     };
     const b = brand || {};

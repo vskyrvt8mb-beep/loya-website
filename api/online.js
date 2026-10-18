@@ -18,7 +18,7 @@ const h_cfg = async (req, res) => {
 const ACTIONS = { 'pos-in': h_pos, 'pos-key': h_pos, 'pos-pull': h_pos, 'dk-start': h_pos, 'dk-status': h_pos, 'dk-disconnect': h_pos, 'dk-page': h_pos, 'dk-callback': h_pos,
   'book-slots': h_book, 'book-info': h_book, 'book-create': h_book, 'book-cancel': h_book, 'book-pull': h_book, 'book-update': h_book, 'book-busy': h_book, 'book-remind': h_book,
   'fb-new': h_book, 'fb-rate': h_book, 'fb-pull': h_book, 'book-page': h_book_page, 'fb-page': h_fb_page,
-  'client-cfg': h_cfg, 'publish': h_publish, 'register': h_register, 'pull': h_pull, 'page': h_page };
+  'client-cfg': h_cfg, 'publish': h_publish, 'register': h_register, 'pull': h_pull, 'page': h_page, 'page-bg': h_page.pageBg };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }

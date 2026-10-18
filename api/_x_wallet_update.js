@@ -32,7 +32,7 @@ async function appleUpdate(licenseKey, card, brand) {
   const next = { ...(row.card || {}), stamp_count: Number(card.stamp_count) || 0, stamp_target: Number(card.stamp_target) || 0, discount_percent: Number(card.discount_percent) || 0,
     spend_accumulated: Number(card.spend_accumulated) || 0, spend_target: Number(card.spend_target) || 0,
     bonus_balance: Math.max(0, Math.round(Number(card.bonus_balance) || 0)), spend_bonus_points: Math.max(1, Math.round(Number(card.spend_bonus_points) || 1)), title: String(card.title || (row.card || {}).title || '').slice(0, 80),
-    gift_balance: Math.max(0, Math.round((Number(card.gift_balance) || 0) * 100) / 100), tier: ['basic', 'silver', 'gold'].includes(card.tier) ? card.tier : '', invite_url: require('./_wallet').cleanInvite(card.invite_url) };
+    gift_balance: Math.max(0, Math.round((Number(card.gift_balance) || 0) * 100) / 100), tier: ['basic', 'silver', 'gold'].includes(card.tier) ? card.tier : '', tier_next: ['silver', 'gold'].includes(card.tier_next) ? card.tier_next : '', tier_next_left: Math.max(0, Math.min(100000, Math.round(Number(card.tier_next_left) || 0))), invite_url: require('./_wallet').cleanInvite(card.invite_url) };
   // «Wallet рядом»: место заведения могли включить, поменять или выключить — обновляем и его.
   const geo = require('./_wallet').cleanGeo((brand || {}).geo);
   const nextBrand = { ...(row.brand || {}) }; if (geo) nextBrand.geo = geo; else delete nextBrand.geo;
