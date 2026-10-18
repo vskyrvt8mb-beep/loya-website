@@ -8,6 +8,8 @@ async function googleUpdate(licenseKey, card, brand) {
   const design = await require('./_walletDesign').getDesignInfo(licenseKey);
   const { object } = W.buildObject(licenseKey, card, brand || {}, design);
   const token = await W.accessToken(sa);
+  // «Wallet рядом»: места заведения на классе — включили, поменяли или выключили (один раз на изменение).
+  await W.syncClassLocations(token, W.buildObject(licenseKey, card, brand || {}, design).classId, W.cleanGeo((brand || {}).geo)).catch(() => {});
   // Логотип и баннер тоже обновляем — так новый дизайн заведения доходит и до уже сохранённых карт.
   const patchBody = (withImages) => ({ textModulesData: object.textModulesData, ...(object.linksModuleData ? { linksModuleData: object.linksModuleData } : {}), header: object.header, cardTitle: object.cardTitle, hexBackgroundColor: object.hexBackgroundColor, ...(withImages ? { heroImage: object.heroImage, logo: object.logo } : {}) });
   const path = `genericObject/${encodeURIComponent(object.id)}`;

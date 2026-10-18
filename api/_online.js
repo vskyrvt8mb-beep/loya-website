@@ -45,6 +45,7 @@ function cleanProfile(p, prev) {
     refFriend: str(p.refFriend, 60),
     reviewUrl: /^https:\/\/[^\s<>"']{4,300}$/.test(String(p.reviewUrl || '')) ? String(p.reviewUrl) : '',
     book: require('./_book').cleanBook(p.book),
+    geo: require('./_wallet').cleanGeo(p.geo),
     // 2.23: какую постоянную карту получит гость при регистрации (чтобы сразу выдать её в Google/Apple Wallet)
     card: cleanCard(p.card),
     // 2.23: оформление страницы регистрации (можно задать и из админки)
@@ -147,7 +148,7 @@ async function walletLinksFor(row, rec) {
     const WL = require('./_walletLinks');
     const prof = row.profile || {};
     const card = WL.joinCard(prof, rec.bonus_code, rec.name, rec.lang || prof.lang || 'ru');
-    const brand = { name: prof.name, color: prof.color, currency: prof.currency, niche: prof.niche };
+    const brand = { name: prof.name, color: prof.color, currency: prof.currency, niche: prof.niche, ...(prof.geo ? { geo: prof.geo } : {}) };
     const [g, a] = await Promise.all([WL.googleLink(row.license_key, card, brand), WL.appleLink(row.license_key, card, brand)]);
     return { gwallet: g || '', awallet: a || '' };
   } catch (e) { return {}; }

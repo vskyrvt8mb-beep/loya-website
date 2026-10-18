@@ -255,10 +255,10 @@ async function deleteKeys(keys) {
   return { deleted, failed };
 }
 
-async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code, extra, device, cfg, wallet }, ip) {
+async function action({ session, op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, secret: setupSecret, code, extra, device, cfg, wallet, kind, emoji }, ip) {
   if (!(await check(session))) return { status: 401, error: 'session' };
-  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet });
-  if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test', 'tg_link', 'client_cfg_get'].includes(op)) {
+  const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet, kind, emoji });
+  if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test', 'tg_link', 'client_cfg_get', 'client_preview'].includes(op)) {
     await log(op, ip, { key: KEY_RE.test(String(key || '')) ? key : undefined, keys: Array.isArray(keys) ? keys.slice(0, 50) : undefined,
       email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' ? Number(days) : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
       deleted: res.deleted, extra: op === 'set_extra_devices' ? Number(extra) : undefined, device: op === 'remove_device' ? str(device, 12) : undefined });
@@ -266,7 +266,7 @@ async function action({ session, op, key, keys, email, note, freeUntil, tier, da
   return res;
 }
 
-async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet }) {
+async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet, kind, emoji }) {
   const until = /^\d{4}-\d{2}-\d{2}$/.test(String(freeUntil || '')) ? freeUntil : null;
   if (op === 'logout_all') {
     const { error } = await supabase.from('admin_settings').upsert({ key: 'sessions_after', value: String(Date.now()) });
@@ -287,6 +287,7 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
   // 2.23: настройки клиента из админки (оформление, регистрация, Wallet, акции)
   if (op === 'client_cfg_get') { if (!KEY_RE.test(String(key || ''))) return { status: 400, error: 'bad_request' }; return require('./_clientCfg').adminGet(String(key)); }
   if (op === 'client_cfg_save') { if (!KEY_RE.test(String(key || ''))) return { status: 400, error: 'bad_request' }; return require('./_clientCfg').adminSave(String(key), cfg, wallet); }
+  if (op === 'client_preview') { if (!KEY_RE.test(String(key || ''))) return { status: 400, error: 'bad_request' }; return require('./_clientCfg').preview(String(key), ['join', 'promo', 'book'].includes(kind) ? kind : 'join', cfg, emoji); }
   if (op === 'tg_test') return require('./_tg').test();
   if (op === 'totp_test') {
     const sec = String(setupSecret || '').toUpperCase();

@@ -24,6 +24,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;colo
  background:radial-gradient(640px 420px at 100% -4%,rgba(var(--ar),.32),transparent 70%),radial-gradient(560px 420px at -6% 60%,rgba(var(--br),.2),transparent 70%),var(--bg)}
 .wrap{max-width:460px;margin:0 auto}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.logo.img{background:#fff;padding:4px;overflow:hidden}.logo.img img{width:100%;height:100%;object-fit:contain;border-radius:12px}
 .logo{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(135deg,rgba(var(--ar),.35),rgba(var(--br),.28));border:1px solid rgba(var(--ar),.55)}
 .brand{font-size:20px;font-weight:800;flex:1;min-width:0;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:26px;padding:26px 20px;text-align:center}
@@ -43,7 +44,7 @@ textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 4px rgba(var(
 .err{color:#ffd0d0;font-size:14px;margin-top:12px;min-height:18px}
 .g{display:inline-flex;width:24px;height:24px;border-radius:50%;background:#fff;color:#4285f4;font-weight:900;align-items:center;justify-content:center;font-size:16px}
 </style></head><body><div class="wrap">
-<div class="top"><div class="logo">${esc(prof.emoji || '⭐')}</div><div class="brand">${esc(ctx.brand)}</div></div>
+<div class="top"><div class="logo${prof.page && prof.page.logo ? ' img' : ''}">${prof.page && prof.page.logo ? `<img src="${esc(prof.page.logo)}" alt="">` : esc(prof.emoji || '⭐')}</div><div class="brand">${esc(ctx.brand)}</div></div>
 <div class="card" id="box"></div>
 </div>
 <script>

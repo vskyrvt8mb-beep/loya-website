@@ -1,7 +1,10 @@
 // Тексты сайта на 4 языках. Ключи используются в HTML через data-i18n / data-i18n-html.
 window.SITE_I18N = {
 ru: {
-  plansNoFees: "Без комиссий с покупок, без доплат за Wallet, рассылки и сканер. Отмена — в один клик.",
+
+  plansSetup: "Пришлите логотип и пару фото — мы сами оформим страницу регистрации, карту в Apple и Google Wallet, онлайн-запись и акции в ваших цветах. Без доплат, в любом платном тарифе.",
+  plansSetupT: "Дизайн под ваше заведение — уже от €9.99",
+  planStarterF8: "Настроим всё под вас бесплатно: дизайн страницы регистрации, карты Wallet, логотип и акции",  plansNoFees: "Без комиссий с покупок, без доплат за Wallet, рассылки и сканер. Отмена — в один клик.",
   planProF5: "Ответ поддержки в первую очередь",
   planStarterF7: "До 3 точек с общей базой гостей",
   planStarterF6: "Аналитика, которую понятно читать: кто вернулся, средний чек, лучшие часы",
@@ -48,7 +51,7 @@ ru: {
   a11: "Точка — это заведение, устройств в ней может быть несколько: компьютер на кассе, телефон бариста, планшет. Все устройства одного ключа считаются вместе: Starter — до 3, Pro — до 10. Нужно больше — напишите нам, добавим.",
   payNote: 'Оплата сразу, отмена в любой момент. Если у вас пробный ключ — укажите тот же email, и он станет платным.',
   planProCta: 'Выбрать Pro',
-  planProF4: "Настройка под ключ: оформление, карты Wallet и акции настроим за вас",
+  planProF4: "Настройка под ключ для всей сети: оформление, карты Wallet, запись и акции настроим за вас",
   planProF3: "Онлайн-запись, чеки из кассы и учёт товаров — для всей сети",
   planProF2: "Статистика каждой точки, сотрудника и всей сети",
   planProF1: "До 10 точек и устройств — одна подписка на всю сеть",
@@ -157,7 +160,10 @@ ru: {
   pTitle: 'Оформление подписки'
 },
 uk: {
-  plansNoFees: "Без комісій з покупок, без доплат за Wallet, розсилки й сканер. Скасування — в один клік.",
+
+  plansSetup: "Надішліть логотип і кілька фото — ми самі оформимо сторінку реєстрації, картку в Apple і Google Wallet, онлайн-запис і акції у ваших кольорах. Без доплат, у будь-якому платному тарифі.",
+  plansSetupT: "Дизайн під ваш заклад — уже від €9.99",
+  planStarterF8: "Налаштуємо все під вас безкоштовно: дизайн сторінки реєстрації, картки Wallet, логотип і акції",  plansNoFees: "Без комісій з покупок, без доплат за Wallet, розсилки й сканер. Скасування — в один клік.",
   planProF5: "Відповідь підтримки — в першу чергу",
   planStarterF7: "До 3 точок зі спільною базою гостей",
   planStarterF6: "Аналітика, яку зрозуміло читати: хто повернувся, середній чек, найкращі години",
@@ -204,7 +210,7 @@ uk: {
   a11: "Точка — це заклад, пристроїв у ній може бути кілька: комп’ютер на касі, телефон баристи, планшет. Усі пристрої одного ключа рахуються разом: Starter — до 3, Pro — до 10. Потрібно більше — напишіть нам, додамо.",
   payNote: 'Оплата одразу, скасування будь-коли. Якщо у вас пробний ключ — вкажіть той самий email, і він стане платним.',
   planProCta: 'Обрати Pro',
-  planProF4: "Налаштування під ключ: оформлення, картки Wallet і акції налаштуємо за вас",
+  planProF4: "Налаштування під ключ для всієї мережі: оформлення, картки Wallet, запис і акції налаштуємо за вас",
   planProF3: "Онлайн-запис, чеки з каси й облік товарів — для всієї мережі",
   planProF2: "Статистика кожної точки, працівника й усієї мережі",
   planProF1: "До 10 точок і пристроїв — одна підписка на всю мережу",
@@ -313,7 +319,10 @@ uk: {
   pTitle: 'Оформлення підписки'
 },
 sk: {
-  plansNoFees: "Bez provízií z nákupov, bez príplatkov za Wallet, kampane a skener. Zrušenie jedným klikom.",
+
+  plansSetup: "Pošlite logo a pár fotiek — registračnú stránku, kartu v Apple a Google Wallet, online rezervácie aj akcie pripravíme vo vašich farbách my. Bez príplatkov, v každom platenom pláne.",
+  plansSetupT: "Dizajn pre vašu prevádzku — už od 9,99 €",
+  planStarterF8: "Všetko vám nastavíme zadarmo: dizajn registračnej stránky, karty vo Wallete, logo aj akcie",  plansNoFees: "Bez provízií z nákupov, bez príplatkov za Wallet, kampane a skener. Zrušenie jedným klikom.",
   planProF5: "Podpora odpovedá prednostne",
   planStarterF7: "Do 3 prevádzok so spoločnou databázou hostí",
   planStarterF6: "Prehľadná analytika: kto sa vrátil, priemerný nákup, najlepšie hodiny",
@@ -360,7 +369,7 @@ sk: {
   a11: "Prevádzka je podnik, zariadení v nej môže byť viac: počítač pri pokladni, telefón baristu, tablet. Všetky zariadenia jedného kľúča sa počítajú spolu: Starter — do 3, Pro — do 10. Potrebujete viac — napíšte nám, pridáme.",
   payNote: 'Platba hneď, zrušenie kedykoľvek. Ak máte skúšobný kľúč, zadajte ten istý e-mail a kľúč sa stane plateným.',
   planProCta: 'Vybrať Pro',
-  planProF4: "Nastavenie na kľúč: vzhľad, karty Wallet a akcie nastavíme za vás",
+  planProF4: "Nastavenie na kľúč pre celú sieť: vzhľad, karty vo Wallete, rezervácie aj akcie nastavíme za vás",
   planProF3: "Online rezervácie, doklady z pokladnice a evidencia tovaru — pre celú sieť",
   planProF2: "Štatistiky každej prevádzky, zamestnanca aj celej siete",
   planProF1: "Do 10 prevádzok a zariadení — jedno predplatné na celú sieť",
@@ -469,7 +478,10 @@ sk: {
   pTitle: 'Objednávka predplatného'
 },
 en: {
-  plansNoFees: "No fees on purchases, no extra charges for Wallet, campaigns or the scanner. Cancel in one click.",
+
+  plansSetup: "Send us your logo and a couple of photos — we’ll style your sign-up page, Apple & Google Wallet card, online booking and promotions in your colours. No extra fees, on any paid plan.",
+  plansSetupT: "Design made for your venue — from €9.99",
+  planStarterF8: "We set it all up for you for free: sign-up page design, Wallet cards, logo and promotions",  plansNoFees: "No fees on purchases, no extra charges for Wallet, campaigns or the scanner. Cancel in one click.",
   planProF5: "Priority support",
   planStarterF7: "Up to 3 locations sharing one guest list",
   planStarterF6: "Analytics you can actually read: who came back, average ticket, best hours",
@@ -516,7 +528,7 @@ en: {
   a11: "A location is a venue, and it can have several devices: the till computer, a barista’s phone, a tablet. All devices on one key count together: Starter — up to 3, Pro — up to 10. Need more? Write to us and we’ll add them.",
   payNote: 'You pay now and can cancel anytime. If you have a trial key, use the same email and it becomes paid.',
   planProCta: 'Choose Pro',
-  planProF4: "Done-for-you setup: we design your look, Wallet cards and promotions",
+  planProF4: "Done-for-you setup for the whole chain: look, Wallet cards, booking and promotions",
   planProF3: "Online booking, till receipts and stock tracking — across the chain",
   planProF2: "Stats for every location, every staff member and the whole chain",
   planProF1: "Up to 10 locations and devices — one subscription for the whole chain",

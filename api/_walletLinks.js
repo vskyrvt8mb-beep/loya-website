@@ -13,7 +13,7 @@ async function googleLink(licenseKey, card, brand) {
     try {
       const token = await W.accessToken(sa);
       const c = await W.putClass(token, classId);
-      if (c.ok) { const o = await W.putObject(token, object); if (o.ok) payload = { genericObjects: [{ id: object.id, classId }] }; else if (o.status >= 400 && o.status < 500) return ''; }
+      if (c.ok) { await W.syncClassLocations(token, classId, W.cleanGeo((brand || {}).geo)).catch(() => {}); const o = await W.putObject(token, object); if (o.ok) payload = { genericObjects: [{ id: object.id, classId }] }; else if (o.status >= 400 && o.status < 500) return ''; }
       else if (c.status >= 400 && c.status < 500) return '';
     } catch (e) { /* сеть — ниже ссылка со всеми данными внутри */ }
     if (!payload) payload = { genericClasses: [{ id: classId }], genericObjects: [object] };
@@ -28,7 +28,7 @@ async function appleLink(licenseKey, card, brand) {
     if (!A.configured()) return '';
     const serial = A.serialFor(licenseKey, card.code);
     const b = brand || {};
-    const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24) };
+    const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24), ...(require('./_wallet').cleanGeo(b.geo) ? { geo: require('./_wallet').cleanGeo(b.geo) } : {}) };
     const { error } = await supabase.from('apple_passes').upsert({ serial, license_key: licenseKey.trim(), card, brand: cleanBrand, updated_at: new Date().toISOString() });
     if (error) return '';
     return `${A.SITE_URL}/api/apple-pass?s=${encodeURIComponent(serial)}&t=${A.downloadTokenFor(serial)}`;

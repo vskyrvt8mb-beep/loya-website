@@ -81,7 +81,9 @@ const TX = {
 const TX2 = require('./_admin_tx');
 for (const l of Object.keys(TX)) Object.assign(TX[l], TX2[l] || {});
 const TX3 = require('./_admin_tx3');
-for (const l of Object.keys(TX)) Object.assign(TX[l], TX3[l] || {});
+const TX4 = require('./_admin_tx4');
+const { JS: ED_JS, CSS: ED_CSS } = require('./_admin_ed');
+for (const l of Object.keys(TX)) Object.assign(TX[l], TX3[l] || {}, TX4[l] || {});
 const crypto = require('crypto');
 
 const PAGE = (nonce) => `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -174,6 +176,7 @@ input{height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.16);back
 .wc-n{font-size:22px;font-weight:800;margin:22px 0 4px}.wc-s{font-size:14px;opacity:.8}.wc-qr{width:96px;height:96px;margin:16px auto;border-radius:8px;background:#fff repeating-linear-gradient(45deg,#111 0 4px,#fff 4px 8px)}
 .wc-h{position:absolute;left:0;right:0;bottom:0;height:92px;background:center/cover no-repeat}.wc-h0{background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.04))}
 
+${ED_CSS}
 </style></head><body><div class="wrap">
 <div id="lg" class="login hide"><h1>🔐 Loya</h1><input type="password" id="pw" autocomplete="current-password"><input id="code" class="hide" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*"><div class="err" id="lerr"></div><button class="btn" id="lb"></button><div class="top" style="justify-content:center" id="lang0"></div></div>
 <div id="app" class="hide"><div class="top"><h1 id="ttl"></h1><span id="lang1" style="display:flex;gap:6px"></span><button class="pill" id="rf"></button><button class="pill" id="lo"></button><button class="pill" id="lo2"></button></div>
@@ -224,81 +227,10 @@ $('journal').innerHTML=jh;$('j-t').onclick=()=>{jOpen=!jOpen;extra()}}
 /* ===== 2.23: настройка клиента — вкладки: обзор, заведение, регистрация, Wallet, акции ===== */
 const NICHES={"coffee": ["☕", "Кофейня / кафе", "Кав’ярня / кафе", "Kaviareň / kaviarnička", "Coffee shop / café"], "bakery": ["🥐", "Пекарня / кондитерская", "Пекарня / кондитерська", "Pekáreň / cukráreň", "Bakery / pastry shop"], "barber": ["💈", "Барбершоп / парикмахерская", "Барбершоп / перукарня", "Barbershop / kaderníctvo", "Barbershop / hair salon"], "nails": ["💅", "Ногтевая студия", "Нігтьова студія", "Nechtové štúdio", "Nail studio"], "spa": ["💆", "СПА / массаж", "СПА / масаж", "SPA / masáže", "Spa / massage"], "sushi": ["🍣", "Суши / азиатская кухня", "Суші / азійська кухня", "Sushi / ázijská kuchyňa", "Sushi / Asian kitchen"], "pizza": ["🍕", "Пиццерия / фастфуд", "Піцерія / фастфуд", "Pizzeria / rýchle občerstvenie", "Pizzeria / fast food"], "grocery": ["🛒", "Продукты / магазин у дома", "Продукти / магазин біля дому", "Potraviny / obchod pri dome", "Grocery / convenience store"], "travel": ["✈️", "Турфирма / путешествия", "Турфірма / подорожі", "Cestovná kancelária / cestovanie", "Travel agency"], "tattoo": ["🖋️", "Тату / пирсинг-студия", "Тату / пірсинг-студія", "Tetovacie / piercingové štúdio", "Tattoo / piercing studio"], "fitness": ["🏋️", "Фитнес / йога / танцы", "Фітнес / йога / танці", "Fitness / jóga / tanec", "Fitness / yoga / dance"], "petgroom": ["🐾", "Груминг для животных", "Грумінг для тварин", "Grooming pre zvieratá", "Pet grooming"], "photo": ["📸", "Фотостудия", "Фотостудія", "Fotoštúdio", "Photo studio"], "clothing": ["👗", "Магазин одежды", "Магазин одягу", "Obchod s oblečením", "Clothing store"], "other": ["✨", "Другое", "Інше", "Iné", "Other"]};
 const THEMES={glossy:['#e2b54a','#030303','#060606','#f6eedb'],gold:['#d4af37','#0d0f14','#0b0d12','#f0ece0'],coffee:['#9c5f2a','#2b1d15','#f5f4f2','#241c1c'],mint:['#2f9e6a','#14261f','#f1f7f3','#1c2b23'],ocean:['#2f6fa9','#14212b','#f0f5f8','#1c2530'],berry:['#a9306f','#2b1420','#f8f0f4','#2b1420'],graphite:['#585858','#1c1c1c','#f2f2f2','#232323']};
-let ED=null;
-async function openClient(key,tab){const t=T();$('mb').classList.add('wide');$('mb').innerHTML='<div class="cc">…</div>';$('modal').classList.remove('hide');
-const [r,g]=await Promise.all([api('admin-action',{op:'client',key}),api('admin-action',{op:'client_cfg_get',key})]);
-if(r._s===401||g._s===401){session=null;paint();$('modal').classList.add('hide');return}
-if(!r.ok){$('mb').innerHTML='<div class="err">'+E(t.err)+'</div><button class="btn sec" id="cc-x">'+E(t.close)+'</button>';$('cc-x').onclick=()=>$('modal').classList.add('hide');return}
-const base=Object.assign({},(g.ok&&g.snap)||{},(g.ok&&g.cfg)||{});delete base.brand_logo;
-ED={key,r,g:g.ok?g:{cfg:{},snap:null,wallet:null,ver:0},init:Object.assign({},base),cur:Object.assign({},base),logo:undefined,wal:{},tab:tab||(ED&&ED.key===key?ED.tab:'info')};
-paintEditor()}
-function paintEditor(){const t=T();const c=ED.r.client;const tabs=[['info',t.etInfo],['venue',t.etVenue],['reg',t.etReg],['wallet',t.etWallet],['promo',t.etPromo]];
-$('mb').innerHTML='<div class="ed"><div class="ed-h"><div><b>'+E(c.email||'—')+'</b><small class="key">'+E(c.key)+'</small></div><button class="btn sec ed-x" id="ed-x">✕</button></div>'+
-'<div class="ed-tabs">'+tabs.map(x=>'<button class="tab'+(ED.tab===x[0]?' on':'')+'" data-et="'+x[0]+'">'+E(x[1])+'</button>').join('')+'</div><div class="ed-body" id="ed-body"></div>'+
-(ED.tab==='info'?'':'<div class="ed-f"><span id="ed-msg"></span><button class="btn" id="ed-save">'+E(t.edSave)+'</button></div>')+'</div>';
-$('ed-x').onclick=()=>$('modal').classList.add('hide');
-$('mb').querySelectorAll('[data-et]').forEach(b=>b.onclick=()=>{ED.tab=b.dataset.et;paintEditor()});
-if(ED.tab==='info'){renderInfo(ED.key,ED.r);return}
-const snap=ED.g.snap;const head='<div class="ed-note">'+(snap?E(t.snapNow(dt(ED.g.snapAt),snap.version||'')):E(t.snapNone))+(ED.g.ver?'<br>'+E(t.cfgVer(ED.g.ver,dt(ED.g.at))):'')+'</div>';
-let h=head;const v=k=>ED.cur[k]==null?'':String(ED.cur[k]);
-const txt=(k,l,max,ph)=>'<label class="fld"><span>'+E(l)+'</span><input data-k="'+k+'" maxlength="'+max+'" value="'+E(v(k))+'" placeholder="'+E(ph||'')+'"></label>';
-const num=(k,l,a,b)=>'<label class="fld sm"><span>'+E(l)+'</span><input type="number" data-k="'+k+'" min="'+a+'" max="'+b+'" value="'+E(v(k))+'"></label>';
-const sel=(k,l,opts)=>'<label class="fld"><span>'+E(l)+'</span><select data-k="'+k+'">'+opts.map(o=>'<option value="'+E(o[0])+'"'+(v(k)===String(o[0])?' selected':'')+'>'+E(o[1])+'</option>').join('')+'</select></label>';
-const chk=(k,l)=>'<label class="chk2"><input type="checkbox" data-k="'+k+'" data-b="1"'+(v(k)==='1'?' checked':'')+'><span>'+E(l)+'</span></label>';
-const col=(k,l)=>'<label class="fld col"><span>'+E(l)+'</span><input type="color" data-k="'+k+'" value="'+E(/^#[0-9a-fA-F]{6}$/.test(v(k))?v(k):'#d4af37')+'"></label>';
-if(ED.tab==='venue'){
-h+='<div class="g2">'+txt('brand_name',t.fBrand,60)+sel('business_niche',t.fNiche,[['','—']].concat(Object.keys(NICHES).map(id=>[id,NICHES[id][0]+' '+(NICHES[id][{ru:1,uk:2,sk:3,en:4}[lang]]||NICHES[id][1])])))+sel('app_language',t.fLang,[['',' —'],['ru','Русский'],['uk','Українська'],['sk','Slovenčina'],['en','English']])+sel('spend_currency',t.fCur,[['','—'],['EUR','€ EUR'],['CZK','Kč CZK'],['UAH','₴ UAH'],['PLN','zł PLN'],['HUF','Ft HUF'],['USD','$ USD'],['GBP','£ GBP'],['CHF','CHF']])+'</div>';
-h+='<div class="fld"><span>'+E(t.fLogo)+'</span><div class="logo-row"><div class="logo-prev" id="lg-prev"></div><div><button class="act a-paid" id="lg-pick">'+E(t.fPick)+'</button> <button class="act a-copy" id="lg-rm">'+E(t.fRemove)+'</button><input type="file" id="lg-file" accept="image/png,image/jpeg,image/webp" hidden><small>'+E(t.fLogoHint)+'</small></div></div></div>';
-h+='<div class="fld"><span>'+E(t.fTheme)+'</span><div class="themes">'+Object.keys(THEMES).map(id=>{const c=THEMES[id];return'<button class="th'+(v('theme_name')===id?' on':'')+'" data-th="'+id+'" title="'+id+'"><i style="background:'+c[1]+'"></i><i style="background:'+c[2]+'"></i><b style="background:'+c[0]+'"></b></button>'}).join('')+'<button class="th th-c'+(v('theme_name')==='custom'?' on':'')+'" data-th="custom">🎨</button></div></div>';
-if(v('theme_name')==='custom')h+='<div class="g4">'+col('theme_primary',t.cPrimary)+col('theme_sidebar',t.cSidebar)+col('theme_screen',t.cScreen)+col('theme_text',t.cText)+'</div>'}
-if(ED.tab==='reg'){const ct=v('selfreg_card_type')||'stamp';
-h+='<div class="ed-note">'+E(t.regHint)+'</div><div class="g2">'+sel('selfreg_card_type',t.fCardType,[['stamp',t.ctStamp],['discount',t.ctDiscount],['spend',t.ctSpend]])+'<div></div>';
-if(ct==='stamp')h+=num('selfreg_stamp_target',t.fStampTarget,2,50)+txt('selfreg_stamp_title',t.fStampTitle,60);
-if(ct==='discount')h+=num('selfreg_discount_percent',t.fDiscount,1,90)+'<div></div>';
-if(ct==='spend')h+=num('selfreg_spend_target',t.fSpendTarget,1,100000)+txt('selfreg_spend_title',t.fSpendTitle,60);
-h+='</div><div class="g1">'+txt('registration_heading',t.fRegHead,80)+txt('registration_subtitle',t.fRegText,240)+txt('registration_button_text',t.fRegBtn,40)+'</div><div class="g2">'+sel('reg_page_bg',t.fRegBg,[['',t.bgAuto],['dark',t.bgDark],['light',t.bgLight]])+col('reg_page_color2',t.fColor2)+'</div>';
-const pr=(ED.r.client.profiles||[]).filter(Boolean);if(pr.length)h+='<div class="fld"><span>'+E(t.fPages)+'</span>'+pr.map(p=>'<div class="pg"><b>'+E(p.name||p.slug)+'</b> <a href="/r/'+E(p.slug)+'?mode=join" target="_blank" rel="noopener">/r/'+E(p.slug)+' '+E(t.fOpen)+'</a></div>').join('')+'</div>'}
-if(ED.tab==='wallet'){const w=ED.g.wallet||{};const bg=ED.wal.bgColor!==undefined?ED.wal.bgColor:(w.bg||'#20252d');
-h+='<div class="ed-note">'+E(t.wHint)+'</div><div class="wl"><div><div class="fld"><span>'+E(t.fWLogo)+'</span><div class="logo-row"><div class="logo-prev round" id="wl-prev"></div><div><button class="act a-paid" id="wl-pick">'+E(t.fPick)+'</button> <button class="act a-copy" id="wl-rm">'+E(t.fRemove)+'</button><input type="file" id="wl-file" accept="image/png,image/jpeg,image/webp" hidden></div></div></div>'+
-'<div class="fld"><span>'+E(t.fWHero)+'</span><div class="hero-prev" id="wh-prev"></div><div style="margin-top:6px"><button class="act a-paid" id="wh-pick">'+E(t.fPick)+'</button> <button class="act a-copy" id="wh-rm">'+E(t.fRemove)+'</button><input type="file" id="wh-file" accept="image/png,image/jpeg,image/webp" hidden></div></div>'+
-'<label class="fld col"><span>'+E(t.fWBg)+'</span><input type="color" id="wb" value="'+E(/^#[0-9a-fA-F]{6}$/.test(bg)?bg:'#20252d')+'"></label><label class="chk2"><input type="checkbox" id="ws"'+((ED.wal.heroStamps!==undefined?ED.wal.heroStamps:w.heroStamps!==false)?' checked':'')+'><span>'+E(t.fWStamps)+'</span></label></div>'+
-'<div><div class="fld"><span>'+E(t.wPreview)+'</span><div class="wcard" id="wcard"></div></div></div></div>'}
-if(ED.tab==='promo'){
-h+='<div class="g1">'+chk('welcome_double',t.fWelcome)+'</div><div class="box2">'+chk('bonus_stamps_enabled',t.fBonus)+'<div class="g4">'+sel('bonus_stamps_mult',t.fMult,[['2','×2'],['3','×3']])+'<label class="fld sm"><span>'+E(t.fFrom)+'</span><input type="time" data-k="bonus_stamps_from" value="'+E(v('bonus_stamps_from')||'14:00')+'"></label><label class="fld sm"><span>'+E(t.fTo)+'</span><input type="time" data-k="bonus_stamps_to" value="'+E(v('bonus_stamps_to')||'16:00')+'"></label></div>'+
-'<div class="fld"><span>'+E(t.fDays)+'</span><div class="days">'+[1,2,3,4,5,6,0].map(d=>{const on=v('bonus_stamps_days').split(',').includes(String(d));return'<label class="day"><input type="checkbox" data-day="'+d+'"'+(on?' checked':'')+'><span>'+E(new Date(2024,0,7+d).toLocaleDateString(lang==='en'?'en-GB':lang,{weekday:'short'}))+'</span></label>'}).join('')+'</div></div></div>'+
-'<div class="box2">'+chk('referral_enabled',t.fRef)+'<div class="g4">'+sel('referral_bonus_stamps',t.fRefBonus,[0,1,2,3,4,5].map(n=>[String(n),String(n)]))+sel('referral_friend_stamps',t.fRefFriend,[0,1,2,3,4,5].map(n=>[String(n),String(n)]))+'</div></div>'+
-'<div class="g2">'+sel('scan_cooldown_min',t.fCooldown,[['0','0'],['5','5'],['15','15'],['30','30'],['60','60'],['180','180'],['720','720']])+txt('review_url',t.fReview,300,'https://g.page/r/…/review')+'</div>'}
-$('ed-body').innerHTML=h;
-const body=$('ed-body');
-body.querySelectorAll('[data-k]').forEach(el=>{const ev=el.tagName==='SELECT'||el.type==='checkbox'||el.type==='color'?'change':'input';el.addEventListener(ev,()=>{ED.cur[el.dataset.k]=el.dataset.b?(el.checked?'1':'0'):el.value;if(el.dataset.k==='selfreg_card_type')paintEditor()})});
-body.querySelectorAll('[data-day]').forEach(el=>el.onchange=()=>{ED.cur.bonus_stamps_days=[...body.querySelectorAll('[data-day]:checked')].map(i=>i.dataset.day).join(',')});
-body.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{const id=b.dataset.th;ED.cur.theme_name=id;if(THEMES[id]){const c=THEMES[id];ED.cur.theme_primary=c[0];ED.cur.theme_sidebar=c[1];ED.cur.theme_screen=c[2];ED.cur.theme_text=c[3]}paintEditor()});
-if(ED.tab==='venue'){const pv=()=>{const src=ED.logo===undefined?null:ED.logo;$('lg-prev').innerHTML=src?'<img src="'+src+'" alt="">':(ED.g.snap&&ED.g.snap.has_logo==='1'&&ED.logo===undefined?'✓':'—')};pv();
-$('lg-pick').onclick=()=>$('lg-file').click();$('lg-rm').onclick=()=>{ED.logo=null;pv()};
-$('lg-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;ED.logo=await fitImage(f,512,512,'contain','image/png');pv()}}
-if(ED.tab==='wallet'){const w=ED.g.wallet||{};
-const src=k=>ED.wal[k]!==undefined?ED.wal[k]:(k==='logo'?w.logoUrl:w.heroUrl)||'';
-const draw=()=>{$('wl-prev').innerHTML=src('logo')?'<img src="'+src('logo')+'" alt="">':'L';$('wh-prev').style.backgroundImage=src('hero')?'url("'+src('hero')+'")':'';
-const bgc=$('wb').value;const light=(()=>{const n=parseInt(bgc.slice(1),16);return(0.2126*(n>>16&255)+0.7152*(n>>8&255)+0.0722*(n&255))/255>0.62})();
-$('wcard').style.background=bgc;$('wcard').style.color=light?'#141414':'#fff';
-const nm=E(ED.cur.brand_name||ED.r.client.profile&&ED.r.client.profile.name||'Loya');
-$('wcard').innerHTML='<div class="wc-top">'+(src('logo')?'<img src="'+src('logo')+'" alt="">':'<span class="wc-l">L</span>')+'<b>'+nm+'</b></div><div class="wc-n">Anna K.</div><div class="wc-s">5 / 8</div><div class="wc-qr"></div>'+(src('hero')?'<div class="wc-h" style="background-image:url(&quot;'+src('hero')+'&quot;)"></div>':'<div class="wc-h wc-h0"></div>')};draw();
-$('wb').oninput=()=>{ED.wal.bgColor=$('wb').value;draw()};$('ws').onchange=()=>{ED.wal.heroStamps=$('ws').checked};
-$('wl-pick').onclick=()=>$('wl-file').click();$('wh-pick').onclick=()=>$('wh-file').click();
-$('wl-rm').onclick=()=>{ED.wal.logo=null;draw()};$('wh-rm').onclick=()=>{ED.wal.hero=null;draw()};
-$('wl-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;ED.wal.logo=await fitImage(f,480,480,'contain','image/png');draw()};
-$('wh-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;ED.wal.hero=await fitImage(f,1032,336,'cover','image/jpeg');draw()}}
-$('ed-save').onclick=saveEditor}
+${ED_JS}
 function fitImage(file,W,H,mode,mime){return new Promise(res=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');if(mime==='image/jpeg'){x.fillStyle='#181c23';x.fillRect(0,0,W,H)}
 const k=mode==='cover'?Math.max(W/im.width,H/im.height):Math.min(W/im.width,H/im.height);const w=im.width*k,h=im.height*k;x.imageSmoothingQuality='high';x.drawImage(im,(W-w)/2,(H-h)/2,w,h);URL.revokeObjectURL(u);
 let out=cv.toDataURL(mime,0.86);if(mime==='image/jpeg'&&out.length>760000)out=cv.toDataURL(mime,0.7);res(out)};im.onerror=()=>{URL.revokeObjectURL(u);res(null)};im.src=u})}
-async function saveEditor(){const t=T();const cfg={};for(const k of Object.keys(ED.cur)){if(String(ED.cur[k]??'')!==String(ED.init[k]??''))cfg[k]=ED.cur[k]}
-if(ED.logo!==undefined)cfg.brand_logo=ED.logo;const wal=Object.assign({},ED.wal);
-if(!Object.keys(cfg).length&&!Object.keys(wal).length){$('ed-msg').textContent=t.edNoChanges;return}
-$('ed-save').disabled=true;$('ed-msg').textContent=t.edSaving;
-const r=await api('admin-action',{op:'client_cfg_save',key:ED.key,cfg,wallet:Object.keys(wal).length?wal:undefined});$('ed-save').disabled=false;
-if(r.ok&&(!r.wallet||r.wallet.ok)){const tab=ED.tab;await openClient(ED.key,tab);$('ed-msg').textContent=t.edSaved(r.ver);$('ed-msg').className='ok'}
-else{$('ed-msg').textContent=(r.error==='db_error'?t.edNeedSchema:t.edErr)+(r.wallet&&r.wallet.error?' (Wallet: '+r.wallet.error+')':'');$('ed-msg').className='err'}}
 function renderInfo(key,r){const t=T();
 const c=r.client;const kv=(a,b)=>'<span>'+E(a)+'</span><div>'+b+'</div>';
 let h='<div class="cc"><b style="font-size:17px">'+E(t.cTitle)+'</b><div class="kv">'+kv('Email',E(c.email))+kv('Key','<span class="key">'+E(c.key)+'</span>')+kv(t.lastSeen,E(c.lastSeen?dt(c.lastSeen):t.never)+(c.version?' · v'+E(c.version):''))+kv(t.createdAt,E(dt(c.created)))+

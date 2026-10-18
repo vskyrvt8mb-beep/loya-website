@@ -103,12 +103,24 @@ function progress(card, lang, currency) {
 
 // Уровень клиента (2.19, если у заведения включены привилегии уровней).
 function tierLabel(t) { return t === 'gold' ? '🥇 GOLD' : t === 'silver' ? '🥈 SILVER' : t === 'basic' ? 'BASIC' : ''; }
-// Координаты заведения для «Wallet рядом» (2.19).
+// Координаты заведения для «Wallet рядом» (2.19). С 2.24 — до 10 мест (все точки сети) и радиус для iPhone.
+function cleanGeoPoint(x) {
+  const lat = Number(x && x.lat), lng = Number(x && x.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+  return { lat: Math.round(lat * 1e6) / 1e6, lng: Math.round(lng * 1e6) / 1e6, name: clean(String((x && x.name) || '').replace(/[\u0000-\u001f<>]/g, ' ').trim(), 60) };
+}
 function cleanGeo(g) {
   if (!g || typeof g !== 'object') return null;
-  const lat = Number(g.lat), lng = Number(g.lng);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
-  return { lat: Math.round(lat * 1e6) / 1e6, lng: Math.round(lng * 1e6) / 1e6, text: clean(String(g.text || '').replace(/[\u0000-\u001f<>]/g, ' ').trim(), 120) };
+  const seen = new Set(), points = [];
+  for (const x of [].concat(Array.isArray(g.points) ? g.points : [], [g])) {
+    const p = cleanGeoPoint(x); if (!p) continue;
+    const k = p.lat.toFixed(5) + ',' + p.lng.toFixed(5); if (seen.has(k)) continue;
+    seen.add(k); points.push(p); if (points.length >= 10) break;
+  }
+  if (!points.length) return null;
+  const r = Math.round(Number(g.radius));
+  const radius = Number.isFinite(r) && r >= 50 && r <= 1000 ? r : 200;
+  return { lat: points[0].lat, lng: points[0].lng, points, radius, text: clean(String(g.text || '').replace(/[\u0000-\u001f<>]/g, ' ').trim(), 120) };
 }
 // Текст для экрана блокировки iPhone рядом с заведением: свой или прогресс карты.
 function nearText(card, lang, geo, currency) {
@@ -207,12 +219,21 @@ async function putClass(token, classId) {
   return r.status === 409 ? { ok: true, status: 200, message: '' } : r;   // класс уже есть — это нормально
 }
 
-// Google Wallet: места заведения на классе карт — Google сам покажет карту рядом (если поддерживает для этого типа).
-// Ошибку не считаем фатальной: карта без мест всё равно работает.
+// Google Wallet: места заведения на классе карт — Google сам покажет карту рядом (до 10 мест).
+// geo = null → места убираем (владелец выключил «Wallet рядом»). Ошибку не считаем фатальной.
 async function putClassLocations(token, classId, geo) {
-  if (!geo) return { skipped: true };
-  try { return await gcall(token, 'PATCH', `genericClass/${encodeURIComponent(classId)}`, { id: classId, merchantLocations: [{ latitude: geo.lat, longitude: geo.lng }] }); }
+  const list = geo ? (geo.points || [{ lat: geo.lat, lng: geo.lng }]).slice(0, 10).map(p => ({ latitude: p.lat, longitude: p.lng })) : [];
+  try { return await gcall(token, 'PATCH', `genericClass/${encodeURIComponent(classId)}`, { id: classId, merchantLocations: list }); }
   catch (e) { return { ok: false }; }
 }
+// То же, но не чаще одного раза на изменение (wallet-update вызывается на каждый скан).
+const LOC_SIG = new Map();
+async function syncClassLocations(token, classId, geo) {
+  const sig = geo ? JSON.stringify(geo.points || []) : '-';
+  if (LOC_SIG.get(classId) === sig) return { cached: true };
+  const r = await putClassLocations(token, classId, geo);
+  if (r && r.ok) LOC_SIG.set(classId, sig);
+  return r;
+}
 
-module.exports = { progress, TEXT, putObject, putClass, putClassLocations, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };
+module.exports = { progress, TEXT, putObject, putClass, putClassLocations, syncClassLocations, cleanGeoPoint, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };

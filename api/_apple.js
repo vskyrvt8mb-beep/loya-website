@@ -82,7 +82,7 @@ function buildPassJson(cfg, serial, card, brand, design) {
     sharingProhibited: true,
     barcodes: [{ format: 'PKBarcodeFormatQR', message: String(card.code), messageEncoding: 'iso-8859-1', altText: String(card.code) }],
     // 2.19: «Wallet рядом» — iPhone сам покажет карту на экране блокировки около заведения.
-    ...(geo ? { locations: [{ latitude: geo.lat, longitude: geo.lng, relevantText: W.nearText(card, lang, geo, brand.currency) }], maxDistance: 300 } : {}),
+    ...(geo ? { locations: geo.points.slice(0, 10).map(pt => ({ latitude: pt.lat, longitude: pt.lng, relevantText: W.nearText(card, lang, geo, brand.currency) })), maxDistance: geo.radius || 200 } : {}),
     ...(card.type === 'gift' && card.expires_at ? { expirationDate: `${card.expires_at}T23:59:59Z` } : {}),
     storeCard: {
       headerFields: [{ key: 'progress', label: p.header, value: p.body, changeMessage: '%@' }].concat(p.bonus ? [{ key: 'bonus', label: p.bonus.header, value: p.bonus.body, changeMessage: '%@' }] : []),

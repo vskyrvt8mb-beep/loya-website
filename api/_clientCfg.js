@@ -14,6 +14,15 @@ const hex = (v) => (v === '' ? '' : HEX.test(String(v || '')) ? String(v) : null
 const hhmm = (v) => (/^([01]\d|2[0-3]):[0-5]\d$/.test(String(v || '')) ? String(v) : null);
 const days = (v) => { const d = String(v == null ? '' : v).split(',').filter(Boolean); return d.every(x => /^[0-6]$/.test(x)) ? [...new Set(d)].join(',') : null; };
 
+// JSON-поля (онлайн-запись, «Wallet рядом»): разбираем, чистим и снова превращаем в строку.
+const json = (fn) => (v) => { try { const x = fn(typeof v === 'string' ? JSON.parse(v) : v); return x == null ? null : JSON.stringify(x); } catch (e) { return null; } };
+const idOf = (v, i, p) => String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || (p + (i + 1));
+const svcList = (a) => (Array.isArray(a) ? a : []).slice(0, 40).map((x, i) => ({ id: idOf(x && x.id, i, 's'), n: str(x && x.n, 60), d: Math.max(5, Math.min(480, Math.round(Number(x && x.d) || 60))), p: x && x.p !== '' && x.p != null && Number.isFinite(Number(x.p)) ? Math.max(0, Math.min(100000, Number(x.p))) : null })).filter(x => x.n);
+const staffList = (a) => (Array.isArray(a) ? a : []).slice(0, 20).map((x, i) => ({ id: idOf(x && x.id, i, 'm'), n: str(x && x.n, 40), s: (Array.isArray(x && x.s) ? x.s : []).map(String).slice(0, 40) })).filter(x => x.n);
+const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
+const hoursMap = (o) => { const out = {}; for (let d = 0; d < 7; d++) out[d] = (Array.isArray(o && o[d]) ? o[d] : []).filter(r => Array.isArray(r) && HM.test(r[0]) && HM.test(r[1]) && r[1] > r[0]).slice(0, 3).map(r => [r[0], r[1]]); return out; };
+const geoList = (a) => (Array.isArray(a) ? a : []).map(x => ({ lat: Number(x && x.lat), lng: Number(x && x.lng), name: str(x && x.name, 60) })).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lng) && Math.abs(x.lat) <= 90 && Math.abs(x.lng) <= 180 && !(x.lat === 0 && x.lng === 0)).slice(0, 10).map(x => ({ ...x, lat: Math.round(x.lat * 1e6) / 1e6, lng: Math.round(x.lng * 1e6) / 1e6 }));
+
 // ключ настройки программы → проверка значения (null — отбросить)
 const FIELDS = {
   brand_name: (v) => str(v, 60) || null,
@@ -32,9 +41,19 @@ const FIELDS = {
   bonus_stamps_enabled: bool, bonus_stamps_mult: oneOf(['2', '3']), bonus_stamps_from: hhmm, bonus_stamps_to: hhmm, bonus_stamps_days: days,
   scan_cooldown_min: oneOf(['0', '5', '15', '30', '60', '180', '720']),
   referral_enabled: bool, referral_bonus_stamps: (v) => int(v, 0, 5), referral_friend_stamps: (v) => int(v, 0, 5),
-  review_url: (v) => (v === '' ? '' : /^https:\/\/[^\s<>"']{4,300}$/.test(String(v || '')) ? String(v) : null)
+  review_url: (v) => (v === '' ? '' : /^https:\/\/[^\s<>"']{4,300}$/.test(String(v || '')) ? String(v) : null),
+  // 2.24: всё, что владелец настраивает в программе, — и из админки
+  selfreg_mode: oneOf(['wifi', 'online']),
+  online_reg_enabled: bool, online_bonus_title: (v) => str(v, 80), online_bonus_percent: (v) => int(v, 1, 100), online_bonus_days: (v) => int(v, 1, 90),
+  book_on: bool, book_services: json(svcList), book_staff: json(staffList), book_hours: json(hoursMap),
+  book_step: oneOf(['10', '15', '20', '30', '60']), book_lead: (v) => int(v, 0, 2880), book_days: (v) => int(v, 1, 90),
+  book_note: (v) => str(v, 300), book_address: (v) => str(v, 120), book_phone: (v) => str(v, 30),
+  geo_on: bool, geo_points: json(geoList), geo_text: (v) => str(v, 120),
+  tier_perks_on: bool, auto_winback_enabled: bool, auto_near_enabled: bool, auto_welcome_enabled: bool, auto_birthday_enabled: bool,
+  feature_inventory: bool, feature_network: bool, feature_staff: bool, feature_weather: bool
 };
 const LOGO_RE = /^data:image\/png;base64,[A-Za-z0-9+/=]{20,}$/;
+const SECRET_KEY = /(pass|secret|token|json|_key$|^license|pin|hash|smtp_user|session|private|cookie|device_id|apikey|api_key)/i;
 
 function clean(cfg) {
   const out = {};
@@ -76,6 +95,8 @@ async function poll({ licenseKey, ver, snap }) {
   try { cur = await getKV('ccfg:' + key); } catch (e) { return { status: 200, ok: true, ver: 0, wallet: walletState() }; }   // таблицы admin_settings нет — просто без настроек
   if (snap && typeof snap === 'object') {
     const s = clean(snap); s.has_logo = snap.has_logo ? '1' : '0'; s.version = str(snap.version, 20);
+    // 2.24: все остальные настройки программы (без паролей и ключей) — только для просмотра в админке
+    if (snap.all && typeof snap.all === 'object') { const all = {}; let size = 0; for (const [k, v] of Object.entries(snap.all).slice(0, 600)) { if (!/^[a-z0-9_]{1,60}$/.test(k) || SECRET_KEY.test(k)) continue; const val = str(v, 4000); size += k.length + val.length; if (size > 120000) break; all[k] = val; } s.all = all; }
     try { await setKV('csnap:' + key, { at: new Date().toISOString(), s }); } catch (e) { /* не критично */ }
   }
   const v = cur ? Number(cur.ver) || 0 : 0;
@@ -113,4 +134,63 @@ async function adminSave(key, cfg, wallet) {
   return { status: 200, ok: true, ver, wallet: walletRes };
 }
 
-module.exports = { FIELDS, clean, poll, adminGet, adminSave };
+// 2.24: предпросмотр страниц клиента в админке — та же вёрстка, что увидит гость, с несохранёнными правками.
+async function preview(key, kind, cfg, emoji) {
+  const O = require('./_online');
+  let row = null; try { row = await O.profileByLicense(key); } catch (e) { row = null; }
+  const p = JSON.parse(JSON.stringify((row && row.profile) || {}));
+  const c = clean(cfg || {});
+  const has = (k) => Object.prototype.hasOwnProperty.call(c, k);
+  if (has('brand_name')) p.name = c.brand_name;
+  if (has('business_niche')) p.niche = c.business_niche;
+  if (emoji) p.emoji = str(emoji, 8);
+  if (has('theme_primary') && c.theme_primary) p.color = c.theme_primary;
+  if (has('app_language')) p.lang = c.app_language;
+  if (has('spend_currency')) p.currency = c.spend_currency;
+  p.card = Object.assign({}, p.card || {});
+  if (has('selfreg_card_type')) p.card.type = c.selfreg_card_type;
+  if (has('selfreg_stamp_target')) p.card.stampTarget = Number(c.selfreg_stamp_target);
+  if (has('selfreg_stamp_title')) p.card.title = c.selfreg_stamp_title;
+  if (has('selfreg_discount_percent')) p.card.discount = Number(c.selfreg_discount_percent);
+  if (has('selfreg_spend_target')) p.card.spendTarget = Number(c.selfreg_spend_target);
+  if (has('selfreg_spend_title')) p.card.spendTitle = c.selfreg_spend_title;
+  if (has('welcome_double')) p.card.welcomeDouble = c.welcome_double === '1';
+  p.page = Object.assign({}, p.page || {});
+  if (has('registration_heading')) p.page.title = c.registration_heading;
+  if (has('registration_subtitle')) p.page.text = c.registration_subtitle;
+  if (has('registration_button_text')) p.page.button = c.registration_button_text;
+  if (has('reg_page_color2')) p.page.color2 = c.reg_page_color2;
+  if (has('reg_page_bg')) p.page.bg = c.reg_page_bg;
+  if (has('brand_logo')) p.page.logo = c.brand_logo || '';
+  if (has('online_bonus_title')) p.bonusTitle = c.online_bonus_title;
+  if (has('online_bonus_percent')) p.bonusPercent = Number(c.online_bonus_percent);
+  if (has('online_bonus_days')) p.bonusDays = Number(c.online_bonus_days);
+  if (has('referral_enabled')) p.refOn = c.referral_enabled === '1';
+  p.enabled = true; p.join = true; p.promo = true;
+  const slug = (row && row.slug) || 'preview';
+  let html;
+  if (kind === 'book') {
+    const B = require('./_book');
+    const b = Object.assign({}, p.book || {});
+    const pj = (k) => { try { return JSON.parse(c[k]); } catch (e) { return undefined; } };
+    if (has('book_services')) b.services = pj('book_services');
+    if (has('book_staff')) b.staff = pj('book_staff');
+    if (has('book_hours')) b.hours = pj('book_hours');
+    for (const k of ['step', 'lead', 'days']) if (has('book_' + k)) b[k] = Number(c['book_' + k]);
+    for (const k of ['note', 'address', 'phone']) if (has('book_' + k)) b[k] = c['book_' + k];
+    b.on = true; b.currency = p.currency || b.currency;
+    html = require('./_x_book_page').page({ slug, profile: p, book: B.cleanBook(b) }, {});
+  } else {
+    const wal = walletState();
+    html = require('./_x_online_page').html(slug, p, kind === 'join' ? 'join' : 'promo', wal);
+  }
+  // В предпросмотре ничего не отправляется: форма и ссылки не работают.
+  const guard = '<script>document.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation()},true);document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");if(a){e.preventDefault()}},true);</script>';
+  html = String(html).replace('<head>', '<head>' + guard);
+  // язык предпросмотра — язык заведения (а не браузера админа)
+  const pl = ['ru', 'uk', 'sk', 'en'].includes(p.lang) ? p.lang : 'ru';
+  html = html.split("new URLSearchParams(location.search).get('lang')").join(JSON.stringify(pl));
+  return { status: 200, ok: true, html, slug: row ? row.slug : '' };
+}
+
+module.exports = { FIELDS, clean, poll, adminGet, adminSave, preview };
