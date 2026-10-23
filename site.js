@@ -443,7 +443,8 @@
 
   // демо-карта «как видит клиент»
   const demo = document.getElementById('demo');
-  if (demo) {
+  // Окно демо — только если на странице его новая разметка (иначе старая страница не ломает остальной сайт).
+  if (demo && document.getElementById('demo-next') && document.getElementById('demo-stamps')) {
     const TOTAL = 10; let stamps = 6, lastFocus = null;
     const box = document.getElementById('demo-stamps'), left = document.getElementById('demo-left'), toast = document.getElementById('demo-toast');
     const draw = (pop) => {
