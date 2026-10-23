@@ -21,7 +21,10 @@ module.exports = async (req, res) => {
       gift_balance: Math.min(1000000, Math.max(0, num(q.gb, 0))),
       tier: ['basic', 'silver', 'gold'].includes(q.tier) ? q.tier : ''
     };
-    const brand = { name: String(q.name || 'Loya').slice(0, 60), color: String(q.color || ''), currency: String(q.currency || 'EUR').slice(0, 6) };
+    const brand = { name: String(q.name || 'Loya').slice(0, 60), color: String(q.color || ''), currency: String(q.currency || 'EUR').slice(0, 6),
+      // 2.27: вид карты (значения проверяет cleanLook внутри рисунка)
+      stamp: String(q.si || ''), reward: String(q.sr || ''), stampColor: q.sc ? '#' + String(q.sc).slice(0, 6) : '', layout: String(q.ly || ''), season: String(q.se || ''),
+      arrange: String(q.ar || ''), logoMode: String(q.lm || ''), logoSize: q.lz, logoRot: q.lr, logoX: q.lx, logoY: q.lq, logoFlip: q.lf === '1' };
     const niche = String(q.niche || 'other').slice(0, 30);
     const lang = ['ru', 'uk', 'sk', 'en'].includes(q.lang) ? q.lang : 'ru';
 
@@ -30,9 +33,9 @@ module.exports = async (req, res) => {
     if (q.b && q.dv) {
       try {
         const row = await require('./_walletDesign').getDesignFull(String(q.b), String(q.dv));
-        if (row && row.hero && (await require('./_license').licenseActive(row.license_key))) {
-          bgImage = `data:${row.hero_mime || 'image/jpeg'};base64,${row.hero}`;
-          showProgress = q.hs !== '0';
+        if (row && (row.hero || row.logo) && (await require('./_license').licenseActive(row.license_key))) {
+          if (row.hero) { bgImage = `data:${row.hero_mime || 'image/jpeg'};base64,${row.hero}`; showProgress = q.hs !== '0'; }
+          if (row.logo && q.lm) brand.logoImage = `data:${row.logo_mime || 'image/png'};base64,${row.logo}`;   // 2.27: логотип на баннере
         }
       } catch (e) { /* без картинки — стандартный баннер */ }
     }

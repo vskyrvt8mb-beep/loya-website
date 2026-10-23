@@ -203,6 +203,7 @@ const STAMP_ICONS = {
 const STAMP_IDS = Object.keys(STAMP_ICONS);
 const SEASONS = ['none', 'auto', 'xmas', 'newyear', 'winter', 'valentine', 'march8', 'easter', 'spring', 'summer', 'autumn', 'halloween'];
 const LAYOUTS = ['classic', 'photo'];
+const ARRANGES = ['row', 'arc', 'wave', 'steps', 'garland', 'grid'];
 const hexOk = (c) => /^#[0-9a-fA-F]{6}$/.test(String(c || ''));
 // Из настроек заведения — только известные значения (сервер получает их в ссылке и в теле запроса).
 function cleanLook(b) {
@@ -215,6 +216,15 @@ function cleanLook(b) {
   if (SEASONS.includes(b.season) && b.season !== 'none') o.season = b.season;
   const label = String(b.label || '').replace(/[\u0000-\u001f<>&"]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 18);
   if (label) o.label = label;
+  // 2.27: расположение штампов и логотип на баннере (размер, поворот, отражение, место)
+  if (ARRANGES.includes(b.arrange)) o.arrange = b.arrange;
+  if (b.logoMode === 'logo' || b.logoMode === 'both') {
+    o.logoMode = b.logoMode;
+    const num = (v, lo, hi) => { const x = Math.round(Number(v)); return Number.isFinite(x) && v !== '' && v != null ? Math.max(lo, Math.min(hi, x)) : null; };
+    const sz = num(b.logoSize, 24, 260), rt = num(b.logoRot, -180, 180), lx = num(b.logoX, 0, W), ly = num(b.logoY, 0, H);
+    if (sz != null) o.logoSize = sz; if (rt) o.logoRot = rt; if (lx != null) o.logoX = lx; if (ly != null) o.logoY = ly;
+    if (b.logoFlip === true || b.logoFlip === 1 || b.logoFlip === '1') o.logoFlip = 1;
+  }
   return o;
 }
 // Католическая Пасха (алгоритм Мееуса) — для «по календарю».
@@ -299,20 +309,20 @@ function seasonBack(season) {
 }
 
 // Штампы значками (2.27): закрашенный — кружок с значком, пустой — пунктир с бледным значком, последний — подарок.
-// place: 'classic' — как раньше (с подписью снизу), 'photo' — ряд по низу баннера, 'garland' — шары на гирлянде.
-function stampsIcons(count, target, accent, T, look, place) {
+// photo — раскладка «Фото» (штампы внизу баннера); arr — расположение: ряд, дуга, волна, лесенка, гирлянда, два ряда.
+function stampsIcons(count, target, accent, T, look, photo, arr, orn) {
   const n = Math.max(1, Number(target) || 1);
   count = clamp(Number(count) || 0, 0, n);
   if (n > 24) return progressLine(count / n, `${count} / ${n}`, n - count > 0 ? T.left(n - count) : T.ready, accent);
   const icon = look.stamp || 'check', reward = look.reward || 'gift';
-  const photo = place === 'photo';
   const fill = look.stampColor || (photo ? '#ffffff' : accent);
   const ink = inkOn(fill, accent);
-  const rewardFill = look.stampColor && photo ? accent : (photo ? accent : '#ffffff');
+  const rewardFill = photo ? accent : '#ffffff';
   const rewardInk = inkOn(rewardFill, accent);
   let out = '';
   const one = (cx, cy, size, i) => {
     const r = size / 2, last = i === n - 1, on = i < count;
+    cx = +cx.toFixed(1); cy = +cy.toFixed(1);
     if (last) {
       out += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${rewardFill}"${on ? '' : ' opacity=".95"'}/>`;
       if (on) out += `<circle cx="${cx}" cy="${cy}" r="${r + 5}" fill="none" stroke="#ffffff" stroke-width="3" opacity=".8"/>`;
@@ -323,8 +333,10 @@ function stampsIcons(count, target, accent, T, look, place) {
       out += `<circle cx="${cx}" cy="${cy}" r="${r - 2}" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.62)" stroke-width="3" stroke-dasharray="7 6"/>` + glyph(icon, cx, cy, size * 0.54, '#ffffff', null, 0.32);
     }
   };
-  if (place === 'garland' && n <= 12) {
-    // гирлянда: верёвка провисает дугой, шары висят на нитках, справа — бант
+  const caption = n - count > 0 ? T.left(n - count) : T.ready.replace('🎁 ', '');
+  const capAt = (y) => { if (!photo) out += `<text x="48" y="${y}" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(caption)}</text>`; };
+  if (arr === 'garland' && n <= 12) {
+    // гирлянда: верёвка провисает дугой, штампы висят на нитках, справа — бант (на Рождество — ёлочные шары)
     const P0 = [-20, H - 172], P1 = [W * 0.45, H - 72], P2 = [W - 70, H - 212];
     const at = (t) => [(1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0], (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1]];
     out += `<path d="M${P0[0]} ${P0[1]} Q ${P1[0]} ${P1[1]} ${P2[0]} ${P2[1]}" fill="none" stroke="#f5efe0" stroke-width="5" stroke-linecap="round"/>`;
@@ -337,7 +349,7 @@ function stampsIcons(count, target, accent, T, look, place) {
       const drop = 18 + (i % 2) * 10;
       out += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} v ${drop}" stroke="#f5efe0" stroke-width="2.5"/>`;
       const cy = y + drop + size / 2;
-      if (i === n - 1) { one(x, cy, size * 1.05, i); continue; }
+      if (i === n - 1 || !orn) { one(x, cy, i === n - 1 ? size * 1.05 : size, i); continue; }
       if (i < count) {
         const c = look.stampColor || '#d24b2f';
         out += `<rect x="${(x - size * 0.12).toFixed(1)}" y="${(cy - size / 2 - 6).toFixed(1)}" width="${(size * 0.24).toFixed(1)}" height="9" rx="2" fill="#e8d9b0"/>`;
@@ -349,47 +361,80 @@ function stampsIcons(count, target, accent, T, look, place) {
     }
     return out;
   }
-  const rows = n <= 10 ? 1 : 2;
+  // дуга, волна, лесенка — одной линией (до 12 штампов)
+  if (['arc', 'wave', 'steps'].includes(arr) && n <= 12) {
+    const size = Math.min(photo ? 72 : 64, (W - 96 - 12 * (n - 1)) / n);
+    const gap = n > 1 ? Math.min(photo ? 64 : 56, (W - 96 - n * size) / (n - 1)) : 0;   // кривая на всю ширину
+    const rowW = n * size + gap * (n - 1), left = photo ? (W - rowW) / 2 : 48;
+    const A = arr === 'arc' ? 44 : arr === 'wave' ? 28 : 36;
+    const cy0 = photo ? H - 30 - size / 2 - (arr === 'arc' ? 0 : A) : 196;
+    for (let i = 0; i < n; i++) {
+      const t = n === 1 ? 0.5 : i / (n - 1);
+      const dy = arr === 'arc' ? -A * Math.sin(Math.PI * t) : arr === 'wave' ? A * Math.sin(Math.PI * 2 * t) : A * (1 - 2 * t);
+      one(left + i * (size + gap) + size / 2, cy0 + dy, size, i);
+    }
+    capAt(318);
+    return out;
+  }
+  const rows = arr === 'grid' && n >= 4 ? 2 : n <= 10 ? 1 : 2;
   const perRow = Math.ceil(n / rows);
   const gap = photo ? 18 : 14;
-  const size = Math.min(photo ? (rows === 1 ? 76 : 58) : (rows === 1 ? 64 : 52), (W - 96 - gap * (perRow - 1)) / perRow);
+  const size = Math.min(photo ? (rows === 1 ? 76 : 58) : (rows === 1 ? 64 : 56), (W - 96 - gap * (perRow - 1)) / perRow);
   const rowW = perRow * size + gap * (perRow - 1);
   const left = photo ? (W - rowW) / 2 : 48;
-  const top = photo ? H - 34 - rows * size - (rows - 1) * 12 : (rows === 1 ? 132 : 108);
+  const top = photo ? H - 34 - rows * size - (rows - 1) * 12 : (rows === 1 ? 132 : 104);
   for (let i = 0; i < n; i++) {
     const r = Math.floor(i / perRow), c = i % perRow;
     one(left + c * (size + gap) + size / 2, top + r * (size + 12) + size / 2, size, i);
   }
-  if (!photo) {
-    const textY = top + rows * size + (rows - 1) * 12 + 42;
-    const caption = n - count > 0 ? T.left(n - count) : T.ready.replace('🎁 ', '');
-    out += `<text x="48" y="${textY}" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(caption)}</text>`;
-  }
+  capAt(Math.min(H - 12, top + rows * size + (rows - 1) * 12 + 42));
   return out;
+}
+
+// Логотип на баннере (2.27): только логотип, логотип + название или как раньше (значок вида бизнеса + название).
+// Размер, поворот, отражение и место задаёт владелец; картинка — логотип карты в Wallet.
+function logoBlock(look, img) {
+  const s = look.logoSize || 72;
+  const x = look.logoX != null ? look.logoX : 48 + s / 2, y = look.logoY != null ? look.logoY : 62;
+  const tr = `translate(${x} ${y})${look.logoRot ? ` rotate(${look.logoRot})` : ''}${look.logoFlip ? ' scale(-1 1)' : ''}`;
+  return { svg: `<g transform="${tr}"><image x="${-s / 2}" y="${-s / 2}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet" href="${img}" xlink:href="${img}"/></g>`, right: x + s / 2 };
 }
 
 function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress, now }) {
   const T = TXT[lang] || TXT.ru;
   const accent = /^#[0-9a-fA-F]{6}$/.test(brand.color || '') ? brand.color : '#d4a24a';
-  // 2.27: значок штампа, раскладка «Фото» и сезонное оформление
+  // 2.27: значок штампа, раскладка «Фото», расположение штампов, логотип и сезонное оформление
   const look = cleanLook(brand);
   const season = resolveSeason(look.season, now);
   const photoLay = look.layout === 'photo';
-  const place = season === 'xmas' ? 'garland' : photoLay ? 'photo' : 'classic';
-  const iconMode = !!(look.stamp || look.reward || look.stampColor || photoLay || season === 'xmas');
+  const arr = look.arrange || (season === 'xmas' ? 'garland' : 'row');
+  const iconMode = !!(look.stamp || look.reward || look.stampColor || photoLay || season === 'xmas' || look.arrange);
   const art = season ? seasonArt(season) : '';
+  const logoImg = look.logoMode && /^data:image\/(png|jpeg);base64,/.test(String(brand.logoImage || '')) ? brand.logoImage : '';
+  const lm = logoImg ? look.logoMode : 'name';
+  const L = logoImg ? logoBlock(look, logoImg) : null;
   const name = String(brand.name || 'Loya').slice(0, 32);
   const nameW = Math.min(560, textWidth(name, 34));
   const pill = card.type === 'gift' ? T.gift : card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
-  const pillX = 102 + nameW + 16, pillW = textWidth(pill, 22) + 36;
+  const pillW = textWidth(pill, 22) + 36;
   // 2.25: «скидка + штампы» — пилюля со скидкой рядом с типом карты; уровень гостя — в правом верхнем углу.
   const cpct = comboPct(card);
-  const extra = (dx) => {
+  const extra = (pillX, withPct) => {
     let o = '';
-    if (cpct) { const x = pillX + dx + pillW + 10, w = textWidth('−' + cpct + '%', 24) + 34; o += `<rect x="${x}" y="38" width="${w}" height="44" rx="22" fill="${accent}"/><text x="${x + w / 2}" y="68" font-family="Carlito" font-weight="700" font-size="24" fill="${INK}" text-anchor="middle">−${cpct}%</text>`; }
+    if (cpct && withPct) { const x = pillX + pillW + 10, w = textWidth('−' + cpct + '%', 24) + 34; o += `<rect x="${x}" y="38" width="${w}" height="44" rx="22" fill="${accent}"/><text x="${x + w / 2}" y="68" font-family="Carlito" font-weight="700" font-size="24" fill="${INK}" text-anchor="middle">−${cpct}%</text>`; }
     const tn = tierName(card.tier);
     if (tn) { const col = card.tier === 'gold' ? '#f4cf5b' : card.tier === 'silver' ? '#d7dde5' : 'rgba(255,255,255,.75)'; const w = textWidth(tn, 22) + 40; o += `<rect x="${W - 48 - w}" y="38" width="${w}" height="44" rx="22" fill="none" stroke="${col}" stroke-width="3"/><text x="${W - 48 - w / 2}" y="67" font-family="Carlito" font-weight="700" font-size="22" fill="${col}" text-anchor="middle" letter-spacing="2">${tn}</text>`; }
     return o;
+  };
+  // Шапка баннера: значок + название + тип карты (как раньше), логотип + название или только логотип.
+  const head = (onPhoto) => {
+    if (lm === 'logo') return L.svg + extra(0, false);
+    const nameX = lm === 'both' ? L.right + 16 : onPhoto ? 48 : 102;
+    const pillX = nameX + nameW + 16;
+    return (lm === 'both' ? L.svg : onPhoto ? '' : `<g>${iconSvg(niche, 48, 44, 32, 1).replace(/#fff/g, accent)}</g>`) +
+      `<text x="${nameX}" y="71" font-family="Carlito" font-weight="700" font-size="34" fill="#ffffff">${esc(name)}</text>
+      <rect x="${pillX}" y="38" width="${pillW}" height="44" rx="22" fill="rgba(255,255,255,${onPhoto ? '.16' : '.12'})"/>
+      <text x="${pillX + pillW / 2}" y="67" font-family="Carlito" font-weight="700" font-size="22" fill="#f1f1f1" text-anchor="middle">${esc(pill)}</text>` + extra(pillX, true);
   };
 
   let body = '';
@@ -412,23 +457,22 @@ function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress, now }) 
         <text x="52" y="282" font-family="Carlito" font-weight="600" font-size="28" fill="${MUTED}">${esc(T.saved)}</text>`;
     }
   } else {
-    body = iconMode ? stampsIcons(card.stamp_count, card.stamp_target || 10, accent, T, look, place) : stampsBlock(card.stamp_count, card.stamp_target || 10, accent, T);
+    body = iconMode ? stampsIcons(card.stamp_count, card.stamp_target || 10, accent, T, look, photoLay, arr, season === 'xmas') : stampsBlock(card.stamp_count, card.stamp_target || 10, accent, T);
   }
-  // В раскладке «Фото» (и на гирлянде) на баннере только штампы — название уже есть в шапке карты.
-  const bare = card.type === 'stamp' && (place === 'photo' || place === 'garland');
+  // В раскладке «Фото» (и на гирлянде поверх фото) на баннере только штампы — название уже есть в шапке карты;
+  // свой логотип при этом остаётся, если владелец его включил.
+  const bare = card.type === 'stamp' && (photoLay || arr === 'garland');
+  const bareHead = L ? L.svg : '';
 
   // Своя картинка заведения: на всю ширину баннера; если поверх показываем штампы —
   // слева затемнение, чтобы текст и кружки читались на любой фотографии.
   if (bgImage && /^data:image\/(png|jpeg);base64,/.test(bgImage)) {
-    const overlay = showProgress === false ? art : bare ? `<defs><linearGradient id="shadeB" x1="0" y1="0" x2="0" y2="1">
+    const overlay = showProgress === false ? art + bareHead : bare ? `<defs><linearGradient id="shadeB" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#0b0e13" stop-opacity=".05"/><stop offset="55%" stop-color="#0b0e13" stop-opacity=".25"/><stop offset="100%" stop-color="#0b0e13" stop-opacity=".62"/></linearGradient></defs>
-      <rect width="${W}" height="${H}" fill="url(#shadeB)"/>${art}${body}` : `<defs><linearGradient id="shadeL" x1="0" y1="0" x2="1" y2="0">
+      <rect width="${W}" height="${H}" fill="url(#shadeB)"/>${art}${bareHead}${body}` : `<defs><linearGradient id="shadeL" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#0b0e13" stop-opacity=".86"/><stop offset="55%" stop-color="#0b0e13" stop-opacity=".55"/><stop offset="100%" stop-color="#0b0e13" stop-opacity=".1"/></linearGradient></defs>
       <rect width="${W}" height="${H}" fill="url(#shadeL)"/>${art}
-      <text x="48" y="71" font-family="Carlito" font-weight="700" font-size="34" fill="#ffffff">${esc(name)}</text>
-      <rect x="${pillX - 54}" y="38" width="${pillW}" height="44" rx="22" fill="rgba(255,255,255,.16)"/>
-      <text x="${pillX - 54 + pillW / 2}" y="67" font-family="Carlito" font-weight="700" font-size="22" fill="#f1f1f1" text-anchor="middle">${esc(pill)}</text>
-      ${extra(-54)}
+      ${head(true)}
       ${body}`;
     return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <rect width="${W}" height="${H}" fill="#181c23"/>
@@ -436,7 +480,7 @@ function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress, now }) 
   ${overlay}
 </svg>`;
   }
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#383e47"/><stop offset="55%" stop-color="#232830"/><stop offset="100%" stop-color="#181c23"/>
@@ -448,13 +492,9 @@ function buildHeroSvg({ card, brand, niche, lang, bgImage, showProgress, now }) 
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
   <rect width="${W}" height="${H}" fill="url(#glow)"/>
   ${season ? seasonBack(season) : ''}
-  ${season ? '' : iconSvg(niche, W - 250, 60, 230, 0.05)}
+  ${season || lm !== 'name' ? '' : iconSvg(niche, W - 250, 60, 230, 0.05)}
   ${art}
-  <g>${iconSvg(niche, 48, 44, 32, 1).replace(/#fff/g, accent)}</g>
-  <text x="102" y="71" font-family="Carlito" font-weight="700" font-size="34" fill="#ffffff">${esc(name)}</text>
-  <rect x="${pillX}" y="38" width="${pillW}" height="44" rx="22" fill="rgba(255,255,255,.12)"/>
-  <text x="${pillX + pillW / 2}" y="67" font-family="Carlito" font-weight="700" font-size="22" fill="#f1f1f1" text-anchor="middle">${esc(pill)}</text>
-  ${extra(0)}
+  ${head(false)}
   ${body}
 </svg>`;
 }
@@ -495,7 +535,7 @@ function passModel(card, brand, lang) {
   return { lang, cardTitle: String(brand.name || 'Loya').slice(0, 60), subheader: String(card.title || typeName).slice(0, 60), header: String(card.client_name || typeName).slice(0, 60), typeName, modules, tier, next: nx, pct, progress: p };
 }
 
-return { TEXT, CUR, progress, tierLabel, tierName, nextLine, comboPct, passModel, buildHeroSvg, TXT, cleanLook, resolveSeason, seasonFor, STAMP_ICONS, STAMP_IDS, SEASONS, glyph };
+return { TEXT, CUR, progress, tierLabel, tierName, nextLine, comboPct, passModel, buildHeroSvg, TXT, cleanLook, resolveSeason, seasonFor, STAMP_ICONS, STAMP_IDS, SEASONS, ARRANGES, glyph };
 }
 // Сервер: module.exports (+ CLIENT_JS — тот же код для страниц, например для превью в админке). Программа: window.LoyaCard.
 if (typeof module !== 'undefined' && module.exports) { module.exports = loyaCardFactory(); module.exports.CLIENT_JS = 'window.LoyaCard=(' + loyaCardFactory.toString() + ')();'; }

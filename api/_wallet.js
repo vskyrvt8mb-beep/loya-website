@@ -75,6 +75,13 @@ function heroImageUrl(card, brand, lang, design) {
   const lk = CM.cleanLook(brand);
   if (lk.stamp) q.set('si', lk.stamp); if (lk.reward) q.set('sr', lk.reward); if (lk.stampColor) q.set('sc', lk.stampColor.slice(1));
   if (lk.layout) q.set('ly', lk.layout); if (lk.season) { const se = CM.resolveSeason(lk.season); if (se) q.set('se', se); }
+  if (lk.arrange) q.set('ar', lk.arrange);
+  // логотип на баннере: картинку сервер берёт из дизайна заведения (b + dv), положение — из ссылки
+  if (lk.logoMode && design && design.hasLogo) {
+    q.set('lm', lk.logoMode); q.set('b', design.biz); q.set('dv', String(design.ver));
+    for (const [k, v] of [['lz', lk.logoSize], ['lr', lk.logoRot], ['lx', lk.logoX], ['lq', lk.logoY]]) if (v != null) q.set(k, v);
+    if (lk.logoFlip) q.set('lf', '1');
+  }
   q.set('action', 'hero');
   return `${SITE_URL}/api/wallet?${q.toString()}`;
 }

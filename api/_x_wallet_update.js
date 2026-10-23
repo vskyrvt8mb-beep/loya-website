@@ -36,6 +36,8 @@ async function appleUpdate(licenseKey, card, brand) {
   // «Wallet рядом»: место заведения могли включить, поменять или выключить — обновляем и его.
   const geo = require('./_wallet').cleanGeo((brand || {}).geo);
   const nextBrand = { ...(row.brand || {}) }; if (geo) nextBrand.geo = geo; else delete nextBrand.geo;
+  // 2.27: вид карты (значок, цвет, раскладка, сезон, подпись) — как сейчас в программе
+  if (brand && 'look' in brand) { for (const k of ['stamp', 'reward', 'stampColor', 'layout', 'season', 'label', 'arrange', 'logoMode', 'logoSize', 'logoRot', 'logoX', 'logoY', 'logoFlip']) delete nextBrand[k]; Object.assign(nextBrand, require('./_cardModel').cleanLook(brand)); }
   await supabase.from('apple_passes').update({ card: next, brand: nextBrand, updated_at: new Date().toISOString() }).eq('serial', serial);
   const { data: regs } = await supabase.from('apple_registrations').select('device_id, push_token').eq('serial', serial);
   const tokens = [...new Set((regs || []).map(r => r.push_token).filter(Boolean))];

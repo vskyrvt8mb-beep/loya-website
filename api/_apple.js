@@ -76,7 +76,9 @@ function buildPassJson(cfg, serial, card, brand, design) {
   return {
     formatVersion: 1,
     passTypeIdentifier: cfg.passTypeId, teamIdentifier: cfg.teamId, serialNumber: serial,
-    organizationName: name, description: `${name} — ${typeName}`, logoText: name,
+    organizationName: name, description: `${name} — ${typeName}`,
+    // 2.27: «только логотип» — без названия рядом с логотипом
+    ...(require('./_cardModel').cleanLook(brand).logoMode === 'logo' ? {} : { logoText: name }),
     backgroundColor: ownBg ? hexToRgb(ownBg) : PASS_BG, foregroundColor: lightBg ? 'rgb(20,20,20)' : 'rgb(255,255,255)', labelColor: lightBg ? 'rgb(70,70,70)' : hexToRgb(brand.color),
     webServiceURL: `${SITE_URL}/api/apple-ws`, authenticationToken: authTokenFor(serial),
     sharingProhibited: true,
@@ -149,6 +151,7 @@ function stripImages(card, brand, design) {
     const { renderHeroPng } = require('./_walletHero');
     const args = { card, brand, niche: brand.niche || 'other', lang: card.lang };
     if (design && design.hero) { args.bgImage = `data:${design.hero_mime || 'image/jpeg'};base64,${design.hero}`; args.showProgress = design.hero_stamps !== false; }
+    if (design && design.logo && brand.logoMode) args.brand = { ...brand, logoImage: `data:${design.logo_mime || 'image/png'};base64,${design.logo}` };   // 2.27
     return [['strip.png', renderHeroPng(args, 375)], ['strip@2x.png', renderHeroPng(args, 750)], ['strip@3x.png', renderHeroPng(args, 1125)]];
   } catch (e) { return []; }
 }
