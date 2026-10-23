@@ -95,6 +95,8 @@ async function login({ password, code }, ip) {
   if (sec) {
     if (!code) return { status: 401, error: 'need_code' };
     if (!totpOk(sec, code)) { await log('login_fail', ip, { reason: 'code' }); return { status: 401, error: 'bad_code' }; }
+    // Один и тот же код нельзя использовать второй раз (подсмотренный или перехваченный код бесполезен).
+    if (await RL.limited('admin-totp-used:' + String(code), 1, 95e3)) { await log('login_fail', ip, { reason: 'code_reused' }); return { status: 401, error: 'bad_code' }; }
   }
   await log('login', ip, { twofa: !!sec });
   const TG = require('./_tg');

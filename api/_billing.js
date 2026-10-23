@@ -27,13 +27,34 @@ const KIND = {
               sk: ['Predplatné Loya je aktívne', 'Ďakujeme! Predplatné je aktívne.', () => 'Váš kľúč zostáva rovnaký — v programe netreba nič meniť.'],
               en: ['Your Loya subscription is active', 'Thank you! Your subscription is active.', () => 'Your key stays the same — nothing to change in the app.'] }
 };
+// 2.26: подтверждение почты пробного ключа. Ключ работает сразу, а письма клиентам через почту Loya
+// включаются после клика по ссылке — так пробный ключ на чужой адрес нельзя использовать для спама.
+const crypto = require('crypto');
+const verifySecret = () => process.env.OWNER_SECRET || crypto.createHash('sha256').update('loya-verify:' + (process.env.SUPABASE_SERVICE_KEY || 'dev')).digest('hex');
+const verifySig = (key) => crypto.createHmac('sha256', verifySecret()).update('trial-verify:' + key).digest('hex').slice(0, 32);
+const verifyUrl = (key, lang) => `${SITE_URL}/api/trial-confirm?k=${encodeURIComponent(key)}&s=${verifySig(key)}&lang=${LANGS.includes(lang) ? lang : 'en'}`;
+const VERIFY_TXT = {
+  ru: { t: 'Подтвердите почту', d: 'Одно нажатие — и программа сможет отправлять письма вашим клиентам (карты, поздравления, рассылки).', b: 'Подтвердить почту',
+    okT: 'Почта подтверждена', okD: 'Готово! Теперь программа Loya может отправлять письма вашим клиентам. Это окно можно закрыть.', badT: 'Ссылка не подходит', badD: 'Откройте самое свежее письмо с ключом или нажмите в программе «Отправить письмо ещё раз».' },
+  uk: { t: 'Підтвердьте пошту', d: 'Одне натискання — і програма зможе надсилати листи вашим клієнтам (картки, привітання, розсилки).', b: 'Підтвердити пошту',
+    okT: 'Пошту підтверджено', okD: 'Готово! Тепер програма Loya може надсилати листи вашим клієнтам. Це вікно можна закрити.', badT: 'Посилання не підходить', badD: 'Відкрийте найсвіжіший лист із ключем або натисніть у програмі «Надіслати лист ще раз».' },
+  sk: { t: 'Potvrďte e-mail', d: 'Jedno kliknutie — a program bude môcť posielať e-maily vašim zákazníkom (karty, blahoželania, kampane).', b: 'Potvrdiť e-mail',
+    okT: 'E-mail je potvrdený', okD: 'Hotovo! Program Loya teraz môže posielať e-maily vašim zákazníkom. Toto okno môžete zavrieť.', badT: 'Odkaz nie je platný', badD: 'Otvorte najnovší e-mail s kľúčom alebo v programe kliknite na „Poslať e-mail znova“.' },
+  en: { t: 'Confirm your email', d: 'One click — and the app can send emails to your customers (cards, greetings, campaigns).', b: 'Confirm email',
+    okT: 'Email confirmed', okD: 'Done! The Loya app can now send emails to your customers. You can close this window.', badT: 'This link doesn’t work', badD: 'Open the latest email with your key, or click “Send the email again” in the app.' }
+};
+const verifyBlock = (key, lang) => {
+  const v = VERIFY_TXT[LANGS.includes(lang) ? lang : 'en'];
+  return `<div style="margin:18px 0;padding:16px 18px;border-radius:14px;background:#fff8e6;border:1px solid #f0dca6"><b style="font-size:16px">${esc(v.t)}</b><p style="margin:6px 0 12px;color:#5c4a17">${esc(v.d)}</p>`
+    + `<a href="${verifyUrl(key, lang)}" style="display:inline-block;padding:12px 22px;border-radius:12px;background:#d4af37;color:#1b1813;font-weight:bold;text-decoration:none">${esc(v.b)}</a></div>`;
+};
 async function sendKeyEmail({ email, key, lang, kind, until }) {
   const lg = LANGS.includes(lang) ? lang : 'en';
   const l = L[lg];
   const k = KIND[kind] && KIND[kind][lg];
   const subject = k ? k[0] : l.s, title = k ? k[1] : l.hi;
   const extra = k ? `<p>${esc(k[2](until ? new Date(until).toLocaleDateString(lg === 'en' ? 'en-GB' : lg) : ''))}</p>` : '';
-  await sendSystemMail({ to: email, subject, html: wrap(`<h2 style="margin:0 0 8px">${esc(title)}</h2>${extra}<p>${esc(l.key)}:</p>${keyBox(key)}${kind === 'upgraded' ? '' : `<ol style="padding-left:20px">${l.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`}${manageLink(l)}<p style="color:#5f5a4a">${esc(l.help)}</p>`) });
+  await sendSystemMail({ to: email, subject, html: wrap(`<h2 style="margin:0 0 8px">${esc(title)}</h2>${extra}${kind === 'trial' ? verifyBlock(key, lg) : ''}<p>${esc(l.key)}:</p>${keyBox(key)}${kind === 'upgraded' ? '' : `<ol style="padding-left:20px">${l.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`}${manageLink(l)}<p style="color:#5f5a4a">${esc(l.help)}</p>`) });
 }
 
 // ---------- 14 дней пробного периода без карты ----------
@@ -86,6 +107,37 @@ async function resendKeys({ email, lang }, ip) {
   return { status: 200, ok: true };
 }
 
+// Программа: «Отправить письмо ещё раз» — ссылка подтверждения уходит только на адрес, на который выдан пробный ключ.
+async function resendVerify({ licenseKey, lang }, ip) {
+  const key = String(licenseKey || '').trim();
+  if (!/^LOYA-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(key)) return { status: 400, error: 'bad_key' };
+  if (await RL.limited('verify-ip:' + ip, 10, 3600e3) || await RL.limited('verify-key:' + key, 3, 3600e3)) return { status: 429, error: 'too_many' };
+  const { data, error } = await supabase.from('licenses').select('*').eq('license_key', key).maybeSingle();
+  if (error || !data) return { status: 404, error: 'not_found' };
+  if (data.plan !== 'trial' || data.email_verified_at || !EMAIL_RE.test(String(data.email || ''))) return { status: 200, ok: true, already: true };
+  const v = VERIFY_TXT[LANGS.includes(lang) ? lang : 'en'];
+  await sendSystemMail({ to: data.email, subject: `Loya — ${v.t}`, html: wrap(verifyBlock(key, lang)) });
+  return { status: 200, ok: true, sentTo: String(data.email).replace(/^(.).*?(@.*)$/, '$1•••$2') };
+}
+// GET /api/trial-confirm?k=…&s=… — переход по ссылке из письма.
+async function confirmTrial(req, res) {
+  const lg = langOf(req), v = VERIFY_TXT[lg];
+  const key = String((req.query && req.query.k) || ''), sig = String((req.query && req.query.s) || '');
+  const good = verifySig(key);
+  let ok = /^LOYA-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(key) && sig.length === good.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(good));
+  if (ok) {
+    const { error } = await supabase.from('licenses').update({ email_verified_at: new Date().toISOString() }).eq('license_key', key).is('email_verified_at', null);
+    if (error) { console.error('[trial-confirm]', error.message); ok = !/email_verified_at/.test(String(error.message)); }
+  }
+  res.statusCode = ok ? 200 : 400; res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.setHeader('Cache-Control', 'no-store'); res.setHeader('X-Robots-Tag', 'noindex');
+  res.end(`<!doctype html><html lang="${lg}"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loya — ${esc(ok ? v.okT : v.badT)}</title>
+<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 80% at 50% 0%,#2a2210,#0b0d12 60%);font-family:Arial,Helvetica,sans-serif;color:#f0ece0;padding:20px;box-sizing:border-box">
+<div style="max-width:440px;width:100%;text-align:center;background:#14161d;border:1px solid rgba(226,181,74,.3);border-radius:22px;padding:34px 26px;box-shadow:0 30px 80px rgba(0,0,0,.5)">
+<div style="width:72px;height:72px;margin:0 auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;${ok ? 'background:linear-gradient(135deg,#f4d47c,#d4af37);color:#1b1813' : 'background:#3a1d1d;color:#f87171'}">${ok ? '✓' : '!'}</div>
+<h1 style="margin:0 0 10px;font-size:22px">${esc(ok ? v.okT : v.badT)}</h1><p style="margin:0 0 22px;line-height:1.55;color:#c9c3b3">${esc(ok ? v.okD : v.badD)}</p>
+<a href="${SITE_URL}/${lg === 'en' ? '' : lg + '/'}" style="color:#e2b54a;font-weight:bold;text-decoration:none">loya-loyalty.com</a></div></body></html>`);
+}
+
 // /manage → кабинет Stripe (Customer Portal): клиент сам отменяет подписку и меняет карту.
 const MANAGE_OFF = {
   ru: ['Управление подпиской скоро будет доступно', 'Пока напишите нам — поможем отменить подписку или сменить карту.'],
@@ -109,4 +161,4 @@ function manage(req, res) {
   res.end(`<!doctype html><html lang="${langOf(req)}"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loya</title><body style="font-family:Arial,sans-serif;background:#0c0e13;color:#f3efe6;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:20px"><div style="max-width:460px;text-align:center"><h2>${esc(h)}</h2><p style="color:#c9c3b6">${esc(p)}</p><p><a style="color:#f5b83d" href="mailto:${esc(mail)}">${esc(mail)}</a></p><p><a style="color:#c9c3b6" href="${SITE_URL}/">loya-loyalty.com</a></p></div></body></html>`);
 }
 
-module.exports = { sendKeyEmail, resendKeys, manage, startTrial, TRIAL_DAYS, SITE_URL };
+module.exports = { sendKeyEmail, resendKeys, manage, startTrial, resendVerify, confirmTrial, TRIAL_DAYS, SITE_URL };

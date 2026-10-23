@@ -146,6 +146,41 @@ function walletMailButtons(r, lang) {
   const out = [r && r.awallet ? b(r.awallet, 'apple', t[0]) : '', r && r.gwallet ? b(r.gwallet, 'google', t[1]) : ''].filter(Boolean);
   return out.length ? `<p style="text-align:center">${out.join(' ')}</p>` : '';
 }
+// 2.26: оформленное письмо гостю — шапка в цвете заведения (логотип или значок и название), карта/купон с QR в фирменной рамке.
+// Таблицы и инлайн-стили — так письмо одинаково выглядит в Gmail, Outlook и почте на телефоне.
+const SHELL_TXT = {
+  ru: { card: 'Карта лояльности', coupon: 'Бонус-купон', show: 'Покажите QR-код на кассе', foot: (b) => `Вы получили это письмо, потому что зарегистрировались в «${b}».` },
+  uk: { card: 'Картка лояльності', coupon: 'Бонус-купон', show: 'Покажіть QR-код на касі', foot: (b) => `Ви отримали цей лист, бо зареєструвалися в «${b}».` },
+  sk: { card: 'Vernostná karta', coupon: 'Bonusový kupón', show: 'Ukážte QR kód pri pokladnici', foot: (b) => `Tento e-mail ste dostali, pretože ste sa zaregistrovali v „${b}“.` },
+  en: { card: 'Loyalty card', coupon: 'Bonus coupon', show: 'Show the QR code at the till', foot: (b) => `You received this email because you signed up at ${b}.` }
+};
+function mailBrand(prof) {
+  const color = /^#[0-9a-fA-F]{6}$/.test(prof.color || '') ? prof.color : '#d4af37';
+  const n = parseInt(color.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  const m = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String((prof.page && prof.page.logo) || ''));
+  // Логотип — вложением (cid): Gmail не показывает картинки data:. Слишком большой — без него.
+  const logo = m && m[2].length < 300000 ? { filename: 'logo.' + (m[1] === 'jpeg' ? 'jpg' : m[1]), contentBase64: m[2], cid: 'brandlogo', contentType: 'image/' + m[1] } : null;
+  return { name: prof.name || 'Loya', emoji: prof.emoji || '', color, on: lum > 0.62 ? '#1d1a14' : '#ffffff', logo };
+}
+function mailCardHtml(brand, lang, code, isCoupon) {
+  const T = SHELL_TXT[lang] || SHELL_TXT.en;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="300" style="margin:18px auto;border-collapse:separate;background:${brand.color};border-radius:18px">
+<tr><td style="padding:14px 18px 0;color:${brand.on};font:700 15px Arial,Helvetica,sans-serif">${esc(brand.name)}</td><td align="right" style="padding:14px 18px 0;color:${brand.on};font:12px Arial,Helvetica,sans-serif;opacity:.85">${esc(isCoupon ? T.coupon : T.card)}</td></tr>
+<tr><td colspan="2" align="center" style="padding:12px 18px 6px"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border-radius:12px"><tr><td style="padding:10px"><img src="cid:coupon" width="210" height="210" style="display:block;border:0" alt="QR"></td></tr></table></td></tr>
+<tr><td colspan="2" align="center" style="padding:4px 18px 16px;color:${brand.on};font:700 13px 'Courier New',monospace;letter-spacing:2px">${esc(code)}<div style="font:12px Arial,Helvetica,sans-serif;letter-spacing:0;opacity:.85;margin-top:4px">${esc(T.show)}</div></td></tr></table>`;
+}
+function mailShell(innerHtml, brand, lang) {
+  const T = SHELL_TXT[lang] || SHELL_TXT.en;
+  const mark = brand.logo
+    ? `<img src="cid:brandlogo" width="36" height="36" style="display:inline-block;vertical-align:middle;border-radius:9px;border:0;margin-right:10px" alt="">`
+    : (brand.emoji ? `<span style="font-size:22px;vertical-align:middle;margin-right:8px">${esc(brand.emoji)}</span>` : '');
+  return `<div style="margin:0;padding:24px 12px;background:#f4f2ee">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:18px;border-collapse:separate;overflow:hidden">
+<tr><td style="background:${brand.color};padding:18px 24px;color:${brand.on};font:700 19px Arial,Helvetica,sans-serif">${mark}<span style="vertical-align:middle">${esc(brand.name)}</span></td></tr>
+<tr><td style="padding:22px 24px 10px;color:#222222;font:15px/1.55 Arial,Helvetica,sans-serif">${innerHtml}</td></tr>
+<tr><td style="padding:12px 24px 20px;color:#8a8a8a;font:12px/1.5 Arial,Helvetica,sans-serif;border-top:1px solid #eeeeee">${esc(T.foot(brand.name))}</td></tr>
+</table></div>`;
+}
 // 2.23: ссылки «Добавить в Wallet» для постоянной карты гостя (Google — Android, Apple — iPhone).
 async function walletLinksFor(row, rec) {
   try {
@@ -221,10 +256,11 @@ async function register(body, ip) {
       const T = MAIL_TXT[lang];
       const png = await QR.toBuffer(saved.bonus_code, { width: 360, margin: 2 });
       const J = JOIN_MAIL[lang];
+      const mBrand = mailBrand(prof);
       const r = await sendMail({
         licenseKey: row.license_key, fromName: prof.name, to: email, subject: join ? J.subj(prof.name) : T.subj(prof.name),
-        html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#222"><p>${esc(T.hi(name))}</p><p>${join ? esc(J.body(prof.name)) : T.body(esc(prof.name), esc(rec.bonus_title), rec.bonus_percent, fmtDate(rec.bonus_expires, lang))}</p><p style="text-align:center"><img src="cid:coupon" width="240" height="240" alt="QR"><br><b style="letter-spacing:2px">${esc(rec.bonus_code)}</b></p>${walletMailButtons(reply, lang)}<p style="color:#666;font-size:13px">${join ? '' : T.after}</p></div>`,
-        attachments: [{ filename: 'coupon.png', contentBase64: png.toString('base64'), cid: 'coupon', contentType: 'image/png' }]
+        html: mailShell(`<p>${esc(T.hi(name))}</p><p>${join ? esc(J.body(prof.name)) : T.body(esc(prof.name), esc(rec.bonus_title), rec.bonus_percent, fmtDate(rec.bonus_expires, lang))}</p>${mailCardHtml(mBrand, lang, rec.bonus_code, !join)}${walletMailButtons(reply, lang)}${join || !T.after ? '' : `<p style="color:#666;font-size:13px">${T.after}</p>`}`, mBrand, lang),
+        attachments: [{ filename: 'coupon.png', contentBase64: png.toString('base64'), cid: 'coupon', contentType: 'image/png' }, ...(mBrand.logo ? [mBrand.logo] : [])]
       });
       reply.emailSent = !!r.ok;   // для join: карта на email; в программе она появится при следующем обмене (раз в минуту)
     } catch (e) { /* письмо не ушло — купон всё равно выдан */ }
