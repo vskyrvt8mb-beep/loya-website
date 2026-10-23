@@ -140,8 +140,10 @@ const JOIN_MAIL = {
 };
 const WAL_TXT = { ru: ['Добавить в Apple Wallet', 'Добавить в Google Wallet'], uk: ['Додати в Apple Wallet', 'Додати в Google Wallet'], sk: ['Pridať do Apple Wallet', 'Pridať do Google Wallet'], en: ['Add to Apple Wallet', 'Add to Google Wallet'] };
 function walletMailButtons(r, lang) {
-  const t = WAL_TXT[lang] || WAL_TXT.en, b = (href, label) => `<a href="${esc(href)}" style="display:inline-block;margin:4px;padding:12px 18px;border-radius:12px;background:#111;color:#fff;text-decoration:none;font-weight:bold">${esc(label)}</a>`;
-  const out = [r && r.awallet ? b(r.awallet, t[0]) : '', r && r.gwallet ? b(r.gwallet, t[1]) : ''].filter(Boolean);
+  // Официальные значки Apple / Google Wallet (PNG: почтовики не показывают SVG), язык — как у письма.
+  const l = WAL_TXT[lang] ? lang : 'en', t = WAL_TXT[l];
+  const b = (href, kind, label) => `<a href="${esc(href)}" style="display:inline-block;margin:4px;text-decoration:none"><img src="${SITE_URL}/img/wallet/${kind}-${l}.png" alt="${esc(label)}" height="44" style="height:44px;width:auto;border:0;vertical-align:middle"></a>`;
+  const out = [r && r.awallet ? b(r.awallet, 'apple', t[0]) : '', r && r.gwallet ? b(r.gwallet, 'google', t[1]) : ''].filter(Boolean);
   return out.length ? `<p style="text-align:center">${out.join(' ')}</p>` : '';
 }
 // 2.23: ссылки «Добавить в Wallet» для постоянной карты гостя (Google — Android, Apple — iPhone).

@@ -149,12 +149,11 @@ button.go[disabled]{opacity:.65;transform:none}
 .logo.img{background:#fff;padding:4px;overflow:hidden}.logo.img img{width:100%;height:100%;object-fit:contain;border-radius:12px}
 .req{color:#ff6b6b;font-weight:900;margin-left:2px}
 .ptitle{font-size:24px;font-weight:900;line-height:1.2;margin:0 4px 8px}
-button.go.wal{background:#0b0b0b;color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18)}
-button.go.wal .wi{width:34px;height:26px;flex:0 0 auto}
+button.go.wal{background:none;border:0;box-shadow:none;height:auto;padding:0}button.go.wal:hover{box-shadow:none;filter:none}
+img.wb{display:block;height:56px;width:auto;max-width:100%}
 button.go.wal .wt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;text-align:left}button.go.wal .wt small{font-size:12px;font-weight:600;opacity:.85}button.go.wal .wt b{font-size:18px;font-weight:800}
 .wbtns{display:flex;flex-direction:column;gap:10px;margin:16px 0 4px}
-a.wbtn{display:flex;align-items:center;justify-content:center;gap:12px;height:56px;border-radius:16px;background:#0b0b0b;color:#fff;text-decoration:none;font-weight:800;font-size:16px;border:1px solid rgba(255,255,255,.18)}
-a.wbtn svg{width:30px;height:22px}
+a.wbtn{display:flex;justify-content:center;text-decoration:none}
 body.light{--bg:#f4f1ea;--line:rgba(20,16,8,.12);--mut:rgba(30,26,20,.62);color:#1b1813}
 body.light .card{background:#fff;box-shadow:0 18px 40px rgba(20,16,8,.08)}
 body.light input[type=text],body.light input[type=tel],body.light input[type=email],body.light input[type=date]{background:#faf8f3;border-color:rgba(20,16,8,.16);color:#1b1813;color-scheme:light}
@@ -193,7 +192,7 @@ for(const l of (navigator.languages||[navigator.language||''])){const k=String(l
 const $=id=>document.getElementById(id);let coupon=null,repeat=false,mailed=false;
 const REF=(new URLSearchParams(location.search).get('ref')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);
 const UA=navigator.userAgent||'';const DEV=/iPhone|iPad|iPod/.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'ios':/Android/i.test(UA)?'android':'pc';
-const WSVG='<svg viewBox="0 0 34 26" aria-hidden="true"><rect x="1" y="1" width="32" height="24" rx="5" fill="#e9e5dc"/><rect x="3" y="3.5" width="28" height="5" rx="2" fill="#4aa3df"/><rect x="3" y="6.5" width="28" height="5" rx="2" fill="#f2b233"/><rect x="3" y="9.5" width="28" height="5" rx="2" fill="#57b85a"/><path d="M1 14h11c1.6 0 2.4 3 5 3s3.4-3 5-3h11v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3z" fill="#f1ede4"/><path d="M12 14c1.6 0 2.4 3 5 3s3.4-3 5-3" fill="none" stroke="#e46b5a" stroke-width="1.6"/></svg>';
+const BADGE=k=>'/img/wallet/'+k+'-'+(TX[lang]&&['ru','uk','sk','en'].includes(lang)?lang:'en')+'.svg';
 let wlink='';
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmt(iso){const p=String(iso).split('-');return lang==='en'?p[1]+'/'+p[2]+'/'+p[0]:p[2]+'.'+p[1]+'.'+p[0]}
@@ -216,11 +215,11 @@ d.innerHTML=J?'<div class="ticket"><div class="h"><b>💳 '+esc(T.jOk)+'</b><div
 :'<div class="ticket"><div class="h"><b>🎁 '+esc(repeat?T.again:T.okTitle)+'</b><div>'+esc(coupon.title||CTX.defaults[lang])+'</div><span class="badge">'+esc(pct(coupon.percent))+'</span></div>'+
 '<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="until">'+esc(T.until)+' '+esc(fmt(coupon.expires))+'</div><div class="small">'+esc(T.show)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'}}
 function goLabel(){const T=TX[lang];const J=CTX.mode==='join';const g=$('go');
-if(J&&((DEV==='ios'&&CTX.wal.a)||(DEV==='android'&&CTX.wal.g))){g.classList.add('wal');g.innerHTML=WSVG.replace('<svg','<svg class="wi"')+'<span id="go-t">'+esc(DEV==='ios'?T.wApple:T.wGoogle)+'</span>'}
+if(J&&((DEV==='ios'&&CTX.wal.a)||(DEV==='android'&&CTX.wal.g))){g.classList.add('wal');g.innerHTML='<img class="wb" src="'+BADGE(DEV==='ios'?'apple':'google')+'" alt="'+esc(DEV==='ios'?T.wApple:T.wGoogle)+'">'}
 else{g.classList.remove('wal');g.innerHTML='<span id="go-t">'+esc((CTX.page&&CTX.page.button)||(J?T.wMail:T.btn))+'</span><span aria-hidden="true">→</span>'}}
 function walletBtns(){const T=TX[lang];if(!coupon)return'';const L=[];
-if(coupon.awallet&&DEV!=='android')L.push('<a class="wbtn" href="'+esc(coupon.awallet)+'">'+WSVG+esc(T.wApple)+'</a>');
-if(coupon.gwallet&&DEV!=='ios')L.push('<a class="wbtn" href="'+esc(coupon.gwallet)+'" target="_blank" rel="noopener">'+WSVG+esc(T.wGoogle)+'</a>');
+if(coupon.awallet&&DEV!=='android')L.push('<a class="wbtn" href="'+esc(coupon.awallet)+'"><img class="wb" src="'+BADGE('apple')+'" alt="'+esc(T.wApple)+'"></a>');
+if(coupon.gwallet&&DEV!=='ios')L.push('<a class="wbtn" href="'+esc(coupon.gwallet)+'" target="_blank" rel="noopener"><img class="wb" src="'+BADGE('google')+'" alt="'+esc(T.wGoogle)+'"></a>');
 return L.length?'<div class="wbtns">'+L.join('')+'</div>':''}
 function burst(){try{if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const cols=[getComputedStyle(document.documentElement).getPropertyValue('--a').trim(),getComputedStyle(document.documentElement).getPropertyValue('--b').trim(),'#fbbf24','#34d399','#60a5fa','#f472b6'];
 const box=document.createElement('div');box.className='confetti';for(let i=0;i<46;i++){const e=document.createElement('i');e.style.left=(Math.random()*100)+'%';e.style.background=cols[i%cols.length];e.style.setProperty('--dx',((Math.random()-.5)*160)+'px');e.style.setProperty('--rot',(Math.random()*720-360)+'deg');e.style.animationDelay=(Math.random()*.5)+'s';e.style.animationDuration=(2+Math.random()*1.6)+'s';box.appendChild(e)}document.body.appendChild(box);setTimeout(()=>box.remove(),4600)}catch(e){}}
@@ -228,7 +227,7 @@ $('f').addEventListener('submit',async ev=>{ev.preventDefault();const T=TX[lang]
 const name=$('n').value.trim(),phone=$('p').value.trim(),email=$('e').value.trim();
 if(!name){$('err').textContent=T.errName;$('n').focus();return}if(!email){$('err').textContent=T.errEmailReq;$('e').focus();return}
 if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email)){$('err').textContent=T.errEmail;$('e').focus();return}if(phone&&phone.replace(/\\D/g,'').length<7){$('err').textContent=T.errPhone;$('p').focus();return}
-$('go').disabled=true;$('go').querySelector('#go-t').textContent=T.wait;
+$('go').disabled=true;$('go').classList.remove('wal');$('go').innerHTML='<span id="go-t"></span>';$('go').querySelector('#go-t').textContent=T.wait;
 try{const r=await fetch('/api/online-register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:CTX.slug,mode:CTX.mode,name,phone,email,birthday:$('b').value,lang,consent:$('c').checked,hp:$('hp').value,ref:REF})});
 const j=await r.json();if(j.ok&&j.code){coupon=j;repeat=!!j.repeat;mailed=!!j.emailSent;render();window.scrollTo(0,0);if(!repeat)burst();
 wlink=CTX.mode==='join'?(DEV==='ios'?j.awallet:DEV==='android'?j.gwallet:''):'';if(wlink)setTimeout(()=>{location.href=wlink},700);return}
