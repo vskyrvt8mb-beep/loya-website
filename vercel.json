@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/trial-confirm",
+      "destination": "/api/core?action=trial-confirm"
+    },
+    {
+      "source": "/api/verify-resend",
+      "destination": "/api/core?action=verify-resend"
+    },
+    {
       "source": "/api/tg-webhook",
       "destination": "/api/core?action=tg-webhook"
     },

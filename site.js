@@ -450,7 +450,29 @@
       box.innerHTML = Array.from({ length: TOTAL }, (_, i) => '<i class="' + (i < stamps ? 'on' : '') + (i === TOTAL - 1 ? ' gift' : '') + (pop && i === stamps - 1 ? ' pop' : '') + '">' + (i === TOTAL - 1 ? '🎁' : i < stamps ? '✓' : '') + '</i>').join('');
       left.textContent = stamps >= TOTAL ? t('demoGift') : t('demoLeft').replace('{n}', TOTAL - stamps);
     };
-    const open = () => { lastFocus = document.activeElement; stamps = 6; draw(); toast.textContent = ''; demo.hidden = false; document.documentElement.classList.add('menu-lock'); setTimeout(() => document.getElementById('demo-add').focus(), 30); };
+    // Три шага пути клиента: регистрация → письмо → карта в телефоне (на третьем — «+ Штамп»).
+    const STEPS = ['reg', 'mail', 'card'];
+    let step = 'reg';
+    const badge = (k) => '/img/wallet/' + k + '-' + (['ru', 'uk', 'sk'].includes(lang) ? lang : 'en') + '.svg';
+    const show = (k) => {
+      step = k;
+      demo.querySelectorAll('[data-pane]').forEach(p => { p.hidden = p.dataset.pane !== k; });
+      demo.querySelectorAll('[data-ds]').forEach(b => { const on = b.dataset.ds === k; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      document.getElementById('demo-sub').textContent = t(k === 'reg' ? 'demoSubReg' : k === 'mail' ? 'demoSubMail' : 'demoSub');
+      document.getElementById('demo-acts-next').hidden = k === 'card';
+      document.getElementById('demo-acts-card').hidden = k !== 'card';
+      toast.textContent = '';
+    };
+    demo.querySelectorAll('[data-ds]').forEach(b => b.addEventListener('click', () => show(b.dataset.ds)));
+    document.getElementById('demo-next').addEventListener('click', () => show(STEPS[Math.min(STEPS.length - 1, STEPS.indexOf(step) + 1)]));
+    document.getElementById('demo-wallet').addEventListener('click', () => show('mail'));
+    const open = () => {
+      lastFocus = document.activeElement; stamps = 6; draw(); toast.textContent = '';
+      document.getElementById('demo-wallet-img').src = badge('google');
+      document.getElementById('demo-mail-a').src = badge('apple'); document.getElementById('demo-mail-g').src = badge('google');
+      show('reg'); demo.hidden = false; document.documentElement.classList.add('menu-lock');
+      setTimeout(() => document.getElementById('demo-next').focus(), 30);
+    };
     const close = () => { demo.hidden = true; document.documentElement.classList.remove('menu-lock'); if (lastFocus) lastFocus.focus(); };
     document.querySelectorAll('[data-demo-open]').forEach(b => b.addEventListener('click', open));
     demo.querySelectorAll('[data-demo-close]').forEach(b => b.addEventListener('click', close));
