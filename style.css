@@ -1153,3 +1153,11 @@ html.os-android .dl-grid .dl-card[data-os="android"] { order: -1; }
 .plans-setup p{margin:0;font-size:14.5px;line-height:1.55;opacity:.88}
 .plan-li-star{font-weight:700}
 @media(max-width:560px){.plans-setup{padding:14px 16px;gap:12px}}
+
+/* Телефон: ссылки подвала — удобная высота для пальца; кнопка «Написать нам» меньше и не закрывает край карточек */
+@media (max-width: 640px) {
+  .foot a { padding: 7px 0; margin-bottom: 2px; }
+  .foot-langs a { display: inline-block; padding: 6px 2px; }
+  .msg-fab { right: 10px; }
+  .msg-fab-btn { width: 46px; height: 46px; opacity: .92; }
+}
