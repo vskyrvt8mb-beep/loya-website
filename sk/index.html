@@ -40,7 +40,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.min.css?v=1b089fde">
+<link rel="stylesheet" href="/style.min.css?v=747b4668">
 <link rel="preload" as="image" href="/img/dashboard_sk.webp">
 </head>
 <body data-page="home" data-page-lang="sk">
@@ -198,6 +198,10 @@
       </div>
       <div class="plans-setup reveal"><span class="ps-ic" aria-hidden="true">🎨</span><div><b data-i18n="plansSetupT">Dizajn pre vašu prevádzku — už od 9,99 €</b><p data-i18n="plansSetup">Pošlite logo a pár fotiek — registračnú stránku, kartu v Apple a Google Wallet, online rezervácie aj akcie pripravíme vo vašich farbách my. Bez príplatkov, v každom platenom pláne.</p></div></div>
       <p class="plans-nofees reveal" data-i18n="plansNoFees">Bez provízií z nákupov, bez príplatkov za Wallet, kampane a skener. Zrušenie jedným klikom.</p>
+      <details class="cmp reveal"><summary><span data-i18n="cmpTitle">Podrobné porovnanie taríf</span><svg viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></summary>
+        <div class="cmp-wrap"><table class="cmp-t"><thead><tr><th></th><th scope="col"><span class="cmp-l" data-i18n="planFreeName">Zadarmo</span><span class="cmp-s" aria-hidden="true">€0</span></th><th scope="col" class="hl">Starter</th><th scope="col">Pro</th></tr></thead>
+        <tbody><tr><th scope="row" data-i18n="cmpClients">Zákazníci a karty</th><td data-i18n="cmpFreeLim">do 10 zákazníkov</td><td class="inf">∞</td><td class="inf">∞</td></tr><tr><th scope="row" data-i18n="cmpTypes">Pečiatky, zľavy, vernostné body</th><td class="ck">✓</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpScan">Skener: kamera, telefón alebo USB</th><td class="ck">✓</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpQr">Samoregistrácia hostí cez QR</th><td class="ck">✓</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpWallet">Karta v Apple a Google Wallet</th><td class="no">—</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpMail">E-maily a kampane zákazníkom</th><td class="no">—</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpPoints">Prevádzok so spoločnou databázou</th><td class="num">1</td><td class="num">3</td><td class="num">10</td></tr><tr><th scope="row" data-i18n="cmpSetup">Dizajn vám nastavíme zadarmo</th><td class="no">—</td><td class="ck">✓</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpStats">Štatistika každej prevádzky a zamestnanca</th><td class="no">—</td><td class="no">—</td><td class="ck">✓</td></tr><tr><th scope="row" data-i18n="cmpSupport">Prednostná podpora</th><td class="no">—</td><td class="no">—</td><td class="ck">✓</td></tr></tbody></table></div>
+      </details>
       <p class="swipe-hint" aria-hidden="true" data-i18n="swipeHint">← posúvajte →</p>
       <form class="checkout plans-checkout reveal" novalidate>
         <div class="tier-switch"><label><input type="radio" name="tier" value="starter" checked><span class="ts-starter" data-pm="Starter · €9.99" data-py="Starter · €99.90">Starter · €9.99</span></label><label><input type="radio" name="tier" value="pro"><span class="ts-pro" data-pm="Pro · €19.99" data-py="Pro · €199.90">Pro · €19.99</span></label></div>
@@ -409,9 +413,30 @@
 <div class="demo-modal" id="demo" hidden>
   <div class="demo-in" role="dialog" aria-modal="true" aria-labelledby="demo-t">
     <button type="button" class="demo-x" data-demo-close data-i18n-aria="close" aria-label="Zavrieť">×</button>
-    <h3 id="demo-t" data-i18n="demoTitle">Takto vidí zákazník kartu v telefóne</h3>
-    <p class="muted" data-i18n="demoSub">Stlačte „+ Pečiatka“ — takto barista zaznamená návštevu. Je to ukážka, údaje nie sú skutočné.</p>
+    <h3 id="demo-t" data-i18n="demoJourney">Cesta zákazníka: od QR po kartu v telefóne</h3>
+    <div class="demo-steps" role="tablist">
+      <button type="button" role="tab" class="on" data-ds="reg"><b>1</b><span data-i18n="demoS1">Registrácia</span></button>
+      <button type="button" role="tab" data-ds="mail"><b>2</b><span data-i18n="demoS2">E-mail</span></button>
+      <button type="button" role="tab" data-ds="card"><b>3</b><span data-i18n="demoS3">Karta</span></button>
+    </div>
+    <p class="muted demo-sub" id="demo-sub"></p>
     <div class="demo-phone"><div class="demo-scr">
+      <div class="dw-pane dw-reg" data-pane="reg">
+        <div class="dr-head"><img src="/logo-80.webp" alt="" width="40" height="40"><b>Black Rich</b></div>
+        <div class="dr-h" data-i18n="demoRegH">Získajte vernostnú kartu</div>
+        <label class="dr-f"><span data-i18n="demoRegName">Meno</span><i>Anna</i></label>
+        <label class="dr-f"><span>Email</span><i>anna@mail.com</i></label>
+        <div class="dr-ok"><b>✓</b><span data-i18n="demoConsent">Súhlasím so zasielaním bonusov a noviniek</span></div>
+        <button type="button" class="dr-wallet" id="demo-wallet" aria-label="Google Wallet"><img id="demo-wallet-img" alt="" height="44"></button>
+      </div>
+      <div class="dw-pane dw-mail" data-pane="mail" hidden>
+        <div class="dm-head"><img src="/logo-80.webp" alt="" width="26" height="26"><b>Black Rich</b></div>
+        <div class="dm-body"><p data-i18n="demoMailHi">Dobrý deň, Anna! Tu je vaša karta — ukážte QR kód pri pokladnici.</p>
+          <div class="dm-card"><div class="dm-top"><b>Black Rich</b><small data-i18n="demoS3">Karta</small></div><div class="dm-qr"><i></i></div><div class="dm-code">LC-8F21A0C47B19</div></div>
+          <div class="dm-badges"><img id="demo-mail-a" alt="" height="26"><img id="demo-mail-g" alt="" height="26"></div>
+        </div>
+      </div>
+      <div class="dw-pane" data-pane="card" hidden>
       <div class="dw-card">
         <div class="dw-top"><img src="/logo-80.webp" alt="" width="34" height="34"><b>Black Rich</b></div>
         <div class="dw-rew" data-i18n="demoReward">Káva zadarmo</div>
@@ -420,9 +445,11 @@
         <div class="dw-code">LC-8F21A0C47B19</div>
         <div class="dw-strip"><div class="dw-stamps" id="demo-stamps"></div><div class="dw-left" id="demo-left"></div></div>
       </div>
+      </div>
       <div class="dw-toast" id="demo-toast"></div>
     </div></div>
-    <div class="demo-acts"><button type="button" class="btn btn-primary" id="demo-add" data-i18n="demoStamp">+ Pečiatka</button><button type="button" class="btn btn-ghost" id="demo-reset" data-i18n="demoReset">Od začiatku</button></div>
+    <div class="demo-acts" id="demo-acts-next"><button type="button" class="btn btn-primary" id="demo-next" data-i18n="demoNext">Ďalej →</button></div>
+    <div class="demo-acts" id="demo-acts-card" hidden><button type="button" class="btn btn-primary" id="demo-add" data-i18n="demoStamp">+ Pečiatka</button><button type="button" class="btn btn-ghost" id="demo-reset" data-i18n="demoReset">Od začiatku</button></div>
   </div>
 </div>
 
@@ -444,7 +471,7 @@
 </div>
 <div class="sticky-cta"><a href="#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Vyskúšať 14 dní zadarmo</span></a></div>
 
-<script src="/i18n/sk.js?v=d1b003fe"></script>
-<script src="/site.js?v=d1b003fe"></script>
+<script src="/i18n/sk.js?v=f7cfb3bc"></script>
+<script src="/site.js?v=f7cfb3bc"></script>
 </body>
 </html>

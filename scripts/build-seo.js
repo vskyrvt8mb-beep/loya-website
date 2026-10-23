@@ -422,7 +422,8 @@ const assets = (html, lang) => html
   .replace(/src="\/i18n(?:\/[a-z]{2})?\.js(?:\?v=[a-f0-9]+)?"/g, lang ? `src="/i18n/${lang}.js?v=${jsVer}"` : `src="/i18n.js?v=${jsVer}"`)
   .replace(/src="\/site\.js(?:\?v=[a-f0-9]+)?"/g, `src="/site.js?v=${jsVer}"`);
 for (const rel of pages) {
-  const f = path.join(ROOT, rel), lang = (rel.match(/^(ru|uk|sk)\//) || [, 'en'])[1];
+  // путь с «/» на любой системе (на Windows path.relative даёт «uk\index.html» — язык бы не определился)
+  const f = path.join(ROOT, rel), lang = (rel.split(path.sep).join('/').match(/^(ru|uk|sk)\//) || [, 'en'])[1];
   fs.writeFileSync(f, assets(fs.readFileSync(f, 'utf8'), lang));
 }
 console.log('written i18n/*.js, style.min.css', (cssSrc.length / 1024).toFixed(0) + 'KB →', (cssMin.length / 1024).toFixed(0) + 'KB');

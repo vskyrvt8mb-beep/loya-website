@@ -39,7 +39,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.min.css?v=1b089fde">
+<link rel="stylesheet" href="/style.min.css?v=747b4668">
+<link rel="preload" as="image" href="/img/dashboard_sk.webp">
 </head>
 <body data-page="article" data-page-lang="sk" data-page-sub="blog/bring-customers-back">
 <a class="skip-link" href="#main" data-i18n="skipToContent">Prejsť na obsah</a>
@@ -116,9 +117,30 @@
 <div class="demo-modal" id="demo" hidden>
   <div class="demo-in" role="dialog" aria-modal="true" aria-labelledby="demo-t">
     <button type="button" class="demo-x" data-demo-close data-i18n-aria="close" aria-label="Zavrieť">×</button>
-    <h3 id="demo-t" data-i18n="demoTitle">Takto vidí zákazník kartu v telefóne</h3>
-    <p class="muted" data-i18n="demoSub">Stlačte „+ Pečiatka“ — takto barista zaznamená návštevu. Je to ukážka, údaje nie sú skutočné.</p>
+    <h3 id="demo-t" data-i18n="demoJourney">Cesta zákazníka: od QR po kartu v telefóne</h3>
+    <div class="demo-steps" role="tablist">
+      <button type="button" role="tab" class="on" data-ds="reg"><b>1</b><span data-i18n="demoS1">Registrácia</span></button>
+      <button type="button" role="tab" data-ds="mail"><b>2</b><span data-i18n="demoS2">E-mail</span></button>
+      <button type="button" role="tab" data-ds="card"><b>3</b><span data-i18n="demoS3">Karta</span></button>
+    </div>
+    <p class="muted demo-sub" id="demo-sub"></p>
     <div class="demo-phone"><div class="demo-scr">
+      <div class="dw-pane dw-reg" data-pane="reg">
+        <div class="dr-head"><img src="/logo-80.webp" alt="" width="40" height="40"><b>Black Rich</b></div>
+        <div class="dr-h" data-i18n="demoRegH">Získajte vernostnú kartu</div>
+        <label class="dr-f"><span data-i18n="demoRegName">Meno</span><i>Anna</i></label>
+        <label class="dr-f"><span>Email</span><i>anna@mail.com</i></label>
+        <div class="dr-ok"><b>✓</b><span data-i18n="demoConsent">Súhlasím so zasielaním bonusov a noviniek</span></div>
+        <button type="button" class="dr-wallet" id="demo-wallet" aria-label="Google Wallet"><img id="demo-wallet-img" alt="" height="44"></button>
+      </div>
+      <div class="dw-pane dw-mail" data-pane="mail" hidden>
+        <div class="dm-head"><img src="/logo-80.webp" alt="" width="26" height="26"><b>Black Rich</b></div>
+        <div class="dm-body"><p data-i18n="demoMailHi">Dobrý deň, Anna! Tu je vaša karta — ukážte QR kód pri pokladnici.</p>
+          <div class="dm-card"><div class="dm-top"><b>Black Rich</b><small data-i18n="demoS3">Karta</small></div><div class="dm-qr"><i></i></div><div class="dm-code">LC-8F21A0C47B19</div></div>
+          <div class="dm-badges"><img id="demo-mail-a" alt="" height="26"><img id="demo-mail-g" alt="" height="26"></div>
+        </div>
+      </div>
+      <div class="dw-pane" data-pane="card" hidden>
       <div class="dw-card">
         <div class="dw-top"><img src="/logo-80.webp" alt="" width="34" height="34"><b>Black Rich</b></div>
         <div class="dw-rew" data-i18n="demoReward">Káva zadarmo</div>
@@ -127,9 +149,11 @@
         <div class="dw-code">LC-8F21A0C47B19</div>
         <div class="dw-strip"><div class="dw-stamps" id="demo-stamps"></div><div class="dw-left" id="demo-left"></div></div>
       </div>
+      </div>
       <div class="dw-toast" id="demo-toast"></div>
     </div></div>
-    <div class="demo-acts"><button type="button" class="btn btn-primary" id="demo-add" data-i18n="demoStamp">+ Pečiatka</button><button type="button" class="btn btn-ghost" id="demo-reset" data-i18n="demoReset">Od začiatku</button></div>
+    <div class="demo-acts" id="demo-acts-next"><button type="button" class="btn btn-primary" id="demo-next" data-i18n="demoNext">Ďalej →</button></div>
+    <div class="demo-acts" id="demo-acts-card" hidden><button type="button" class="btn btn-primary" id="demo-add" data-i18n="demoStamp">+ Pečiatka</button><button type="button" class="btn btn-ghost" id="demo-reset" data-i18n="demoReset">Od začiatku</button></div>
   </div>
 </div>
 
@@ -151,7 +175,7 @@
 </div>
 <div class="sticky-cta"><a href="/sk/#download" class="btn btn-primary">🎁 <span data-i18n="heroCta">Vyskúšať 14 dní zadarmo</span></a></div>
 
-<script src="/i18n/sk.js?v=d1b003fe"></script>
-<script src="/site.js?v=d1b003fe"></script>
+<script src="/i18n/sk.js?v=f7cfb3bc"></script>
+<script src="/site.js?v=f7cfb3bc"></script>
 </body>
 </html>
