@@ -71,6 +71,10 @@ function heroImageUrl(card, brand, lang, design) {
   // Свой баннер заведения: картинка берётся из wallet_designs по «отпечатку» бизнеса и версии дизайна.
   if (['basic', 'silver', 'gold'].includes(card.tier)) q.set('tier', card.tier);   // 2.25: уровень гостя на баннере
   if (design && design.hasHero) { q.set('b', design.biz); q.set('dv', String(design.ver)); if (!design.heroStamps) q.set('hs', '0'); }
+  // 2.27: вид карты — значок штампа и подарка, цвет штампов, раскладка, сезонное оформление
+  const lk = CM.cleanLook(brand);
+  if (lk.stamp) q.set('si', lk.stamp); if (lk.reward) q.set('sr', lk.reward); if (lk.stampColor) q.set('sc', lk.stampColor.slice(1));
+  if (lk.layout) q.set('ly', lk.layout); if (lk.season) { const se = CM.resolveSeason(lk.season); if (se) q.set('se', se); }
   q.set('action', 'hero');
   return `${SITE_URL}/api/wallet?${q.toString()}`;
 }

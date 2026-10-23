@@ -64,7 +64,7 @@ const BACK = {
 function buildPassJson(cfg, serial, card, brand, design) {
   const lang = W.TEXT[card.lang] ? card.lang : 'en';
   const T = W.TEXT[lang], B = BACK[lang];
-  const p = W.progress(card, lang, brand.currency);
+  const p = W.progress(card, lang, brand.currency, require('./_cardModel').cleanLook(brand).label);
   const typeName = card.type === 'gift' ? T.gift : card.type === 'discount' ? T.discount : card.type === 'spend' ? T.spend : T.stamp;
   const name = String(brand.name || 'Loya').slice(0, 60);
   const tier = W.tierLabel(card.tier);

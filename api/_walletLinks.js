@@ -28,7 +28,7 @@ async function appleLink(licenseKey, card, brand) {
     if (!A.configured()) return '';
     const serial = A.serialFor(licenseKey, card.code);
     const b = brand || {};
-    const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24), ...(require('./_wallet').cleanGeo(b.geo) ? { geo: require('./_wallet').cleanGeo(b.geo) } : {}) };
+    const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24), ...require('./_cardModel').cleanLook(b), ...(require('./_wallet').cleanGeo(b.geo) ? { geo: require('./_wallet').cleanGeo(b.geo) } : {}) };
     const { error } = await supabase.from('apple_passes').upsert({ serial, license_key: licenseKey.trim(), card, brand: cleanBrand, updated_at: new Date().toISOString() });
     if (error) return '';
     return `${A.SITE_URL}/api/apple-pass?s=${encodeURIComponent(serial)}&t=${A.downloadTokenFor(serial)}`;

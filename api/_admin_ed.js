@@ -7,6 +7,18 @@ function adminEditorClient() {
   // Страница админки защищена CSP с nonce — предпросмотр (srcdoc) наследует её, поэтому скриптам страницы-превью ставим тот же nonce.
   const PV_NONCE = (document.currentScript && document.currentScript.nonce) || ((document.querySelector('script[nonce]') || {}).nonce) || '';
   const PV_KIND = { reg: 'join', promo: 'promo', book: 'book' };
+  // 2.27: превью страницы гостя — настоящий экран телефона 390×844, уменьшенный целиком (раньше страница
+  // сжималась до ~300 px по ширине: всё выглядело крупным и приходилось крутить внутри маленького окна).
+  function pvFit(phone) {
+    const fr = phone && phone.querySelector('iframe'); if (!fr) return;
+    const cs = getComputedStyle(phone), pad = parseFloat(cs.paddingLeft) || 0;
+    const avail = Math.max(200, (phone.parentElement ? phone.parentElement.clientWidth : 360) - 2);
+    const h = phone.clientHeight - pad * 2;
+    const s = Math.min(h / 844, (avail - pad * 2) / 390);
+    phone.style.width = Math.round(390 * s + pad * 2) + 'px';
+    fr.style.cssText = 'width:390px;height:' + Math.round(h / s) + 'px;transform:scale(' + s.toFixed(4) + ');transform-origin:0 0;border-radius:' + Math.round(24 / s) + 'px';
+  }
+  window.addEventListener('resize', () => { const ph = document.querySelector('#pv-box .pv-phone'); if (ph) pvFit(ph); });
   const nicheName = (id) => { const n = NICHES[id]; return n ? n[0] + ' ' + (n[{ ru: 1, uk: 2, sk: 3, en: 4 }[lang]] || n[1]) : id; };
   const pj = (s, d) => { try { const x = JSON.parse(s); return x == null ? d : x; } catch (e) { return d; } };
 
@@ -252,6 +264,7 @@ function adminEditorClient() {
       if (!r.ok) { box.innerHTML = '<div class="err">' + E(t.pvErr) + '</div>'; return; }
       box.innerHTML = '<div class="pv-phone"><iframe sandbox="allow-scripts" title="preview"></iframe></div>';
       box.querySelector('iframe').srcdoc = PV_NONCE ? String(r.html).replace(/<script>/g, '<script nonce="' + PV_NONCE + '">') : r.html;
+      pvFit(box.querySelector('.pv-phone'));
       return;
     }
     if (ED.tab === 'wallet') {
@@ -341,7 +354,7 @@ const CSS = `
 .ed-main .ed-body{overflow:auto;max-height:calc(92vh - 170px)}
 .ed-pv{border-left:1px solid var(--line);padding:14px 16px;overflow:auto;max-height:calc(92vh - 170px);background:rgba(0,0,0,.18)}
 .pv-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pv-h b{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}.pv-h span{font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07)}
-.pv-phone{width:360px;max-width:100%;height:640px;margin:0 auto;border-radius:34px;padding:10px;background:#050507;box-shadow:inset 0 0 0 2px #2b2f38,0 20px 44px rgba(0,0,0,.45);overflow:hidden}
+.pv-phone{width:360px;max-width:100%;height:640px;margin:0 auto;border-radius:34px;padding:10px;background:#050507;box-shadow:inset 0 0 0 2px #2b2f38,0 20px 44px rgba(0,0,0,.45);overflow:hidden;box-sizing:border-box}
 .pv-phone iframe{width:100%;height:100%;border:0;border-radius:26px;background:#0c0e13}.pv-load{display:grid;place-items:center;height:100%;color:var(--mut)}
 .pv-note{font-size:12px;color:var(--mut);line-height:1.45;margin:10px 2px 0;text-align:center}
 .es{padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025);margin-bottom:14px}.es h4{margin:0 0 10px;font-size:14px;display:flex;align-items:center;gap:8px}.es h4 small{color:var(--mut);font-weight:700}
