@@ -442,6 +442,19 @@
   }
 
   // демо-карта «как видит клиент»
+  // Конструктор карты: модуль карты и builder.js грузятся, только когда посетитель подходит к разделу
+  const bldBox = document.getElementById('bld');
+  if (bldBox) {
+    const v = bldBox.dataset.bldV || '';
+    let started = false;
+    const loadBld = () => {
+      if (started) return; started = true;
+      const add = (src, next) => { const s = document.createElement('script'); s.src = src; s.async = false; if (next) s.onload = next; document.body.appendChild(s); };
+      add('/js/card-model.js?v=' + v, () => add('/builder.js?v=' + v));
+    };
+    if (/[#&]card=/.test(location.hash) || !('IntersectionObserver' in window)) loadBld();
+    else { const io = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { io.disconnect(); loadBld(); } }, { rootMargin: '900px 0px' }); io.observe(bldBox); }
+  }
   const demo = document.getElementById('demo');
   if (demo) {
     const TOTAL = 10; let stamps = 6, lastFocus = null;
