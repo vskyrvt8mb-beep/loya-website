@@ -1,0 +1,63 @@
+// 2.30: тексты админки — таблица клиентов, аналитика, окна, уведомления, журнал, автообновление.
+module.exports = {
+  ru: {
+    tabAnalytics: '📈 Аналитика', uiAcct: '👤 Аккаунт', uiLang: 'Язык', uiNow: 'только что', uiMin: (n) => `${n} мин назад`, uiHour: (n) => `${n} ч назад`, uiDay: (n) => `${n} дн. назад`,
+    uiF_all: 'Все', uiF_active: 'Активные', uiF_paying: 'Платят', uiF_trial: 'Пробные', uiF_free: 'Бесплатные', uiF_pastdue: 'Проблема с оплатой', uiF_banned: 'Заблокированные', uiF_online: 'На связи 7 дней', uiF_inactive: 'Неактивные', uiF_test: 'Тестовые',
+    uiPlan: 'Тариф', uiPlan_all: 'Любой', uiPlan_pro: 'Pro', uiPlan_starter: 'Starter', uiPlan_trial: 'Пробный', uiPlan_free: 'Бесплатный', uiPlan_paid: 'Платный', uiPlan_inactive: 'Неактивные',
+    uiSort: 'Сортировка', uiSort_new: 'Сначала новые', uiSort_old: 'Сначала старые', uiSort_seen: 'Недавно на связи', uiSort_silent: 'Давно не заходили', uiSort_email: 'Email А–Я', uiSort_trial: 'Пробный кончается',
+    uiColClient: 'Клиент', uiColStatus: 'Статус', uiColPlan: 'Тариф', uiColDev: 'Устр.', uiColSeen: 'На связи', uiColCreated: 'Создан',
+    uiOpen: '⚙️ Открыть', uiOpenFull: 'Открыть и настроить', uiMore: (n) => `Показать ещё ${n}`, uiEmpty: 'Никого не нашли по этим условиям', uiClear: 'Сбросить фильтры',
+    uiCopyKey: 'Копировать ключ', uiCopyEmail: 'Копировать email', uiCopyEmails: 'Копировать email-ы', uiDeselect: 'Снять выбор', uiSelected: (n) => `Выбрано: ${n}`,
+    uiBulkFor: (n) => `Для выбранных клиентов: ${n}.`, uiDays: 'На сколько дней', uiDoneN: (a, b) => `готово ${a} из ${b}`, uiDone: 'Готово', uiSave: 'Сохранить', uiUntilHint: 'Пусто — бессрочно.',
+    uiA_new: 'Новые ключи за 30 дней', uiA_7d: 'за 7 дней', uiA_30d: 'за 30 дней', uiA_act: 'Активность программ', uiAct_today: 'Сегодня', uiAct_week: '7 дней', uiAct_month: '30 дней', uiAct_never: 'Ни разу',
+    uiA_actNote: (p) => `${p}% ключей заходили на этой неделе.`, uiA_plans: 'Тарифы', uiA_vers: 'Версии программы', uiA_latest: 'новая', uiA_outdated: (n) => `${n} активных клиентов ещё не обновились — программа обновится сама при следующем запуске.`,
+    uiA_trial: 'Пробный период', uiA_trialAct: 'идут сейчас', uiA_trialSoon: 'кончаются ≤ 3 дн.', uiA_conv: 'стали платными', uiA_showSoon: 'Показать, кто заканчивает',
+    uiA_dev: 'Устройства', uiA_devTotal: 'всего подключено', uiA_devFull: 'ключей на пределе',
+    uiJSearch: 'Поиск по журналу: email, ключ, IP…', uiJAll: 'Все действия', uiUpdated: (t) => `обновлено ${t}`, uiAuto: 'Авто', uiAutoOn: 'Автообновление каждую минуту включено', uiAutoOff: 'Автообновление выключено'
+  },
+  uk: {
+    tabAnalytics: '📈 Аналітика', uiAcct: '👤 Акаунт', uiLang: 'Мова', uiNow: 'щойно', uiMin: (n) => `${n} хв тому`, uiHour: (n) => `${n} год тому`, uiDay: (n) => `${n} дн. тому`,
+    uiF_all: 'Усі', uiF_active: 'Активні', uiF_paying: 'Платять', uiF_trial: 'Пробні', uiF_free: 'Безкоштовні', uiF_pastdue: 'Проблема з оплатою', uiF_banned: 'Заблоковані', uiF_online: 'На зв’язку 7 днів', uiF_inactive: 'Неактивні', uiF_test: 'Тестові',
+    uiPlan: 'Тариф', uiPlan_all: 'Будь-який', uiPlan_pro: 'Pro', uiPlan_starter: 'Starter', uiPlan_trial: 'Пробний', uiPlan_free: 'Безкоштовний', uiPlan_paid: 'Платний', uiPlan_inactive: 'Неактивні',
+    uiSort: 'Сортування', uiSort_new: 'Спершу нові', uiSort_old: 'Спершу старі', uiSort_seen: 'Нещодавно на зв’язку', uiSort_silent: 'Давно не заходили', uiSort_email: 'Email А–Я', uiSort_trial: 'Пробний закінчується',
+    uiColClient: 'Клієнт', uiColStatus: 'Статус', uiColPlan: 'Тариф', uiColDev: 'Пристр.', uiColSeen: 'На зв’язку', uiColCreated: 'Створено',
+    uiOpen: '⚙️ Відкрити', uiOpenFull: 'Відкрити й налаштувати', uiMore: (n) => `Показати ще ${n}`, uiEmpty: 'Нікого не знайдено за цими умовами', uiClear: 'Скинути фільтри',
+    uiCopyKey: 'Копіювати ключ', uiCopyEmail: 'Копіювати email', uiCopyEmails: 'Копіювати email-и', uiDeselect: 'Зняти вибір', uiSelected: (n) => `Вибрано: ${n}`,
+    uiBulkFor: (n) => `Для вибраних клієнтів: ${n}.`, uiDays: 'На скільки днів', uiDoneN: (a, b) => `готово ${a} з ${b}`, uiDone: 'Готово', uiSave: 'Зберегти', uiUntilHint: 'Порожньо — безстроково.',
+    uiA_new: 'Нові ключі за 30 днів', uiA_7d: 'за 7 днів', uiA_30d: 'за 30 днів', uiA_act: 'Активність програм', uiAct_today: 'Сьогодні', uiAct_week: '7 днів', uiAct_month: '30 днів', uiAct_never: 'Жодного разу',
+    uiA_actNote: (p) => `${p}% ключів заходили цього тижня.`, uiA_plans: 'Тарифи', uiA_vers: 'Версії програми', uiA_latest: 'нова', uiA_outdated: (n) => `${n} активних клієнтів ще не оновилися — програма оновиться сама під час наступного запуску.`,
+    uiA_trial: 'Пробний період', uiA_trialAct: 'тривають зараз', uiA_trialSoon: 'закінчуються ≤ 3 дн.', uiA_conv: 'стали платними', uiA_showSoon: 'Показати, хто закінчує',
+    uiA_dev: 'Пристрої', uiA_devTotal: 'усього підключено', uiA_devFull: 'ключів на межі',
+    uiJSearch: 'Пошук у журналі: email, ключ, IP…', uiJAll: 'Усі дії', uiUpdated: (t) => `оновлено ${t}`, uiAuto: 'Авто', uiAutoOn: 'Автооновлення щохвилини увімкнено', uiAutoOff: 'Автооновлення вимкнено'
+  },
+  sk: {
+    tabAnalytics: '📈 Analytika', uiAcct: '👤 Účet', uiLang: 'Jazyk', uiNow: 'práve teraz', uiMin: (n) => `pred ${n} min`, uiHour: (n) => `pred ${n} h`, uiDay: (n) => `pred ${n} d.`,
+    uiF_all: 'Všetci', uiF_active: 'Aktívni', uiF_paying: 'Platia', uiF_trial: 'Skúšobní', uiF_free: 'Zadarmo', uiF_pastdue: 'Problém s platbou', uiF_banned: 'Zablokovaní', uiF_online: 'Online 7 dní', uiF_inactive: 'Neaktívni', uiF_test: 'Testovací',
+    uiPlan: 'Tarif', uiPlan_all: 'Akýkoľvek', uiPlan_pro: 'Pro', uiPlan_starter: 'Starter', uiPlan_trial: 'Skúšobný', uiPlan_free: 'Zadarmo', uiPlan_paid: 'Platený', uiPlan_inactive: 'Neaktívni',
+    uiSort: 'Zoradiť', uiSort_new: 'Najnovší', uiSort_old: 'Najstarší', uiSort_seen: 'Nedávno online', uiSort_silent: 'Dlho neboli online', uiSort_email: 'Email A–Z', uiSort_trial: 'Končí skúšobná',
+    uiColClient: 'Klient', uiColStatus: 'Stav', uiColPlan: 'Tarif', uiColDev: 'Zar.', uiColSeen: 'Online', uiColCreated: 'Vytvorený',
+    uiOpen: '⚙️ Otvoriť', uiOpenFull: 'Otvoriť a nastaviť', uiMore: (n) => `Zobraziť ďalších ${n}`, uiEmpty: 'Podľa týchto podmienok sme nikoho nenašli', uiClear: 'Zrušiť filtre',
+    uiCopyKey: 'Kopírovať kľúč', uiCopyEmail: 'Kopírovať e-mail', uiCopyEmails: 'Kopírovať e-maily', uiDeselect: 'Zrušiť výber', uiSelected: (n) => `Vybraných: ${n}`,
+    uiBulkFor: (n) => `Pre vybraných klientov: ${n}.`, uiDays: 'O koľko dní', uiDoneN: (a, b) => `hotovo ${a} z ${b}`, uiDone: 'Hotovo', uiSave: 'Uložiť', uiUntilHint: 'Prázdne — bez obmedzenia.',
+    uiA_new: 'Nové kľúče za 30 dní', uiA_7d: 'za 7 dní', uiA_30d: 'za 30 dní', uiA_act: 'Aktivita programov', uiAct_today: 'Dnes', uiAct_week: '7 dní', uiAct_month: '30 dní', uiAct_never: 'Ani raz',
+    uiA_actNote: (p) => `${p} % kľúčov bolo tento týždeň online.`, uiA_plans: 'Tarify', uiA_vers: 'Verzie programu', uiA_latest: 'nová', uiA_outdated: (n) => `${n} aktívnych klientov sa ešte neaktualizovalo — program sa aktualizuje sám pri ďalšom spustení.`,
+    uiA_trial: 'Skúšobné obdobie', uiA_trialAct: 'práve bežia', uiA_trialSoon: 'končia ≤ 3 dni', uiA_conv: 'začali platiť', uiA_showSoon: 'Ukázať, komu končí',
+    uiA_dev: 'Zariadenia', uiA_devTotal: 'spolu pripojených', uiA_devFull: 'kľúčov na limite',
+    uiJSearch: 'Hľadať v denníku: e-mail, kľúč, IP…', uiJAll: 'Všetky akcie', uiUpdated: (t) => `aktualizované ${t}`, uiAuto: 'Auto', uiAutoOn: 'Automatická aktualizácia každú minútu je zapnutá', uiAutoOff: 'Automatická aktualizácia je vypnutá'
+  },
+  en: {
+    tabAnalytics: '📈 Analytics', uiAcct: '👤 Account', uiLang: 'Language', uiNow: 'just now', uiMin: (n) => `${n} min ago`, uiHour: (n) => `${n} h ago`, uiDay: (n) => `${n} d ago`,
+    uiF_all: 'All', uiF_active: 'Active', uiF_paying: 'Paying', uiF_trial: 'Trial', uiF_free: 'Free', uiF_pastdue: 'Payment issue', uiF_banned: 'Banned', uiF_online: 'Online 7 days', uiF_inactive: 'Inactive', uiF_test: 'Test',
+    uiPlan: 'Plan', uiPlan_all: 'Any', uiPlan_pro: 'Pro', uiPlan_starter: 'Starter', uiPlan_trial: 'Trial', uiPlan_free: 'Free', uiPlan_paid: 'Paid', uiPlan_inactive: 'Inactive',
+    uiSort: 'Sort', uiSort_new: 'Newest first', uiSort_old: 'Oldest first', uiSort_seen: 'Recently online', uiSort_silent: 'Longest offline', uiSort_email: 'Email A–Z', uiSort_trial: 'Trial ending',
+    uiColClient: 'Client', uiColStatus: 'Status', uiColPlan: 'Plan', uiColDev: 'Dev.', uiColSeen: 'Online', uiColCreated: 'Created',
+    uiOpen: '⚙️ Open', uiOpenFull: 'Open and set up', uiMore: (n) => `Show ${n} more`, uiEmpty: 'Nobody matches these filters', uiClear: 'Clear filters',
+    uiCopyKey: 'Copy key', uiCopyEmail: 'Copy email', uiCopyEmails: 'Copy emails', uiDeselect: 'Clear selection', uiSelected: (n) => `Selected: ${n}`,
+    uiBulkFor: (n) => `For the selected clients: ${n}.`, uiDays: 'How many days', uiDoneN: (a, b) => `done ${a} of ${b}`, uiDone: 'Done', uiSave: 'Save', uiUntilHint: 'Empty — no end date.',
+    uiA_new: 'New keys in 30 days', uiA_7d: 'in 7 days', uiA_30d: 'in 30 days', uiA_act: 'App activity', uiAct_today: 'Today', uiAct_week: '7 days', uiAct_month: '30 days', uiAct_never: 'Never',
+    uiA_actNote: (p) => `${p}% of keys were online this week.`, uiA_plans: 'Plans', uiA_vers: 'App versions', uiA_latest: 'latest', uiA_outdated: (n) => `${n} active clients haven’t updated yet — the app updates itself at the next start.`,
+    uiA_trial: 'Trial period', uiA_trialAct: 'running now', uiA_trialSoon: 'ending ≤ 3 days', uiA_conv: 'became paying', uiA_showSoon: 'Show who is ending',
+    uiA_dev: 'Devices', uiA_devTotal: 'connected in total', uiA_devFull: 'keys at the limit',
+    uiJSearch: 'Search the log: email, key, IP…', uiJAll: 'All actions', uiUpdated: (t) => `updated ${t}`, uiAuto: 'Auto', uiAutoOn: 'Auto-refresh every minute is on', uiAutoOff: 'Auto-refresh is off'
+  }
+};

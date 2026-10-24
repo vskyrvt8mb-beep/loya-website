@@ -149,19 +149,54 @@ function adminEditorClient() {
       '<div class="fld"><span>' + E(t.fWHero) + '</span><div class="hero-prev" id="wh-prev"></div><div style="margin-top:6px"><button class="act a-paid" id="wh-pick">' + E(t.fPick) + '</button> <button class="act a-copy" id="wh-rm">' + E(t.fRemove) + '</button><input type="file" id="wh-file" accept="image/png,image/jpeg,image/webp" hidden></div></div>' +
       '<div class="g2"><label class="fld col"><span>' + E(t.fWBg) + '</span><input type="color" id="wb" value="' + E(/^#[0-9a-fA-F]{6}$/.test(bg) ? bg : '#20252d') + '"></label><div class="wcols">' + ['#20252d', '#000000', '#1f2a44', '#2b1d15', '#163126', '#4a1730', '#7a5a2e', '#f4efe4', '#ffffff'].map(c => '<button type="button" class="wcol" data-wc="' + c + '" style="background:' + c + '"></button>').join('') + '</div></div>' +
       '<label class="chk2"><input type="checkbox" id="ws"' + ((ED.wal.heroStamps !== undefined ? ED.wal.heroStamps : w.heroStamps !== false) ? ' checked' : '') + '><span>' + E(t.fWStamps) + '</span></label>', t.wHint) +
-      F.sec(t.wShowTitle, '<div class="g2">' + F.chk('wallet_show_tier', t.wShowTier) + F.chk('wallet_show_next', t.wShowNext) + '</div>', t.wShowHint);
+      F.sec(t.wShowTitle, '<div class="g2">' + F.chk('wallet_show_tier', t.wShowTier) + F.chk('wallet_show_next', t.wShowNext) + '</div>', t.wShowHint) + lookSections(t);
+  }
+  // 2.28: вид карты — как в программе (готовые стили, значки, цвет штампов, подпись, расположение, праздники, логотип)
+  const LK_REWARD = ['gift', 'coffee', 'takeaway', 'tea', 'wine', 'bottle', 'cocktail', 'beer', 'cupcake', 'icecream', 'donut', 'bakery', 'pizza', 'burger', 'sushi', 'star', 'crown', 'heart', 'diamond', 'scissors', 'polish', 'bone'];
+  const LK_COLORS = ['#ffffff', '#f6d77a', '#ff8a3d', '#d24b2f', '#ff4f86', '#9b6bff', '#4fc3f7', '#2f8f5b', '#1b1813'];
+  function lkIco(id) { return '<svg viewBox="0 0 40 40" aria-hidden="true">' + LoyaCard.glyph(id, 20, 20, 30, 'currentColor', 'none') + '</svg>'; }
+  function lookSections(t) {
+    if (!window.LoyaCard) return '';
+    const L = lang in { ru: 1, uk: 1, sk: 1, en: 1 } ? lang : 'en';
+    const grid = (k, ids, def) => '<div class="lk-icons">' + ids.map(id => '<button type="button" class="lk-ico' + ((v(k) || def) === id ? ' on' : '') + '" data-lk="' + k + '" data-v="' + id + '" title="' + E(id) + '">' + lkIco(id) + '</button>').join('') + '</div>';
+    const sc = v('wallet_stamp_color');
+    const colors = '<div class="lk-cols"><button type="button" class="lk-col auto' + (sc ? '' : ' on') + '" data-lk="wallet_stamp_color" data-v="" title="' + E(t.lkColorAuto) + '">A</button>' + LK_COLORS.map(c => '<button type="button" class="lk-col' + (sc === c ? ' on' : '') + '" data-lk="wallet_stamp_color" data-v="' + c + '" style="background:' + c + '"></button>').join('') + '<input type="color" id="lk-sc" value="' + E(sc || '#ffffff') + '"><input class="lk-hex" id="lk-sc-hex" maxlength="7" placeholder="#RRGGBB" value="' + E(sc) + '"></div>';
+    const styles = '<div class="lk-styles">' + LoyaCard.PRESETS.map(p => '<button type="button" class="lk-style" data-ps="' + p.id + '"><i style="background:' + p.bg + '"></i>' + E(p.name[L] || p.name.en) + '</button>').join('') + '</div>';
+    const lm = v('wallet_logo_mode');
+    return F.sec(t.lkPresets, styles, t.lkPresetsH, true) +
+      F.sec(t.lkStamps, '<div class="fld"><span>' + E(t.lkStamp) + '</span>' + grid('wallet_stamp_icon', LoyaCard.STAMP_IDS, 'check') + '</div><div class="fld"><span>' + E(t.lkReward) + '</span>' + grid('wallet_reward_icon', LK_REWARD, 'gift') + '</div>' +
+        '<div class="fld"><span>' + E(t.lkColor) + '</span>' + colors + '</div><div class="g2">' + F.txt('wallet_stamp_label', t.lkLabel, 18, t.lkLabelPh) + '</div>', t.lkStampsH, true) +
+      F.sec(t.lkPlace, '<div class="g2">' + F.sel('wallet_layout', t.lkLayout, [['', t.lkLayoutC], ['photo', t.lkLayoutP]]) +
+        F.sel('wallet_arrange', t.lkArr, [['', t.lkArrAuto]].concat(LoyaCard.ARRANGES.map(a => [a, t['lkArr_' + a]]))) + F.sel('wallet_season', t.lkSeason, [['', t.lkSe_none]].concat(LoyaCard.SEASONS.filter(x => x !== 'none').map(x => [x, t['lkSe_' + x]]))) + '</div>') +
+      F.sec(t.lkLogo, '<div class="g2">' + F.sel('wallet_logo_mode', t.lkLm, [['', t.lkLm_name], ['both', t.lkLm_both], ['logo', t.lkLm_logo]], true) + '</div>' +
+        (lm ? '<div class="g4">' + F.num('wallet_logo_size', t.lkSize, 24, 260) + F.num('wallet_logo_rot', t.lkRot, -180, 180) + F.num('wallet_logo_x', 'X', 0, 1032) + F.num('wallet_logo_y', 'Y', 0, 336) + '</div>' + F.chk('wallet_logo_flip', t.lkFlip) : ''), lm ? t.lkLogoH : t.lkLogoH0);
+  }
+  function bindLook() {
+    document.querySelectorAll('[data-lk]').forEach(b => b.onclick = () => { ED.cur[b.dataset.lk] = b.dataset.v; markDirty(); paintEditor(); });
+    const sc = $('lk-sc'), hx = $('lk-sc-hex');
+    if (sc) sc.onchange = () => { ED.cur.wallet_stamp_color = sc.value; markDirty(); paintEditor(); };
+    if (hx) hx.onchange = () => { let x = hx.value.trim(); if (!x.startsWith('#')) x = '#' + x; if (/^#[0-9a-fA-F]{3}$/.test(x)) x = '#' + x.slice(1).split('').map(c => c + c).join(''); if (/^#[0-9a-fA-F]{6}$/.test(x)) { ED.cur.wallet_stamp_color = x.toLowerCase(); markDirty(); paintEditor(); } else hx.classList.add('bad'); };
+    document.querySelectorAll('[data-ps]').forEach(b => b.onclick = () => {
+      const cur = { logoMode: v('wallet_logo_mode') }; const pl = LoyaCard.presetLook(b.dataset.ps, lang, cur); if (!pl) return;
+      const m = { stamp: 'wallet_stamp_icon', reward: 'wallet_reward_icon', stampColor: 'wallet_stamp_color', layout: 'wallet_layout', season: 'wallet_season', arrange: 'wallet_arrange', label: 'wallet_stamp_label' };
+      for (const [k, key] of Object.entries(m)) ED.cur[key] = pl.look[k] || '';
+      ED.wal.bgColor = pl.bg; markDirty(); paintEditor();
+    });
   }
   function walSrc(k) { const w = ED.g.wallet || {}; return ED.wal[k] !== undefined ? ED.wal[k] : (k === 'logo' ? w.logoUrl : w.heroUrl) || ''; }
   function bindWallet() {
     const draw = () => { $('wl-prev').innerHTML = walSrc('logo') ? '<img src="' + walSrc('logo') + '" alt="">' : 'L'; $('wh-prev').style.backgroundImage = walSrc('hero') ? 'url("' + walSrc('hero') + '")' : ''; markDirty(); renderPreview(); };
     draw();
-    $('wb').oninput = () => { ED.wal.bgColor = $('wb').value; draw(); };
+    $('wb').oninput = () => { ED.wal.bgColor = $('wb').value; const h = $('wb-hex'); if (h) h.value = $('wb').value; draw(); };
+    if (!$('wb-hex')) { const h = document.createElement('input'); h.id = 'wb-hex'; h.className = 'lk-hex'; h.maxLength = 7; h.placeholder = '#RRGGBB'; h.value = $('wb').value; $('wb').after(h);
+      h.onchange = () => { let x = h.value.trim(); if (!x.startsWith('#')) x = '#' + x; if (/^#[0-9a-fA-F]{3}$/.test(x)) x = '#' + x.slice(1).split('').map(c => c + c).join(''); if (/^#[0-9a-fA-F]{6}$/.test(x)) { h.classList.remove('bad'); $('wb').value = x.toLowerCase(); ED.wal.bgColor = x.toLowerCase(); draw(); } else h.classList.add('bad'); }; }
     document.querySelectorAll('[data-wc]').forEach(b => b.onclick = () => { ED.wal.bgColor = b.dataset.wc; $('wb').value = b.dataset.wc; draw(); });
     $('ws').onchange = () => { ED.wal.heroStamps = $('ws').checked; draw(); };
     $('wl-pick').onclick = () => $('wl-file').click(); $('wh-pick').onclick = () => $('wh-file').click();
     $('wl-rm').onclick = () => { ED.wal.logo = null; draw(); }; $('wh-rm').onclick = () => { ED.wal.hero = null; draw(); };
     $('wl-file').onchange = async (e) => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; ED.wal.logo = await fitImage(f, 480, 480, 'contain', 'image/png'); draw(); };
     $('wh-file').onchange = async (e) => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; ED.wal.hero = await fitImage(f, 1032, 336, 'cover', 'image/jpeg'); draw(); };
+    bindLook();
   }
 
   function tabPromo(t) {
@@ -304,7 +339,10 @@ function adminEditorClient() {
     const fg = light ? '#141414' : '#fff', sub = light ? 'rgba(20,20,20,.62)' : 'rgba(255,255,255,.66)';
     const name = ED.cur.brand_name || (ED.r.client.profile && ED.r.client.profile.name) || 'Loya';
     const accent = /^#[0-9a-fA-F]{6}$/.test(v('theme_primary')) ? v('theme_primary') : '#d4af37';
-    const card = sampleCard(); const brand = { name, color: accent, currency: v('spend_currency') || 'EUR' };
+    const card = sampleCard();
+    const look = LoyaCard.cleanLook({ stamp: v('wallet_stamp_icon'), reward: v('wallet_reward_icon'), stampColor: v('wallet_stamp_color'), layout: v('wallet_layout'), season: v('wallet_season'), label: v('wallet_stamp_label'), arrange: v('wallet_arrange'),
+      logoMode: v('wallet_logo_mode'), logoSize: v('wallet_logo_size'), logoRot: v('wallet_logo_rot'), logoX: v('wallet_logo_x'), logoY: v('wallet_logo_y'), logoFlip: v('wallet_logo_flip') });
+    const lg0 = walSrc('logo'); const brand = { name, color: accent, currency: v('spend_currency') || 'EUR', ...look, logoImage: lg0 ? (/^data:/.test(lg0) ? lg0 : heroData(lg0) || '') : '' };
     const M = LoyaCard.passModel(card, brand, card.lang);
     const logo = walSrc('logo'), hero = walSrc('hero'); const hs = ED.wal.heroStamps !== undefined ? ED.wal.heroStamps : w.heroStamps !== false;
     let svg = LoyaCard.buildHeroSvg({ card, brand, niche: v('business_niche') || 'other', lang: M.lang, bgImage: heroData(hero), showProgress: hs });
@@ -423,6 +461,10 @@ const CSS = `
 .wd-a-fields{display:flex;justify-content:space-between;gap:10px;padding:10px 14px 0;flex-wrap:wrap}.wd-logo.sq{border-radius:7px;width:30px;height:30px}
 
 @media(max-width:980px){.ed-main.has-pv{grid-template-columns:1fr}.ed-pv{border-left:0;border-top:1px solid var(--line);max-height:none}.ed-main .ed-body{max-height:none}.ed-main{overflow:auto;max-height:calc(92vh - 170px)}}
+.lk-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:5px}.lk-ico{height:36px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:inherit;cursor:pointer;display:grid;place-items:center;padding:0}.lk-ico svg{width:26px;height:26px}.lk-ico.on{background:var(--a);color:#16110a;border-color:var(--a)}
+.lk-cols{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.lk-col{width:30px;height:30px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(128,128,128,.5);cursor:pointer;padding:0}.lk-col.on{border-color:var(--a);box-shadow:0 0 0 3px rgba(212,175,55,.3)}.lk-col.auto{background:var(--a);color:#16110a;font-weight:800;font-size:11px}
+.lk-cols input[type=color]{width:34px;height:30px;padding:0;border:0;background:none}.lk-hex{width:92px!important;height:30px!important;font:600 12.5px ui-monospace,Consolas,monospace!important;text-transform:uppercase}.lk-hex.bad{border-color:#ef4444!important}
+.lk-styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.lk-style{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:inherit;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;text-align:left}.lk-style:hover{border-color:var(--a)}.lk-style i{flex:none;width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
 `;
 
 const src = adminEditorClient.toString();

@@ -220,4 +220,4 @@ async function syncClassLocations(token, classId, geo) {
   return r;
 }
 
-module.exports = { comboPct: CM.comboPct, nextLine: CM.nextLine, passModel: CM.passModel, progress, TEXT, putObject, putClass, putClassLocations, syncClassLocations, cleanGeoPoint, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };
+module.exports = { heroImageUrl, comboPct: CM.comboPct, nextLine: CM.nextLine, passModel: CM.passModel, progress, TEXT, putObject, putClass, putClassLocations, syncClassLocations, cleanGeoPoint, serviceAccount, signJwt, checkLicense, buildObject, accessToken, tierLabel, cleanGeo, nearText , cleanInvite };

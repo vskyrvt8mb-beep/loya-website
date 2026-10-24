@@ -83,7 +83,9 @@ for (const l of Object.keys(TX)) Object.assign(TX[l], TX2[l] || {});
 const TX3 = require('./_admin_tx3');
 const TX4 = require('./_admin_tx4');
 const { JS: ED_JS, CSS: ED_CSS } = require('./_admin_ed');
-for (const l of Object.keys(TX)) Object.assign(TX[l], TX3[l] || {}, TX4[l] || {});
+const { JS: UI_JS, CSS: UI_CSS } = require('./_admin_ui');   // 2.30: таблица клиентов, аналитика, окна, уведомления
+const TX5 = require('./_admin_tx5');
+for (const l of Object.keys(TX)) Object.assign(TX[l], TX3[l] || {}, TX4[l] || {}, TX5[l] || {});
 const crypto = require('crypto');
 
 const PAGE = (nonce) => `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -177,14 +179,15 @@ input{height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.16);back
 .wc-h{position:absolute;left:0;right:0;bottom:0;height:92px;background:center/cover no-repeat}.wc-h0{background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.04))}
 
 ${ED_CSS}
+${UI_CSS}
 </style></head><body><div class="wrap">
 <div id="lg" class="login hide"><h1>🔐 Loya</h1><input type="password" id="pw" autocomplete="current-password"><input id="code" class="hide" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*"><div class="err" id="lerr"></div><button class="btn" id="lb"></button><div class="top" style="justify-content:center" id="lang0"></div></div>
-<div id="app" class="hide"><div class="top"><h1 id="ttl"></h1><span id="lang1" style="display:flex;gap:6px"></span><button class="pill" id="rf"></button><button class="pill" id="lo"></button><button class="pill" id="lo2"></button></div>
+<div id="app" class="hide"><div class="top"><h1><span class="brand-mark">L</span><span id="ttl"></span><span id="env" class="env"></span></h1><span class="tsp"></span><span id="upd" class="upd"></span><label class="autow"><input type="checkbox" id="auto"><span id="auto-t"></span></label><span id="lang1" style="display:flex;gap:4px"></span><button class="pill" id="rf"></button><button class="pill" id="lo"></button><button class="pill" id="lo2"></button></div>
 <div class="tabs" id="tabs"></div><div class="err" id="aerr"></div>
 <div id="v-overview"><div class="mode" id="mode"></div><div class="grid" id="stats"></div><div class="panels"><div id="money" class="panel"></div><div id="att" class="panel"></div></div></div>
-<div id="v-clients"><div class="bar"><span id="filters" style="display:flex;gap:6px;flex-wrap:wrap"></span><input id="q" style="flex:1;min-width:200px"><button class="btn" id="nf"></button></div>
-<div class="bulk hide" id="bulk"><label class="selall"><input type="checkbox" id="selall" class="sel" style="margin:0"><span id="selall-t"></span></label><button class="act a-del" id="bulkdel"></button><button class="act a-copy" id="csvbtn" type="button"></button><span id="bulkmsg" style="font-size:13px"></span></div><div class="list" id="list"></div><p id="shown" style="text-align:center;color:var(--mut);font-size:12.5px;margin-top:8px"></p></div>
-<div id="v-service"><div id="sec" class="panel"></div><div class="rdy hide" id="rdy"></div><div id="journal" class="panel"></div></div></div>
+<div id="v-clients"><div class="bar"><span id="filters" style="display:flex;gap:6px;flex-wrap:wrap"></span><input id="q" style="flex:1;min-width:200px"><span class="ctools" id="ctools"></span><button class="btn" id="nf"></button></div>
+<div class="bulk hide" id="bulk"><label class="selall"><input type="checkbox" id="selall" class="sel" style="margin:0"><span id="selall-t"></span></label><span id="bulkacts"></span><span id="bulkmsg" style="font-size:13px"></span></div><div class="list" id="list"></div><p id="shown" style="text-align:center;color:var(--mut);font-size:12.5px;margin-top:8px"></p></div>
+<div id="v-analytics"></div><div id="v-service"><div id="sec" class="panel"></div><div class="rdy hide" id="rdy"></div><div id="journal" class="panel"></div></div></div>
 </div><div id="modal" class="modal hide"><div class="in" id="mb"></div></div>
 <script nonce="${nonce}">
 const TXT=${dictJs(TX)};
@@ -219,15 +222,13 @@ const grp=(title,arr,info)=>arr.length?'<div class="att-g"><h3>'+E(title)+' · '
 const ah=grp(t.attPast,past,()=>'')+grp(t.attTrial,trialEnd,x=>dshort(x.trialUntil))+grp(t.attSilent,silent,x=>x.lastSeen?dshort(x.lastSeen):t.never);
 $('att').innerHTML='<h2>'+E(t.attTitle)+'</h2>'+(ah||'<div style="font-size:13px;color:var(--mut)">'+E(t.attNone)+'</div>');
 $('att').querySelectorAll('[data-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.client));
-/* журнал */
-const J=D.journal;let jh='<h2>'+E(t.jTitle)+' <button class="pill" id="j-t">'+E(jOpen?t.jHide:t.jShow)+'</button></h2>';
-if(jOpen)jh+=J===null?'<div style="font-size:13px;color:var(--mut)">'+E(t.jMissing)+'</div>':J.length?J.map(j=>{const d=j.detail||{};const what=[d.key||'',d.keys?d.keys.length+' keys':'',d.email||'',d.newKey||'',d.tier||'',d.days?'+'+d.days+'d':'',d.reason||''].filter(Boolean).join(' · ');return '<div class="jr"><small>'+E(dt(j.at))+'</small><span>'+E(t['op_'+j.op]||j.op)+(what?' — '+E(what):'')+(j.ip?' <small>('+E(j.ip)+')</small>':'')+'</span></div>'}).join(''):'<div style="font-size:13px;color:var(--mut)">'+E(t.jEmpty)+'</div>';
-$('journal').innerHTML=jh;$('j-t').onclick=()=>{jOpen=!jOpen;extra()}}
+UI.journal()}
 
 /* ===== 2.23: настройка клиента — вкладки: обзор, заведение, регистрация, Wallet, акции ===== */
 const NICHES={"coffee": ["☕", "Кофейня / кафе", "Кав’ярня / кафе", "Kaviareň / kaviarnička", "Coffee shop / café"], "bakery": ["🥐", "Пекарня / кондитерская", "Пекарня / кондитерська", "Pekáreň / cukráreň", "Bakery / pastry shop"], "barber": ["💈", "Барбершоп / парикмахерская", "Барбершоп / перукарня", "Barbershop / kaderníctvo", "Barbershop / hair salon"], "nails": ["💅", "Ногтевая студия", "Нігтьова студія", "Nechtové štúdio", "Nail studio"], "spa": ["💆", "СПА / массаж", "СПА / масаж", "SPA / masáže", "Spa / massage"], "sushi": ["🍣", "Суши / азиатская кухня", "Суші / азійська кухня", "Sushi / ázijská kuchyňa", "Sushi / Asian kitchen"], "pizza": ["🍕", "Пиццерия / фастфуд", "Піцерія / фастфуд", "Pizzeria / rýchle občerstvenie", "Pizzeria / fast food"], "grocery": ["🛒", "Продукты / магазин у дома", "Продукти / магазин біля дому", "Potraviny / obchod pri dome", "Grocery / convenience store"], "travel": ["✈️", "Турфирма / путешествия", "Турфірма / подорожі", "Cestovná kancelária / cestovanie", "Travel agency"], "tattoo": ["🖋️", "Тату / пирсинг-студия", "Тату / пірсинг-студія", "Tetovacie / piercingové štúdio", "Tattoo / piercing studio"], "fitness": ["🏋️", "Фитнес / йога / танцы", "Фітнес / йога / танці", "Fitness / jóga / tanec", "Fitness / yoga / dance"], "petgroom": ["🐾", "Груминг для животных", "Грумінг для тварин", "Grooming pre zvieratá", "Pet grooming"], "photo": ["📸", "Фотостудия", "Фотостудія", "Fotoštúdio", "Photo studio"], "clothing": ["👗", "Магазин одежды", "Магазин одягу", "Obchod s oblečením", "Clothing store"], "other": ["✨", "Другое", "Інше", "Iné", "Other"]};
 const THEMES={glossy:['#e2b54a','#030303','#060606','#f6eedb'],gold:['#d4af37','#0d0f14','#0b0d12','#f0ece0'],coffee:['#9c5f2a','#2b1d15','#f5f4f2','#241c1c'],mint:['#2f9e6a','#14261f','#f1f7f3','#1c2b23'],ocean:['#2f6fa9','#14212b','#f0f5f8','#1c2530'],berry:['#a9306f','#2b1420','#f8f0f4','#2b1420'],graphite:['#585858','#1c1c1c','#f2f2f2','#232323']};
 ${ED_JS}
+${UI_JS}
 function fitImage(file,W,H,mode,mime){return new Promise(res=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');if(mime==='image/jpeg'){x.fillStyle='#181c23';x.fillRect(0,0,W,H)}
 const k=mode==='cover'?Math.max(W/im.width,H/im.height):Math.min(W/im.width,H/im.height);const w=im.width*k,h=im.height*k;x.imageSmoothingQuality='high';x.drawImage(im,(W-w)/2,(H-h)/2,w,h);URL.revokeObjectURL(u);
 let out=cv.toDataURL(mime,0.86);if(mime==='image/jpeg'&&out.length>760000)out=cv.toDataURL(mime,0.7);res(out)};im.onerror=()=>{URL.revokeObjectURL(u);res(null)};im.src=u})}
@@ -251,7 +252,7 @@ $('ed-body').querySelectorAll('[data-mop]').forEach(b=>b.onclick=async()=>{await
 $('cc-del').onclick=async()=>{await delKeys([key]);if(!D.list.some(i=>i.key===key))$('modal').classList.add('hide')};
 const say=(ok,msg)=>{$('cc-msg').innerHTML='<span class="'+(ok?'ok':'err')+'">'+E(msg)+'</span>'};
 const errOf=x=>x.error==='stripe_error'?t.stripeErr(x.detail||''):x.error==='no_subscription'?t.noSub:x.error==='mail_error'?t.mailErr:x.error==='db_error'?t.dbErr(x.detail||''):t.err;
-if($('cc-ext'))$('cc-ext').onclick=async()=>{const d=prompt(t.extendAsk,'7');if(d===null)return;const x=await api('admin-action',{op:'extend_trial',key,days:Number(d)});if(x.ok){await load();openClient(key)}else say(false,errOf(x))};
+if($('cc-ext'))$('cc-ext').onclick=async()=>{await UI.extend([key]);openClient(key)};
 $('dv-s').onclick=async()=>{const x=await api('admin-action',{op:'set_extra_devices',key,extra:Number($('dv-x').value)||0,note:$('dv-n').value.trim()});if(x.ok){load();await openClient(key);say(true,t.dvSaved)}else say(false,x.error==='need_schema_217'?t.dvNeedSchema:errOf(x))};
 $('mb').querySelectorAll('.dv-rm').forEach(b=>b.onclick=async()=>{if(!confirm(t.dvConfirmRemove))return;const x=await api('admin-action',{op:'remove_device',key,device:b.dataset.dv});if(x.ok){openClient(key);load()}else say(false,errOf(x))});
 $('cc-mail').onclick=async()=>{const x=await api('admin-action',{op:'resend_key',key,lang});x.ok?say(true,t.resent):say(false,errOf(x))};
@@ -260,34 +261,18 @@ if($('cc-now'))$('cc-now').onclick=async()=>{if(!confirm(t.confirmCancelNow))ret
 function paint(){const t=T();document.title=t.title;$('pw').placeholder=t.pass;$('lb').textContent=t.login;langs('lang0');
 if(!session||!D){$('lg').classList.remove('hide');$('app').classList.add('hide');return}
 $('lg').classList.add('hide');$('app').classList.remove('hide');langs('lang1');$('ttl').textContent=t.title;$('rf').textContent='↻ '+t.refresh;$('lo').textContent=t.logout;$('lo2').textContent=t.logoutAll;$('nf').textContent=t.newFree;$('q').placeholder=t.search;
-const rd0=D.ready;$('tabs').innerHTML=[['overview',t.tabOverview],['clients',t.tabClients],['service',t.tabService]].map(v=>'<button class="tab'+(view===v[0]?' on':'')+'" data-v="'+v[0]+'">'+E(v[1])+(v[0]==='clients'?' <small>'+D.list.length+'</small>':'')+(v[0]==='service'&&rd0&&(rd0.bad||rd0.warn)?' <i class="dot"></i>':'')+'</button>').join('');
+const rd0=D.ready;$('tabs').innerHTML=[['overview',t.tabOverview],['clients',t.tabClients],['analytics',t.tabAnalytics],['service',t.tabService]].map(v=>'<button class="tab'+(view===v[0]?' on':'')+'" data-v="'+v[0]+'">'+E(v[1])+(v[0]==='clients'?' <small>'+D.list.length+'</small>':'')+(v[0]==='service'&&rd0&&(rd0.bad||rd0.warn)?' <i class="dot"></i>':'')+'</button>').join('');
 $('tabs').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;try{localStorage.setItem('loya_admin_view',view)}catch(e){}paint();window.scrollTo(0,0)});
-['overview','clients','service'].forEach(v=>$('v-'+v).classList.toggle('hide',view!==v));
-const s=D.stats;$('stats').innerHTML=[[s.total,t.sTotal,'#e5e7eb'],[s.active,t.sActive,'#4ade80'],[s.paying,t.sPaying,'#fbbf24'],[s.free,t.sFree,'#60a5fa'],[s.online7,t.sOnline,'#2dd4bf'],[s.trial||0,t.sTrial,'#a78bfa'],[s.pro||0,t.sPro,'#f472b6'],[s.test||0,t.sTest,'#fbbf24']].map(x=>'<div class="stat" style="--c:'+x[2]+'"><b>'+x[0]+'</b><span>'+E(x[1])+'</span></div>').join('')+(function(){const pr=[[s.pastDue,t.sPast,'#fb923c','inactive'],[s.banned,t.sBanned,'#f87171','banned'],[s.canceled,t.sCanceled,'#a1a1aa','inactive']].filter(x=>x[0]>0);return pr.length?'<div class="prob-row">'+pr.map(x=>'<button type="button" class="stat prob" data-pf="'+x[3]+'" style="--c:'+x[2]+'"><b>'+x[0]+'</b><span>'+E(x[1])+'</span><i>→</i></button>').join('')+'</div>':''})();$('stats').querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{filter=b.dataset.pf;view='clients';try{localStorage.setItem('loya_admin_view',view)}catch(e){}paint();window.scrollTo(0,0)});
-$('filters').innerHTML=[['all',t.fAll],['active',t.fActive],['trial',t.fTrial],['free',t.fFree],['banned',t.fBanned],['inactive',t.fInactive],['test',t.fTest]].map(f=>'<button class="pill '+(filter===f[0]?'on':'')+'" data-f="'+f[0]+'">'+E(f[1])+'</button>').join('');
-$('filters').querySelectorAll('button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;paint()});
-const qq=q.trim().toLowerCase();let L=D.list.filter(x=>filter==='all'||(filter==='active'&&x.state==='active')||(filter==='free'&&x.plan==='free')||(filter==='banned'&&x.banned)||(filter==='inactive'&&x.state!=='active')||(filter==='test'&&x.livemode===false)||(filter==='trial'&&x.plan==='trial'));
-if(qq)L=L.filter(x=>(x.email+' '+x.key+' '+x.note).toLowerCase().includes(qq));const total=L.length;L=L.slice(0,300);
-const tierChip=x=>{if(x.plan==='trial'){const d=Math.ceil((new Date(x.trialUntil)-Date.now())/864e5);return d>0?'<span class="chip c-trial">'+E(t.chTrial(d))+'</span>':'<span class="chip c-bad">'+E(t.chTrialEnd)+'</span>'}return x.tier?'<span class="chip '+(x.tier==='pro'?'c-pro':'c-st')+'">'+(x.tier==='pro'?'Pro':'Starter')+'</span>':''};
-const modeChip=x=>x.livemode===false?'<span class="chip c-test">'+E(t.chTest)+'</span>':x.livemode===true?'<span class="chip c-free">'+E(t.chLive)+'</span>':'';
-const chip=x=>x.banned?'<span class="chip c-bad">'+E(t.st_banned)+'</span>':x.state==='active'?'<span class="chip c-ok">'+E(t.st_active)+'</span>':x.state==='past_due'?'<span class="chip c-warn">'+E(t.st_past_due)+'</span>':'<span class="chip c-bad">'+E(t['st_'+x.state]||x.state)+'</span>';
-$('list').innerHTML=L.map(x=>'<div class="row"><div class="who"><input type="checkbox" class="sel" data-sel="'+E(x.key)+'"'+(selected.has(x.key)?' checked':'')+'><div><button class="linkbtn" data-client="'+E(x.key)+'">'+E(x.email||'—')+'</button>'+chip(x)+tierChip(x)+modeChip(x)+(x.plan==='free'?'<span class="chip c-free">'+E(t.planFree)+(x.freeUntil?' → '+E(x.freeUntil):'')+'</span>':'')+
-'<small><span class="key">'+E(x.key)+'</span> · '+E(t.createdAt)+' '+E(dt(x.created))+'</small><small>'+E(t.lastSeen)+': '+E(x.lastSeen?dt(x.lastSeen):t.never)+(x.version?' · '+E(t.ver)+' '+E(x.version):'')+(x.devices?' · '+E(t.devices)+': '+E(t.dvShort(x.devices,x.deviceLimit||'?'))+(x.extraDevices?' (+'+x.extraDevices+(x.extraNote?' '+E(x.extraNote):'')+')':''):'')+'</small>'+(x.note?'<small>📝 '+E(x.note)+'</small>':'')+'</div></div>'+
-'<div class="acts"><button class="act a-paid" data-client="'+E(x.key)+'">'+E(t.rowSetup)+'</button><button class="act a-copy" data-copy="'+E(x.key)+'">'+E(t.rowCopy)+'</button></div></div>').join('')||'<div class="row" style="color:var(--mut)">—</div>';
-$('shown').textContent=t.shown(L.length,total);
+['overview','clients','analytics','service'].forEach(v=>$('v-'+v).classList.toggle('hide',view!==v));
+const s=D.stats;$('stats').innerHTML=[[s.total,t.sTotal,'#e5e7eb'],[s.active,t.sActive,'#4ade80'],[s.paying,t.sPaying,'#fbbf24'],[s.free,t.sFree,'#60a5fa'],[s.online7,t.sOnline,'#2dd4bf'],[s.trial||0,t.sTrial,'#a78bfa'],[s.pro||0,t.sPro,'#f472b6'],[s.test||0,t.sTest,'#fbbf24']].map(x=>'<div class="stat" style="--c:'+x[2]+'"><b>'+x[0]+'</b><span>'+E(x[1])+'</span></div>').join('')+(function(){const pr=[[s.pastDue,t.sPast,'#fb923c','pastdue'],[s.banned,t.sBanned,'#f87171','banned'],[s.canceled,t.sCanceled,'#a1a1aa','inactive']].filter(x=>x[0]>0);return pr.length?'<div class="prob-row">'+pr.map(x=>'<button type="button" class="stat prob" data-pf="'+x[3]+'" style="--c:'+x[2]+'"><b>'+x[0]+'</b><span>'+E(x[1])+'</span><i>→</i></button>').join('')+'</div>':''})();$('stats').querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{filter=b.dataset.pf;view='clients';try{localStorage.setItem('loya_admin_view',view)}catch(e){}paint();window.scrollTo(0,0)});
+UI.clients();
 const rd=D.ready;if(rd){const ic={ok:'✅',warn:'⚠️',bad:'❌',info:'ℹ️'};const rows=rd.items.map(i=>{const f=t['r_'+i.id];return f?'<div class="rdy-i '+i.level+'"><span>'+ic[i.level]+'</span><span>'+E(f(i.v,i.level))+'</span></div>':''}).join('');
 const tag=rd.bad||rd.warn?'<span class="rdy-tag '+(rd.bad?'bad':'warn')+'">'+E(t.rdyNeed(rd.bad,rd.warn))+'</span>':'<span class="rdy-tag ok">'+E(t.rdyAllOk)+'</span>';
 const open=rdyOpen===null?(rd.bad>0||rd.warn>0):rdyOpen;$('rdy').classList.remove('hide');const tgI=rd.items.find(i=>i.id==='telegram');const tgB=tgI&&tgI.v!=='off'?'<div class="rdy-tg"><button type="button" class="act a-paid" id="tgc">'+E(t.tgLinkBtn)+'</button>'+(tgI.v==='ok'?'<button type="button" class="act a-note" id="tgt">'+E(t.tgTest)+'</button>':'')+'<span id="tgm"></span></div>':'';$('rdy').innerHTML='<div class="rdy-h" id="rdy-h"><span>'+E(t.rdyTitle)+(rd.version?' · v'+E(rd.version):'')+'</span><span class="sp"></span>'+tag+'<span>'+(open?'▲':'▼')+'</span></div>'+(open?'<div class="rdy-b">'+rows+tgB+'</div>':'');$('rdy-h').onclick=()=>{rdyOpen=!open;paint()};if($('tgc'))$('tgc').onclick=tgLink;if($('tgt'))$('tgt').onclick=()=>tgDo('tg_test')}
 const mm=D.stripeMode||'none';$('mode').className='mode m-'+(mm==='live'?'live':mm==='test'?'test':'none');$('mode').textContent=(mm==='live'?'✅ ':'⚠️ ')+(mm==='live'?t.modeLive:mm==='test'?t.modeTest:mm==='unknown'?t.modeUnknown:t.modeNone);
-$('list').querySelectorAll('[data-op]').forEach(b=>b.onclick=()=>act(b.dataset.op,b.dataset.k,b.dataset.tier));
-$('list').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delKeys([b.dataset.del]));
-$('list').querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{c.checked?selected.add(c.dataset.sel):selected.delete(c.dataset.sel);bulkBar(L)});
-$('selall').onchange=()=>{L.forEach(x=>$('selall').checked?selected.add(x.key):selected.delete(x.key));paint()};
-bulkBar(L);extra();
-$('list').querySelectorAll('[data-client]').forEach(b=>b.onclick=()=>openClient(b.dataset.client));
-$('list').querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent=T().copied}catch(e){}})}
+extra();UI.chrome()}
 async function load(){const r=await api('admin-data');if(r._s===401){session=null;D=null;try{sessionStorage.removeItem('loya_admin_s')}catch(e){}paint();return}
-if(!r.ok){$('aerr').textContent=r.error==='db_error'?T().dbErr(r.detail||''):T().err;return}$('aerr').textContent='';D=r;paint()}
+if(!r.ok){$('aerr').textContent=r.error==='db_error'?T().dbErr(r.detail||''):T().err;return}$('aerr').textContent='';D=r;UI.loaded();paint()}
 function bulkBar(L){const t=T();[...selected].forEach(k=>{if(!D.list.some(x=>x.key===k))selected.delete(k)});const n=selected.size;$('bulk').classList.toggle('hide',!D.list.length);
 $('selall-t').textContent=t.selectAll;$('selall').checked=L.length>0&&L.every(x=>selected.has(x.key));$('bulkdel').textContent='🗑 '+t.delSel(n);$('bulkdel').disabled=!n;$('bulkdel').style.opacity=n?1:.5;
 $('bulkdel').onclick=()=>{if(n)delKeys([...selected])};$('bulk').classList.toggle('has-sel',n>0);$('bulkdel').classList.toggle('hide',!n);
@@ -295,9 +280,9 @@ $('csvbtn').textContent='⬇ '+t.csv;$('csvbtn').onclick=()=>{const cell=v=>{let
 const rows=[['email','key','state','plan','free_until','created','last_seen','version','livemode','note']].concat(D.list.map(x=>[x.email,x.key,x.state,x.plan,x.freeUntil,x.created,x.lastSeen,x.version,x.livemode===null?'':x.livemode,x.note]));
 const blob=new Blob(['\\ufeff'+rows.map(r=>r.map(cell).join(',')).join('\\r\\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='loya-keys-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}}
 async function delKeys(keys){const t=T();const stripe=D.list.some(x=>keys.includes(x.key)&&x.hasStripe);
-if(!confirm(t.delConfirm(keys.length)+(stripe?'\\n\\n'+t.delStripe:'')))return;
+if(!(await UI.ask({icon:'🗑',title:t.del,text:t.delConfirm(keys.length)+(stripe?' '+t.delStripe:''),ok:t.del,danger:true})))return;
 const r=await api('admin-action',{op:'delete',keys});if(!r.ok){$('aerr').textContent=r.error==='db_error'?t.dbErr(r.detail||''):t.err;return}
-keys.forEach(k=>selected.delete(k));await load();$('bulkmsg').textContent=t.deleted(r.deleted)}
+keys.forEach(k=>selected.delete(k));await load();UI.toast(t.deleted(r.deleted),'ok')}
 async function tgLink(){const t=T();const m=$('tgm');m.textContent='…';const r=await api('admin-action',{op:'tg_link'});if(r._s===401){session=null;paint();return}
 if(!r.ok){m.textContent=r.error==='tg_no_token'?t.r_telegram('off'):t.tgErr+(r.detail?': '+r.detail:'');return}
 try{window.open(r.link,'_blank','noopener')}catch(e){}
@@ -305,12 +290,12 @@ m.innerHTML=E(t.tgLinkOpen)+' <a href="'+E(r.link)+'" target="_blank" rel="noope
 const t0=Date.now();const tick=async()=>{const d=await api('admin-data');if(d.ok){D=d;const it=(d.ready&&d.ready.items||[]).find(i=>i.id==='telegram');if(it&&it.v==='ok'){paint();const mm=$('tgm');if(mm)mm.textContent=T().tgLinked;return}}
 if(Date.now()-t0<120000)setTimeout(tick,3000);else{const mm=$('tgm');if(mm)mm.textContent=T().tgWaitLong}};setTimeout(tick,4000)}
 async function tgDo(op){const t=T();const m=$('tgm');m.textContent='…';const r=await api('admin-action',{op});if(r._s===401){session=null;paint();return}m.textContent=r.ok?(op==='tg_connect'?t.tgOk(r.name,r.saved):t.tgSent):r.error==='tg_no_chat'?t.tgNoChat:t.tgErr+(r.detail?': '+r.detail:'');if(r.ok&&op==='tg_connect'&&r.saved)setTimeout(load,1500)}
-async function act(op,key,tier){const t=T();let note,freeUntil;
-if(op==='ban'&&!confirm(t.confirmBan))return;
-if(op==='reset_devices'&&!confirm(t.confirmResetDev))return;
-if(op==='note'){const cur=(D.list.find(x=>x.key===key)||{}).note||'';note=prompt(t.note,cur);if(note===null)return}
-if(op==='make_free'){freeUntil=prompt(t.until+' (YYYY-MM-DD)','');if(freeUntil===null)return}
-const r=await api('admin-action',{op,key,note,freeUntil,tier});if(!r.ok){$('aerr').textContent=r.error==='db_error'?t.dbErr(r.detail||''):t.err;return}load()}
+async function act(op,key,tier){const t=T();let note,freeUntil;const x0=D.list.find(x=>x.key===key)||{};
+if(op==='ban'&&!(await UI.ask({icon:'⛔',title:t.ban,text:(x0.email?x0.email+' — ':'')+t.confirmBan,ok:t.ban,danger:true})))return;
+if(op==='reset_devices'&&!(await UI.ask({icon:'🖥',title:t.resetDev,text:t.confirmResetDev,ok:t.resetDev})))return;
+if(op==='note'){const v=await UI.ask({icon:'📝',title:t.editNote,text:x0.email||key,fields:[{id:'n',label:t.note,type:'textarea',value:x0.note||'',max:500}],ok:t.uiSave});if(!v)return;note=v.n}
+if(op==='make_free'){const v=await UI.ask({icon:'🎁',title:t.makeFree,text:x0.email||key,fields:[{id:'u',label:t.until,type:'date',hint:t.uiUntilHint}],ok:t.makeFree});if(!v)return;freeUntil=v.u||''}
+const r=await api('admin-action',{op,key,note,freeUntil,tier});if(!r.ok){UI.toast(r.error==='db_error'?t.dbErr(r.detail||''):t.err,'err');return}await load();UI.toast((t['op_'+op]||t.uiDone)+(x0.email?' · '+x0.email:''),'ok')}
 $('nf').onclick=()=>{const t=T();$('mb').innerHTML='<b>'+E(t.newFree)+'</b><input id="m-e" type="email" placeholder="'+E(t.email)+'"><input id="m-n" placeholder="'+E(t.note)+'"><label style="font-size:13px;color:var(--mut)">'+E(t.until)+'<input id="m-u" type="date" style="width:100%;margin-top:4px;color-scheme:dark"></label><div class="err" id="m-err"></div><div style="display:flex;gap:8px"><button class="btn" id="m-ok" style="flex:1">'+E(t.create)+'</button><button class="btn sec" id="m-no">'+E(t.cancel)+'</button></div>';
 $('modal').classList.remove('hide');$('m-no').onclick=()=>$('modal').classList.add('hide');
 $('m-ok').onclick=async()=>{const email=$('m-e').value.trim();if(!email){$('m-err').textContent=t.needEmail;return}$('m-ok').disabled=true;

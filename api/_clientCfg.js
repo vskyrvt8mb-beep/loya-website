@@ -51,7 +51,11 @@ const FIELDS = {
   geo_on: bool, geo_points: json(geoList), geo_text: (v) => str(v, 120),
   tier_perks_on: bool, auto_winback_enabled: bool, auto_near_enabled: bool, auto_welcome_enabled: bool, auto_birthday_enabled: bool,
   feature_inventory: bool, feature_network: bool, feature_staff: bool, feature_weather: bool,
-  wallet_show_tier: bool, wallet_show_next: bool, reg_page_bg_dim: (v) => int(v, 0, 85)
+  wallet_show_tier: bool, wallet_show_next: bool, reg_page_bg_dim: (v) => int(v, 0, 85),
+  // 2.28: вид карты в Wallet ('' — стандартный)
+  ...(() => { const M = require('./_cardModel'), one = (l) => (v) => (v === '' || l.includes(String(v)) ? String(v) : null), n = (a, b) => (v) => (v === '' || v == null ? '' : int(v, a, b));
+    return { wallet_stamp_icon: one(M.STAMP_IDS), wallet_reward_icon: one(M.STAMP_IDS), wallet_stamp_color: hex, wallet_layout: one(['classic', 'photo']), wallet_season: one(M.SEASONS), wallet_arrange: one(M.ARRANGES),
+      wallet_stamp_label: (v) => str(v, 18).replace(/[<>&"]/g, ' '), wallet_logo_mode: one(['logo', 'both']), wallet_logo_size: n(24, 260), wallet_logo_rot: n(-180, 180), wallet_logo_x: n(0, 1032), wallet_logo_y: n(0, 336), wallet_logo_flip: one(['1']) }; })()
 };
 const LOGO_RE = /^data:image\/png;base64,[A-Za-z0-9+/=]{20,}$/;
 const SECRET_KEY = /(pass|secret|token|json|_key$|^license|pin|hash|smtp_user|session|private|cookie|device_id|apikey|api_key)/i;

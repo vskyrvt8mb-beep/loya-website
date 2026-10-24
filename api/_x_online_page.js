@@ -78,7 +78,7 @@ function bgStyle(p, slug) {
 function html(slug, p, mode, wal) {
   const pal = palette(p.color, p.niche, p.page && p.page.color2);
   const light = !!(p.page && p.page.bg === 'light');
-  const ctx = { slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '', wal: wal || { g: false, a: false }, welcome: !!(p.card && p.card.welcomeDouble && ['stamp', 'combo'].includes(p.card.type || 'stamp')), page: { title: (p.page && p.page.title) || '', text: (p.page && p.page.text) || '', button: (p.page && p.page.button) || '' } };
+  const ctx = { hero: /^\/api\/wallet\?/.test(String(p.__hero || '')) ? p.__hero : '', slug, name: p.name || 'Loya', lang: p.lang || 'ru', days: p.bonusDays || 14, percent: p.bonusPercent || 100, title: p.bonusTitle || '', defaults: DEFAULT_BONUS, enabled: !!p.enabled && (mode === 'join' ? !!p.join : p.promo !== false), mode: mode === 'join' ? 'join' : 'promo', refOn: !!p.refOn, refFriend: p.refFriend || '', wal: wal || { g: false, a: false }, welcome: !!(p.card && p.card.welcomeDouble && ['stamp', 'combo'].includes(p.card.type || 'stamp')), page: { title: (p.page && p.page.title) || '', text: (p.page && p.page.text) || '', button: (p.page && p.page.button) || '' } };
   return `<!DOCTYPE html><html lang="${esc(ctx.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="theme-color" content="#0d0f14"><title>${esc(ctx.name)}</title>
 <style>
@@ -126,6 +126,7 @@ button.go[disabled]{opacity:.65;transform:none}
 .err{color:#ffd0d0;font-size:14.5px;min-height:0}.err:not(:empty){padding:11px 13px;border-radius:13px;background:rgba(239,68,68,.22);border:1px solid rgba(248,113,113,.55)}
 .closed{padding:16px;border-radius:16px;background:rgba(245,158,11,.16);border:1px solid rgba(245,158,11,.55);text-align:center}
 .ticket{position:relative;border-radius:26px;background:#fffaf0;color:#1b1813;overflow:hidden;box-shadow:0 26px 64px rgba(0,0,0,.5),0 10px 30px rgba(var(--ar),.25)}
+.ticket .jhero{display:block;width:100%;height:auto;aspect-ratio:1032/336;background:#181c23}
 .ticket .h{padding:22px 22px 18px;background:linear-gradient(135deg,var(--a),var(--b));color:var(--on);position:relative;overflow:hidden}
 .ticket .h:after{content:"";position:absolute;right:-30px;top:-34px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.22)}
 .ticket .h b{display:block;font-size:13px;letter-spacing:.06em;text-transform:uppercase;position:relative;z-index:1}
@@ -210,7 +211,7 @@ $('l-e').textContent=T.lEmail;$('o-e').textContent='';$('e').placeholder=J?T.pEm
 $('cl').textContent=T.consent;goLabel();if(CTX.page&&CTX.page.title&&!$('ptitle')){const h=document.createElement('h1');h.id='ptitle';h.className='ptitle';$('how').before(h)}if($('ptitle'))$('ptitle').textContent=CTX.page.title;if(CTX.page&&CTX.page.text)$('how').textContent=CTX.page.text;$('ag').textContent=T.agree;$('pv').textContent=T.privacy;
 if(!CTX.enabled){$('f').style.display='none';$('closed').style.display='block';$('closed').textContent=T.closed}
 if(coupon){$('form-box').style.display='none';const d=$('done');d.style.display='block';
-d.innerHTML=J?'<div class="ticket"><div class="h"><b>💳 '+esc(T.jOk)+'</b><div>'+esc(CTX.name)+' · '+esc(T.jTitle)+'</div></div>'+
+d.innerHTML=J?'<div class="ticket"><div class="h"><b>💳 '+esc(T.jOk)+'</b><div>'+esc(CTX.name)+' · '+esc(T.jTitle)+'</div></div>'+(CTX.hero?'<img class="jhero" alt="" src="'+esc(CTX.hero.replace(/([?&])lang=[a-z]{2}/,'$1lang='+lang))+'">':'')+
 '<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="small">'+esc(T.jShow)+'</div></div></div>'+walletBtns()+(mailed?'<p class="tip">✉️ '+esc(T.jMailed)+'</p>':'<p class="tip">'+esc(T.shot)+'</p>')
 :'<div class="ticket"><div class="h"><b>🎁 '+esc(repeat?T.again:T.okTitle)+'</b><div>'+esc(coupon.title||CTX.defaults[lang])+'</div><span class="badge">'+esc(pct(coupon.percent))+'</span></div>'+
 '<div class="cut"></div><div class="b"><img alt="QR" src="'+esc(coupon.qr)+'"><div class="code">'+esc(coupon.code)+'</div><div class="until">'+esc(T.until)+' '+esc(fmt(coupon.expires))+'</div><div class="small">'+esc(T.show)+(mailed?'<br>'+esc(T.mailed):'')+'</div></div></div><p class="tip">'+esc(T.shot)+'</p>'}}
@@ -243,6 +244,16 @@ module.exports = async (req, res) => {
     if (!row) { res.status(404).setHeader('Content-Type', 'text/plain; charset=utf-8'); res.send('Not found'); return; }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
+    // 2.28: на странице «Готово! Это ваша карта» — картинка карты (штампы, значки, сезон, логотип), как в Wallet
+    if (req.query && req.query.mode === 'join' && row.profile && row.profile.join) {
+      try {
+        const p = row.profile, lang = p.lang || 'ru';
+        const card = require('./_walletLinks').joinCard(p, 'X', '', lang);
+        const design = await require('./_walletDesign').getDesignInfo(row.license_key);
+        const url = require('./_wallet').heroImageUrl(card, { name: p.name, color: p.color, currency: p.currency, niche: p.niche, ...(p.look || {}) }, lang, design);
+        row.profile = { ...p, __hero: url.replace(/^https?:\/\/[^/]+/, '') };
+      } catch (e) { /* без картинки */ }
+    }
     const wal = { g: (() => { try { require('./_wallet').serviceAccount(); return true; } catch (e) { return false; } })(), a: (() => { try { return !!require('./_apple').configured(); } catch (e) { return false; } })() };
     res.status(200).send(html(row.slug, row.profile || {}, req.query && req.query.mode, wal));
   } catch (e) { res.status(500).send('Error'); }

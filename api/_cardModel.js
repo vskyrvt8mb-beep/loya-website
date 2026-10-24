@@ -227,6 +227,25 @@ function cleanLook(b) {
   }
   return o;
 }
+// 2.28: готовые стили карты — одним нажатием: цвет карты + вид (значки, цвет штампов, расположение, сезон).
+// label — подпись счётчика на 4 языках; name — название стиля. Свой логотип и фото заведения стиль не трогает.
+const PRESETS = [
+  { id: 'burgundy', bg: '#5e1224', look: { stamp: 'coffee', stampColor: '#ffffff', reward: 'gift', layout: 'photo', arrange: 'row' }, name: { ru: 'Бордовая кофейня', uk: 'Бордова кав’ярня', sk: 'Bordová kaviareň', en: 'Burgundy café' } },
+  { id: 'paws', bg: '#d9572b', look: { stamp: 'paw', stampColor: '#f6d77a', reward: 'takeaway', layout: 'photo', arrange: 'row' }, label: { ru: 'Лапки', uk: 'Лапки', sk: 'Labky', en: 'Paws' }, name: { ru: 'Оранжевые лапки', uk: 'Помаранчеві лапки', sk: 'Oranžové labky', en: 'Orange paws' } },
+  { id: 'xmas', bg: '#1e1e1c', look: { season: 'xmas', arrange: 'garland', reward: 'wine' }, name: { ru: 'Рождественская гирлянда', uk: 'Різдвяна гірлянда', sk: 'Vianočná girlanda', en: 'Christmas garland' } },
+  { id: 'wine', bg: '#2b0f1a', look: { stamp: 'wine', stampColor: '#e8c48a', reward: 'bottle', arrange: 'arc' }, label: { ru: 'Бокалы', uk: 'Келихи', sk: 'Poháre', en: 'Glasses' }, name: { ru: 'Винный бар', uk: 'Винний бар', sk: 'Vináreň', en: 'Wine bar' } },
+  { id: 'barber', bg: '#121212', look: { stamp: 'scissors', stampColor: '#ffffff', reward: 'crown', arrange: 'steps' }, name: { ru: 'Барбершоп', uk: 'Барбершоп', sk: 'Barbershop', en: 'Barbershop' } },
+  { id: 'nails', bg: '#3b1d2c', look: { stamp: 'polish', stampColor: '#ff8fb1', reward: 'diamond', arrange: 'wave' }, name: { ru: 'Маникюр', uk: 'Манікюр', sk: 'Manikúra', en: 'Nail studio' } },
+  { id: 'bakery', bg: '#6b4e30', look: { stamp: 'bakery', stampColor: '#f6d77a', reward: 'cupcake', arrange: 'row' }, name: { ru: 'Пекарня', uk: 'Пекарня', sk: 'Pekáreň', en: 'Bakery' } },
+  { id: 'cocktail', bg: '#1f2a44', look: { stamp: 'cocktail', stampColor: '#4fc3f7', reward: 'star', arrange: 'grid' }, name: { ru: 'Коктейль-бар', uk: 'Коктейль-бар', sk: 'Koktailový bar', en: 'Cocktail bar' } },
+  { id: 'seasons', bg: '#20252d', look: { season: 'auto', stamp: 'star' }, name: { ru: 'Праздники сами', uk: 'Свята самі', sk: 'Sviatky samy', en: 'Holidays by calendar' } }
+];
+// Вид карты по стилю: логотип (режим, размер, место) остаётся как был.
+function presetLook(id, lang, cur) {
+  const p = PRESETS.find(x => x.id === id); if (!p) return null;
+  const keep = {}; for (const k of ['logoMode', 'logoSize', 'logoRot', 'logoX', 'logoY', 'logoFlip']) if (cur && cur[k] != null && cur[k] !== '') keep[k] = cur[k];
+  return { bg: p.bg, look: { ...p.look, ...(p.label ? { label: p.label[lang] || p.label.en } : {}), ...keep } };
+}
 // Католическая Пасха (алгоритм Мееуса) — для «по календарю».
 function easterDate(y) {
   const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
@@ -535,7 +554,7 @@ function passModel(card, brand, lang) {
   return { lang, cardTitle: String(brand.name || 'Loya').slice(0, 60), subheader: String(card.title || typeName).slice(0, 60), header: String(card.client_name || typeName).slice(0, 60), typeName, modules, tier, next: nx, pct, progress: p };
 }
 
-return { TEXT, CUR, progress, tierLabel, tierName, nextLine, comboPct, passModel, buildHeroSvg, TXT, cleanLook, resolveSeason, seasonFor, STAMP_ICONS, STAMP_IDS, SEASONS, ARRANGES, glyph };
+return { TEXT, CUR, progress, tierLabel, tierName, nextLine, comboPct, passModel, buildHeroSvg, TXT, cleanLook, resolveSeason, seasonFor, STAMP_ICONS, STAMP_IDS, SEASONS, ARRANGES, PRESETS, presetLook, glyph };
 }
 // Сервер: module.exports (+ CLIENT_JS — тот же код для страниц, например для превью в админке). Программа: window.LoyaCard.
 if (typeof module !== 'undefined' && module.exports) { module.exports = loyaCardFactory(); module.exports.CLIENT_JS = 'window.LoyaCard=(' + loyaCardFactory.toString() + ')();'; }
