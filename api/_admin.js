@@ -262,7 +262,7 @@ async function action({ session, op, key, keys, email, note, freeUntil, tier, da
   const res = await doAction({ op, key, keys, email, note, freeUntil, tier, days, lang, atPeriodEnd, setupSecret, code, extra, device, cfg, wallet, kind, emoji });
   if (res.status === 200 && !['client', 'totp_setup', 'totp_test', 'tg_test', 'tg_link', 'client_cfg_get', 'client_preview'].includes(op)) {
     await log(op, ip, { key: KEY_RE.test(String(key || '')) ? key : undefined, keys: Array.isArray(keys) ? keys.slice(0, 50) : undefined,
-      email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' ? Number(days) : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
+      email: op === 'create_free' ? str(email, 160) : undefined, newKey: res.key, tier, days: op === 'extend_trial' || op === 'nudge' ? Number(days) : undefined, lang: op === 'nudge' ? lang : undefined, atPeriodEnd: op === 'cancel_stripe' ? !!atPeriodEnd : undefined,
       deleted: res.deleted, extra: op === 'set_extra_devices' ? Number(extra) : undefined, device: op === 'remove_device' ? str(device, 12) : undefined });
   }
   return res;
@@ -327,6 +327,22 @@ async function doAction({ op, key, keys, email, note, freeUntil, tier, days, lan
     return { status: 200, ok: true };
   }
   if (op === 'cancel_stripe') return cancelStripe(k, !!atPeriodEnd);
+  if (op === 'nudge') {
+    const { data: rows } = await supabase.from('licenses').select('email, plan, trial_until').eq('license_key', k).limit(1);
+    const row = rows && rows[0];
+    if (!row || !row.email) return { status: 400, error: 'email' };
+    let until = null;
+    const n = Math.round(Number(days)) || 0;
+    if (n > 0 && row.plan === 'trial') {
+      if (n > 30) return { status: 400, error: 'days' };
+      const base = Math.max(Date.now(), new Date(row.trial_until || 0).getTime() || 0);
+      until = new Date(base + n * 86400e3).toISOString();
+      const { error } = await supabase.from('licenses').update({ trial_until: until, updated_at: new Date().toISOString() }).eq('license_key', k);
+      if (error) return { status: 500, error: 'db_error', detail: String(error.message || '').slice(0, 140) };
+    }
+    try { await require('./_billing').sendNudgeEmail({ email: row.email, lang: ['ru', 'uk', 'sk', 'en'].includes(lang) ? lang : 'en', until }); } catch (e) { return { status: 502, error: 'mail_error' }; }
+    return { status: 200, ok: true, until };
+  }
   if (op === 'resend_key') {
     const { data: rows } = await supabase.from('licenses').select('email, plan, trial_until').eq('license_key', k).limit(1);
     const row = rows && rows[0];

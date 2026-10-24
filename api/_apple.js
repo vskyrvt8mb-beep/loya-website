@@ -51,6 +51,7 @@ const validSerial = (s) => /^loya_[a-f0-9]{16}_[A-Za-z0-9_.-]{1,60}$/.test(Strin
 function hmac(prefix, s) { return crypto.createHmac('sha256', secret()).update(prefix + ':' + s).digest('hex').slice(0, 40); }
 const authTokenFor = (serial) => hmac('auth', serial);       // Wallet присылает его в заголовке Authorization
 const downloadTokenFor = (serial) => hmac('dl', serial);     // подпись ссылки на скачивание
+const webTokenFor = (serial) => hmac('web', serial);         // 2.30: подпись ссылки на карту в браузере (/k/…)
 function safeEq(a, b) { const x = Buffer.from(String(a || '')), y = Buffer.from(String(b || '')); return x.length === y.length && crypto.timingSafeEqual(x, y); }
 
 // ---- содержимое карты ----
@@ -219,4 +220,4 @@ async function designFor(licenseKey) {
   try { const D = require('./_walletDesign'); return await D.getDesignFull(D.bizOf(licenseKey), ''); } catch (e) { return null; }
 }
 
-module.exports = { designFor, config, configured, serialFor, validSerial, authTokenFor, downloadTokenFor, safeEq, buildPassJson, buildPkpass, pushUpdate, zip, crc32, SITE_URL };
+module.exports = { designFor, config, configured, serialFor, validSerial, authTokenFor, downloadTokenFor, webTokenFor, safeEq, buildPassJson, buildPkpass, pushUpdate, zip, crc32, SITE_URL };

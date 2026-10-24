@@ -8,7 +8,6 @@ module.exports = async (req, res) => {
   try {
     const { licenseKey, card, brand } = req.body || {};
     if (!card || !card.code || typeof licenseKey !== 'string') { res.status(400).json({ error: 'bad_request' }); return; }
-    if (!A.configured()) { res.status(503).json({ error: 'apple_not_configured' }); return; }
     if (!(await licenseActive(licenseKey))) { res.status(403).json({ error: 'license_inactive' }); return; }
     const serial = A.serialFor(licenseKey, card.code);
     const clean = {
@@ -29,6 +28,9 @@ module.exports = async (req, res) => {
     const cleanBrand = { name: String(b.name || 'Loya').slice(0, 60), color: /^#[0-9a-fA-F]{6}$/.test(b.color || '') ? b.color : '#d4af37', currency: String(b.currency || 'EUR').slice(0, 6), niche: String(b.niche || 'other').slice(0, 24), ...require('./_cardModel').cleanLook(b), ...(geo ? { geo } : {}) };
     const { error } = await supabase.from('apple_passes').upsert({ serial, license_key: licenseKey.trim(), card: clean, brand: cleanBrand, updated_at: new Date().toISOString() });
     if (error) { res.status(500).json({ error: 'db_error', detail: String(error.message || '').slice(0, 140) }); return; }
-    res.status(200).json({ ok: true, link: `${A.SITE_URL}/api/apple-pass?s=${encodeURIComponent(serial)}&t=${A.downloadTokenFor(serial)}` });
+    // 2.30: карта в браузере — для гостей без Wallet (работает и без аккаунта Apple)
+    const web = `${A.SITE_URL}/k/${encodeURIComponent(serial)}?t=${A.webTokenFor(serial)}`;
+    if (!A.configured()) { res.status(503).json({ error: 'apple_not_configured', web }); return; }
+    res.status(200).json({ ok: true, web, link: `${A.SITE_URL}/api/apple-pass?s=${encodeURIComponent(serial)}&t=${A.downloadTokenFor(serial)}` });
   } catch (err) { res.status(500).json({ error: 'server_error' }); }
 };

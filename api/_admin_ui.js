@@ -58,10 +58,12 @@ function adminUiClient() {
     }
 
     // ---------- фильтры, тариф, сортировка ----------
-    const FILTERS = ['all', 'active', 'paying', 'trial', 'free', 'pastdue', 'banned', 'online', 'inactive', 'test'];
+    const FILTERS = ['all', 'active', 'paying', 'trial', 'atrisk', 'free', 'pastdue', 'banned', 'online', 'inactive', 'test'];
+    // «Могут уйти»: пробный кончается за 7 дней, а программой почти не пользуются (не заходили 3+ дня или ни разу)
+    const atRisk = (x) => x.plan === 'trial' && x.state === 'active' && x.trialUntil && new Date(x.trialUntil) - Date.now() < 7 * DAY && (!x.lastSeen || Date.now() - new Date(x.lastSeen).getTime() > 3 * DAY);
     function inFilter(x, f) {
       return f === 'all' || (f === 'active' && x.state === 'active') || (f === 'paying' && x.state === 'active' && x.plan !== 'free' && x.plan !== 'trial') ||
-        (f === 'trial' && x.plan === 'trial') || (f === 'free' && x.plan === 'free') || (f === 'pastdue' && x.state === 'past_due') || (f === 'banned' && x.banned) ||
+        (f === 'trial' && x.plan === 'trial') || (f === 'atrisk' && atRisk(x)) || (f === 'free' && x.plan === 'free') || (f === 'pastdue' && x.state === 'past_due') || (f === 'banned' && x.banned) ||
         (f === 'online' && x.lastSeen && Date.now() - new Date(x.lastSeen).getTime() < 7 * DAY) || (f === 'inactive' && x.state !== 'active') || (f === 'test' && x.livemode === false);
     }
     function inPlan(x) { return planF === 'all' || (planF === 'pro' && x.tier === 'pro' && x.plan !== 'trial') || (planF === 'starter' && x.tier !== 'pro' && x.plan !== 'trial' && x.plan !== 'free') || (planF === 'trial' && x.plan === 'trial') || (planF === 'free' && x.plan === 'free'); }
@@ -138,7 +140,7 @@ function adminUiClient() {
       if (menuKey === key) { closeMenu(); return; } closeMenu(); menuKey = key;
       const t = T(); const x = D.list.find(i => i.key === key); if (!x) return;
       const items = [['open', '⚙️ ' + t.uiOpenFull], ['copyKey', '📋 ' + t.uiCopyKey], ['copyEmail', '✉️ ' + t.uiCopyEmail], ['sep'],
-        ...(x.plan === 'trial' ? [['extend', '⏳ ' + t.extend]] : []), ['note', '📝 ' + t.editNote], ['resend', t.resend], ['sep'],
+        ...(x.plan === 'trial' ? [['extend', '⏳ ' + t.extend]] : []), ...(x.email ? [['nudge', '💬 ' + t.uiNudge]] : []), ['note', '📝 ' + t.editNote], ['resend', t.resend], ['sep'],
         x.plan === 'free' ? ['make_paid', '💳 ' + t.makePaid] : ['make_free', '🎁 ' + t.makeFree],
         ...(x.plan !== 'trial' && x.plan !== 'free' ? [['set_tier', (x.tier === 'pro' ? '⬇️ ' + t.toStarter : '⬆️ ' + t.toPro)]] : []),
         x.banned ? ['unban', '✅ ' + t.unban] : ['ban', '⛔ ' + t.ban], ['sep'], ['del', '🗑 ' + t.del, 'danger']];
@@ -155,6 +157,7 @@ function adminUiClient() {
         if (op === 'copyEmail') return copy(x.email || '');
         if (op === 'del') return delKeys([key]);
         if (op === 'extend') return extend([key]);
+        if (op === 'nudge') return nudge([key]);
         if (op === 'resend') { const r2 = await api('admin-action', { op: 'resend_key', key, lang }); return toast(r2.ok ? t.resent : t.mailErr, r2.ok ? 'ok' : 'err'); }
         return act(op, key, op === 'set_tier' ? (x.tier === 'pro' ? 'starter' : 'pro') : undefined);
       });
@@ -169,6 +172,18 @@ function adminUiClient() {
       if (!v) return; const days = Math.max(1, Math.min(365, Number(v.d) || 7));
       let ok = 0; for (const key of keys) { const r = await api('admin-action', { op: 'extend_trial', key, days }); if (r.ok) ok++; }
       await load(); toast(t.extend + ': ' + t.uiDoneN(ok, keys.length), ok ? 'ok' : 'err');
+    }
+    // «Нужна помощь?» — письмо от Loya: 3 шага за 5 минут, предложение настроить всё бесплатно и (по желанию) продление пробного
+    async function nudge(keys) {
+      const t = T(); keys = keys.filter(k => { const x = D.list.find(i => i.key === k); return x && x.email; }); if (!keys.length) return;
+      const v = await ask({ icon: '💬', title: t.uiNudgeT, text: (keys.length > 1 ? t.uiBulkFor(keys.length) + ' ' : '') + t.uiNudgeText,
+        fields: [{ id: 'l', label: t.uiNudgeLang, value: lang }, { id: 'd', label: t.uiNudgeDays, type: 'number', value: 7, min: 0, max: 30, hint: t.uiNudgeDaysHint }],
+        chips: ['ru', 'uk', 'sk', 'en'].map(l => ({ v: l, f: 'l', l: l.toUpperCase() })).concat([0, 7, 14].map(n => ({ v: String(n), f: 'd', l: n ? '+' + n : '0' }))), ok: t.uiNudgeSend });
+      if (!v) return;
+      const lg = ['ru', 'uk', 'sk', 'en'].includes(String(v.l).trim().toLowerCase()) ? String(v.l).trim().toLowerCase() : lang;
+      const days = Math.max(0, Math.min(30, Math.round(Number(v.d)) || 0));
+      let ok = 0; for (const key of keys) { const r = await api('admin-action', { op: 'nudge', key, lang: lg, days }); if (r.ok) ok++; }
+      await load(); toast(t.uiNudge + ': ' + t.uiDoneN(ok, keys.length), ok ? 'ok' : 'err');
     }
     async function bulkRun(op, label) {
       const t = T(); const keys = [...selected]; if (!keys.length) return;
@@ -192,12 +207,13 @@ function adminUiClient() {
       $('selall-t').textContent = n ? t.uiSelected(n) : t.selectAll;
       $('selall').checked = L.length > 0 && L.every(x => selected.has(x.key));
       const sel = D.list.filter(x => selected.has(x.key));
-      const btns = n ? [['extend', '⏳ ' + t.extend, sel.some(x => x.plan === 'trial')], ['make_free', '🎁 ' + t.makeFree, true], ['ban', '⛔ ' + t.ban, true], ['unban', '✅ ' + t.unban, sel.some(x => x.banned)], ['emails', '✉️ ' + t.uiCopyEmails, true], ['csvsel', '⬇ CSV', true], ['del', '🗑 ' + t.delSel(n), true]].filter(b => b[2]) : [];
+      const btns = n ? [['extend', '⏳ ' + t.extend, sel.some(x => x.plan === 'trial')], ['nudge', '💬 ' + t.uiNudge, sel.some(x => x.email)], ['make_free', '🎁 ' + t.makeFree, true], ['ban', '⛔ ' + t.ban, true], ['unban', '✅ ' + t.unban, sel.some(x => x.banned)], ['emails', '✉️ ' + t.uiCopyEmails, true], ['csvsel', '⬇ CSV', true], ['del', '🗑 ' + t.delSel(n), true]].filter(b => b[2]) : [];
       $('bulkacts').innerHTML = btns.map(b => '<button type="button" class="act ' + (b[0] === 'del' ? 'a-del' : b[0] === 'ban' ? 'a-ban' : 'a-copy') + '" data-b="' + b[0] + '">' + E(b[1]) + '</button>').join('') + (n ? '<button type="button" class="act a-copy" data-b="none">✕ ' + E(t.uiDeselect) + '</button>' : '<button type="button" class="act a-copy" data-b="csv">⬇ ' + E(t.csv) + '</button>');
       $('bulkacts').querySelectorAll('[data-b]').forEach(b => b.onclick = () => {
         const k = b.dataset.b;
         if (k === 'del') return delKeys([...selected]);
         if (k === 'extend') return extend(sel.filter(x => x.plan === 'trial').map(x => x.key));
+        if (k === 'nudge') return nudge(sel.map(x => x.key));
         if (k === 'emails') return copy(sel.map(x => x.email).filter(Boolean).join(', '));
         if (k === 'csvsel') return csvOf(sel);
         if (k === 'csv') return csvOf(rows());
@@ -235,6 +251,20 @@ function adminUiClient() {
       const tr = D.money && D.money.trials || {};
       const trialAct = L.filter(x => x.plan === 'trial' && x.state === 'active');
       const trialSoon = trialAct.filter(x => new Date(x.trialUntil) - now < 3 * DAY).length;
+      const risk = L.filter(atRisk).length;
+      // рост платящих: новые минус отмены по месяцам (последние 6) и отток за 3 месяца
+      const growth = () => {
+        const m = D.money; if (!m || !Array.isArray(m.months) || !m.months.length) return '';
+        const n = Math.min(6, m.months.length), from = m.months.length - n;
+        const rows = m.months.slice(from).map((mo, i) => ({ mo, a: Number(m.newPaid[from + i]) || 0, c: Number(m.canceled[from + i]) || 0 }));
+        const mx = Math.max(1, ...rows.map(r => Math.max(r.a, r.c)));
+        const a3 = rows.slice(-3).reduce((s, r) => s + r.a, 0), c3 = rows.slice(-3).reduce((s, r) => s + r.c, 0);
+        const base = (Number(m.payingLive) || 0) + c3; const churn = base ? Math.round(c3 / base * 1000) / 10 : null;
+        const mname = (mo) => { const [y, mm] = String(mo).split('-').map(Number); return new Date(y, mm - 1, 1).toLocaleDateString(lang === 'en' ? 'en-GB' : lang, { month: 'short' }); };
+        return card(t.uiA_growth, '<div class="akpis k3"><div><b class="g-up">+' + a3 + '</b><span>' + E(t.uiA_g_new) + '</span></div><div><b class="g-down">−' + c3 + '</b><span>' + E(t.uiA_g_lost) + '</span></div><div><b>' + (churn == null ? '—' : churn.toLocaleString(lang === 'en' ? 'en-GB' : lang) + '%') + '</b><span>' + E(t.uiA_g_churn) + '</span></div></div>' +
+          '<div class="gbars">' + rows.map(r => { const net = r.a - r.c; return '<div class="gcol" title="' + E(mname(r.mo)) + ': +' + r.a + ' / −' + r.c + '"><div class="gpair"><i class="gup" style="height:' + (r.a / mx * 100) + '%"></i><i class="gdn" style="height:' + (r.c / mx * 100) + '%"></i></div><b class="' + (net > 0 ? 'g-up' : net < 0 ? 'g-down' : '') + '">' + (net > 0 ? '+' : '') + net + '</b><span>' + E(mname(r.mo)) + '</span></div>'; }).join('') + '</div>' +
+          '<p class="anote">' + E(t.uiA_g_note) + '</p>');
+      };
       const devTotal = L.reduce((a, x) => a + (x.devices || 0), 0), atLimit = L.filter(x => x.deviceLimit && x.devices >= x.deviceLimit).length;
       const card = (title, body, cls) => '<section class="apanel ' + (cls || '') + '"><h2>' + E(title) + '</h2>' + body + '</section>';
       box.innerHTML = '<div class="agrid">' +
@@ -242,12 +272,14 @@ function adminUiClient() {
         card(t.uiA_act, act4.map(a => '<div class="hbar"><span>' + E(a[0]) + '</span><i><em class="h-' + a[2] + '" style="width:' + (a[1] / tot * 100) + '%"></em></i><b>' + a[1] + '</b></div>').join('') + '<p class="anote">' + E(t.uiA_actNote(Math.round(seen(7 * DAY) / tot * 100))) + '</p>') +
         card(t.uiA_plans, '<div class="donut-w"><div class="donut" style="background:conic-gradient(' + cone + ')"><span><b>' + L.filter(x => x.state === 'active').length + '</b><small>' + E(t.sActive) + '</small></span></div><div class="dleg">' + plans.map(p => '<button type="button" class="dl" data-plan="' + p[0] + '"><b style="background:' + p[2] + '"></b>' + E(t['uiPlan_' + p[0]]) + '<em>' + p[1] + '</em></button>').join('') + '</div></div>') +
         card(t.uiA_vers, (vlist.length ? vlist.map(v => '<button type="button" class="hbar vbar" data-ver="' + E(v[0]) + '"><span>v' + E(v[0]) + (v[0] === latest ? ' <small class="chip c-ok">' + E(t.uiA_latest) + '</small>' : '') + '</span><i><em style="width:' + (v[1] / vmx * 100) + '%"></em></i><b>' + v[1] + '</b></button>').join('') : '<p class="anote">—</p>') + (outdated ? '<p class="anote warn">' + E(t.uiA_outdated(outdated)) + '</p>' : '')) +
-        card(t.uiA_trial, '<div class="akpis k3"><div><b>' + trialAct.length + '</b><span>' + E(t.uiA_trialAct) + '</span></div><div><b>' + trialSoon + '</b><span>' + E(t.uiA_trialSoon) + '</span></div><div><b>' + (tr.rate == null ? '—' : Number(tr.rate).toLocaleString(lang === 'en' ? 'en-GB' : lang, { maximumFractionDigits: 1 }) + '%') + '</b><span>' + E(t.uiA_conv) + '</span></div></div>' + (trialSoon ? '<button type="button" class="pill" data-go="trial-soon">' + E(t.uiA_showSoon) + ' →</button>' : '')) +
+        card(t.uiA_trial, '<div class="akpis k3"><div><b>' + trialAct.length + '</b><span>' + E(t.uiA_trialAct) + '</span></div><div><b>' + trialSoon + '</b><span>' + E(t.uiA_trialSoon) + '</span></div><div><b>' + (tr.rate == null ? '—' : Number(tr.rate).toLocaleString(lang === 'en' ? 'en-GB' : lang, { maximumFractionDigits: 1 }) + '%') + '</b><span>' + E(t.uiA_conv) + '</span></div></div>' + (trialSoon ? '<button type="button" class="pill" data-go="trial-soon">' + E(t.uiA_showSoon) + ' →</button>' : '') + (risk ? '<button type="button" class="risk-b" data-risk><b>⚠ ' + risk + '</b><span>' + E(t.uiA_risk) + '</span><em>' + E(t.uiA_riskGo) + ' →</em></button>' : '<p class="anote">✓ ' + E(t.uiA_riskNone) + '</p>')) +
+        growth() +
         card(t.uiA_dev, '<div class="akpis k3"><div><b>' + devTotal + '</b><span>' + E(t.uiA_devTotal) + '</span></div><div><b>' + atLimit + '</b><span>' + E(t.uiA_devFull) + '</span></div><div><b>' + (D.stats.online7 || 0) + '</b><span>' + E(t.sOnline) + '</span></div></div>') +
         '</div>';
       box.querySelectorAll('[data-plan]').forEach(b => b.onclick = () => { if (b.dataset.plan === 'inactive') { filter = 'inactive'; planF = 'all'; } else { filter = 'all'; planF = b.dataset.plan; } ls('loya_admin_plan', planF); go('clients'); });
       box.querySelectorAll('[data-ver]').forEach(b => b.onclick = () => { filter = 'all'; q = 'v:' + b.dataset.ver; $('q').value = q; go('clients'); });
       box.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { filter = 'trial'; planF = 'all'; sort = 'trial'; ls('loya_admin_sort', sort); go('clients'); });
+      box.querySelectorAll('[data-risk]').forEach(b => b.onclick = () => { filter = 'atrisk'; planF = 'all'; sort = 'trial'; ls('loya_admin_sort', sort); go('clients'); });
     }
     function go(v) { view = v; try { localStorage.setItem('loya_admin_view', v); } catch (e) { /* нет */ } paint(); window.scrollTo(0, 0); }
 
@@ -327,7 +359,10 @@ const CSS = `
 /* ===== клиенты ===== */
 .ctools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .csel{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--mut)}.csel select{height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:#151922;color:inherit;padding:0 10px;font:inherit;font-size:13.5px;font-weight:700}
-.fchip small{opacity:.7;font-weight:800;margin-left:2px}.fchip.f-pastdue:not(.on){color:#fde68a}.fchip.f-banned:not(.on){color:#fca5a5}
+.fchip small{opacity:.7;font-weight:800;margin-left:2px}.fchip.f-pastdue:not(.on){color:#fde68a}.fchip.f-atrisk:not(.on){color:#fdba74}
+.risk-b{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:11px 14px;border-radius:12px;border:1px solid rgba(251,146,60,.45);background:rgba(251,146,60,.08);color:inherit;font:inherit;cursor:pointer;text-align:left}.risk-b:hover{background:rgba(251,146,60,.15)}.risk-b b{color:#fdba74;font-size:16px;white-space:nowrap}.risk-b span{flex:1;font-size:13px;color:var(--mut)}.risk-b em{font-style:normal;font-weight:800;font-size:13px;color:#fdba74;white-space:nowrap}
+.gbars{display:flex;align-items:stretch;gap:10px;height:130px;margin-top:14px}.gcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}.gpair{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px}.gpair i{width:12px;border-radius:5px 5px 2px 2px;min-height:2px}.gpair .gup{background:linear-gradient(180deg,#86efac,#22c55e)}.gpair .gdn{background:linear-gradient(180deg,#fca5a5,#ef4444)}.gcol b{font-size:12.5px;font-variant-numeric:tabular-nums}.gcol span{font-size:11px;color:var(--mut)}.g-up{color:#4ade80}.g-down{color:#f87171}
+.fchip.f-banned:not(.on){color:#fca5a5}
 .crow{display:grid;grid-template-columns:28px minmax(240px,2.4fr) minmax(110px,1fr) minmax(110px,1fr) 70px 120px 92px 150px;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);transition:background .12s}
 .crow:hover{background:rgba(255,255,255,.025)}.crow.picked{background:rgba(227,184,87,.07)}
 .chead{border-top:0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);padding-top:12px;padding-bottom:8px;position:sticky;top:116px;z-index:5;background:rgba(18,20,26,.97);border-radius:16px 16px 0 0}.chead:hover{background:rgba(18,20,26,.97)}
@@ -361,6 +396,7 @@ const CSS = `
 .dlg-chips{display:flex;gap:6px;flex-wrap:wrap}.dlg-a{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}.dlg-a .btn{min-width:110px}
 .btn.danger{background:linear-gradient(135deg,#ef4444,#b91c1c)!important;color:#fff!important;box-shadow:0 10px 24px rgba(239,68,68,.3)!important}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{z-index:50}body:has(.modal:not(.hide)){overflow:hidden}
 .toasts{position:fixed;right:16px;bottom:16px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 32px))}
 .toast{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:13px;font-size:13.5px;font-weight:700;background:#171a22;border:1px solid rgba(255,255,255,.12);box-shadow:0 16px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s}
 .toast.in{opacity:1;transform:none}.toast.ok{border-color:rgba(74,222,128,.45)}.toast.err{border-color:rgba(248,113,113,.6)}.toast.info{border-color:rgba(147,197,253,.45)}.toast i{font-style:normal}

@@ -5,8 +5,9 @@ const h_link = require('./_x_wallet_link');
 const h_update = require('./_x_wallet_update');
 const h_hero = require('./_x_wallet_hero');
 const D = require('./_walletDesign');
+const CP = require('./_x_card_page');   // 2.30: карта гостя в браузере (/k/…)
 // design — свой дизайн карт (логотип, баннер, цвет), asset — эти картинки для Google Wallet.
-const ACTIONS = { 'link': h_link, 'update': h_update, 'hero': h_hero, 'design': D.handleDesign, 'asset': D.handleAsset };
+const ACTIONS = { 'link': h_link, 'update': h_update, 'hero': h_hero, 'design': D.handleDesign, 'asset': D.handleAsset, 'card': CP.cardPage, 'card-google': CP.cardGoogle };
 module.exports = (req, res) => {
   const h = ACTIONS[String((req.query && req.query.action) || '')];
   if (!h) { res.status(404).json({ error: 'not_found' }); return; }
