@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: mediastream: data:; font-src 'self' data:; connect-src 'self' https: http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self' blob:">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loya — demo</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="android.css">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+
+<!-- ЭКРАН ПЕРВОГО ЗАПУСКА -->
+<div id="onboarding-overlay" style="display:none">
+  <div class="onboarding-box">
+    <div class="onboarding-steps" id="onboarding-steps" aria-hidden="true">
+      <span class="onboarding-dot active"></span><span class="onboarding-dot"></span><span class="onboarding-dot"></span><span class="onboarding-dot"></span><span class="onboarding-dot"></span><span class="onboarding-dot"></span>
+    </div>
+    <!-- Шаг 0: язык. Заголовок на всех 4 языках сразу — язык ещё не выбран. -->
+    <div id="onboarding-step-lang">
+      <div class="onboarding-emoji">🌍</div>
+      <h1 class="onboarding-lang-title">Язык · Мова · Jazyk · Language</h1>
+      <div class="onboarding-lang-grid">
+        <button type="button" class="onboarding-lang-card" data-lang="ru"><span class="onboarding-lang-code">RU</span><span class="onboarding-lang-name">Русский</span></button>
+        <button type="button" class="onboarding-lang-card" data-lang="uk"><span class="onboarding-lang-code">UK</span><span class="onboarding-lang-name">Українська</span></button>
+        <button type="button" class="onboarding-lang-card" data-lang="sk"><span class="onboarding-lang-code">SK</span><span class="onboarding-lang-name">Slovenčina</span></button>
+        <button type="button" class="onboarding-lang-card" data-lang="en"><span class="onboarding-lang-code">EN</span><span class="onboarding-lang-name">English</span></button>
+      </div>
+    </div>
+    <div id="onboarding-step-region" style="display:none">
+      <div class="onboarding-emoji">📍</div>
+      <h1 data-i18n="regionTitle">Где находится заведение?</h1>
+      <p class="hint" data-i18n="regionHint">От страны зависят валюта, праздники и подсказки. Поменять потом можно в «Настройки → Бренд».</p>
+      <div class="region-box" id="onboarding-region-box"></div>
+      <div class="onboarding-actions">
+        <button type="button" id="onboarding-back-region" class="btn-secondary" data-i18n="onboardBack">← Назад</button>
+        <button type="button" id="onboarding-region-next" class="onboarding-primary" data-i18n="onboardNext">Далее →</button>
+      </div>
+    </div>
+    <div id="onboarding-step-niche" style="display:none">
+      <div class="onboarding-emoji">👋</div>
+      <h1 data-i18n="onboardWelcomeTitle">Добро пожаловать!</h1>
+      <p class="hint" data-i18n="onboardWelcomeHint">Пара вопросов, чтобы настроить приложение под ваш бизнес — это займёт меньше минуты.</p>
+      <p class="onboarding-question" data-i18n="onboardNicheQuestion">Чем вы занимаетесь?</p>
+      <div class="onboarding-niche-grid" id="onboarding-niche-grid"></div>
+      <div class="onboarding-actions onboarding-actions-top">
+        <button type="button" id="onboarding-back-lang" class="btn-secondary" data-i18n="onboardBack">← Назад</button>
+      </div>
+    </div>
+    <div id="onboarding-step-brand" style="display:none">
+      <div class="onboarding-emoji" id="onboarding-brand-emoji">✨</div>
+      <h1 data-i18n="onboardBrandTitle">Как называется ваш бизнес?</h1>
+      <p class="hint" data-i18n="onboardBrandHint">Это имя будет видно в приложении, в письмах клиентам и на карточках лояльности. Изменить его потом тоже можно в настройках.</p>
+      <input type="text" id="onboarding-brand-input" data-i18n-placeholder="onboardBrandPlaceholder" placeholder="Например: Loya">
+      <div class="onboarding-actions">
+        <button type="button" id="onboarding-back" class="btn-secondary" data-i18n="onboardBack">← Назад</button>
+        <button type="button" id="onboarding-brand-next" class="onboarding-primary" data-i18n="onboardNext">Далее →</button>
+      </div>
+    </div>
+    <!-- 2.18: что нужно заведению — остальное прячем, включить можно в «Возможностях» -->
+    <div id="onboarding-step-needs" style="display:none">
+      <div class="onboarding-emoji">🧩</div>
+      <h1 data-i18n="needsTitle">Что вам нужно?</h1>
+      <p class="hint" data-i18n="needsHint">Покажем только нужное. Остальное можно включить позже: Настройки → Возможности программы.</p>
+      <div class="needs-list" id="needs-list"></div>
+      <div class="onboarding-actions">
+        <button type="button" id="onboarding-back-needs" class="btn-secondary" data-i18n="onboardBack">← Назад</button>
+        <button type="button" id="onboarding-needs-next" class="onboarding-primary" data-i18n="onboardNext">Далее →</button>
+      </div>
+    </div>
+    <div id="onboarding-step-theme" style="display:none">
+      <div class="onboarding-emoji">🎨</div>
+      <h1 data-i18n="onboardThemeTitle">Выберите оформление</h1>
+      <p class="hint" data-i18n="onboardThemeHint">Нажмите на вариант — приложение сразу перекрасится. Сменить тему или задать свои цвета можно потом в настройках.</p>
+      <div class="onboarding-theme-grid" id="onboarding-theme-grid"></div>
+      <div class="onboarding-actions">
+        <button type="button" id="onboarding-back-theme" class="btn-secondary" data-i18n="onboardBack">← Назад</button>
+        <button type="button" id="onboarding-finish" class="onboarding-primary" data-i18n="onboardFinish">Начать работу →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН УДАЛЁННОЙ БЛОКИРОВКИ -->
+<div id="license-lock-overlay" style="display:none">
+  <div class="license-lock-box">
+    <div class="license-lock-icon">🔒</div>
+    <h2 data-i18n="licenseLockTitle">Доступ временно ограничен</h2>
+    <p id="license-lock-message"></p>
+    <button id="btn-license-recheck" data-i18n="btnLicenseRecheck">Проверить снова</button>
+    <p id="license-recheck-status" class="hint"></p>
+  </div>
+</div>
+
+<div id="free-banner" class="free-banner" style="display:none" role="status">
+  <span class="fb-text" id="fb-text"></span>
+  <span class="fb-actions">
+    <button type="button" id="fb-trial" class="fb-btn fb-primary" style="display:none"></button>
+    <button type="button" id="fb-subscribe" class="fb-btn fb-primary"></button>
+    <button type="button" id="fb-key" class="fb-btn"></button>
+  </span>
+</div>
+
+<div id="nav-backdrop" class="nav-backdrop"></div>
+<button type="button" id="notice-bell" class="notice-bell" data-i18n-title="ntTitle" title="Уведомления" aria-haspopup="true">🔔<b id="notice-badge" class="notice-badge" hidden></b></button>
+<div id="notice-panel" class="notice-panel" hidden>
+  <div class="np-head"><b data-i18n="ntTitle">Уведомления</b><button type="button" id="np-readall" class="np-link" data-i18n="ntReadAll">Прочитать все</button></div>
+  <div id="np-list" class="np-list"></div>
+  <details class="np-set"><summary data-i18n="ntSettings">Какие уведомления показывать</summary>
+    <div id="np-kinds" class="np-kinds"></div>
+    <label class="np-chk"><input type="checkbox" id="np-system"> <span data-i18n="ntSystem">Системные уведомления, когда окно свёрнуто</span></label>
+    <button type="button" id="np-clear" class="np-link np-clear" data-i18n="ntClear">Очистить список</button>
+  </details>
+</div>
+<div class="app">
+  <nav class="sidebar">
+    <div class="logo" id="app-logo"><span class="logo-mark" id="app-logo-mark">💛</span><span class="logo-name" id="app-logo-name">Loya</span></div>
+
+    <button class="nav-btn active" data-view="dashboard"><span class="nav-icon">🏠</span><span data-i18n="navDashboard">Главная</span></button>
+    <button class="nav-btn" data-view="clients"><span class="nav-icon">👥</span><span data-i18n="navClients">Клиенты</span></button>
+    <button class="nav-btn" data-view="newcard"><span class="nav-icon">💳</span><span data-i18n="navNewCard">Новая карта</span></button>
+    <button class="nav-btn" data-view="scan"><span class="nav-icon">📷</span><span data-i18n="navScan">Сканирование</span></button>
+    <button class="nav-btn" data-view="appointments" style="display:none"><span class="nav-icon">📅</span><span data-i18n="navAppointments">Записи</span><span class="nav-badge" id="nav-appt-badge" hidden></span></button>
+    <button class="nav-btn" data-view="campaigns"><span class="nav-icon">📣</span><span data-i18n="navCampaigns">Рассылки</span></button>
+    <button class="nav-btn" data-view="inventory"><span class="nav-icon">📦</span><span data-i18n="navInventory">Товары</span></button>
+    <button class="nav-btn" data-view="marketing"><span class="nav-icon">📊</span><span data-i18n="navMarketing">Маркетинг</span></button>
+    <button class="nav-btn" data-view="settings"><span class="nav-icon">⚙️</span><span data-i18n="navSettings">Настройки</span></button>
+    <button type="button" class="nav-help" id="btn-nav-help"><span class="nav-icon">📖</span><span data-i18n="navHelp">Помощь</span></button>
+    <button type="button" class="nav-more" id="btn-nav-more" aria-expanded="false"><span class="nav-icon">☰</span><span data-i18n="navMore">Ещё</span></button>
+
+    <div class="user-chip" id="user-chip" style="display:none">
+      <span class="user-chip-avatar" id="user-chip-avatar"></span>
+      <span class="user-chip-text"><b id="user-chip-name"></b><span id="user-chip-role"></span></span>
+      <button type="button" id="btn-user-theme" class="user-chip-theme" data-i18n-title="myThemeTitle" title="Мой цвет" style="display:none">🎨</button>
+      <button type="button" id="btn-user-switch" data-i18n="loginSwitch">Сменить</button>
+    </div>
+
+    <button type="button" class="sync-chip" id="sync-chip" style="display:none"></button>
+
+    <div class="lang-switch">
+      <button type="button" class="lang-flag-btn" id="lang-flag-btn" data-i18n-title="langLabel" title="Язык приложения" aria-haspopup="true"></button>
+      <label for="app-lang-select" data-i18n="langLabel">Язык приложения</label>
+      <select id="app-lang-select">
+        <option value="ru">Русский</option>
+        <option value="sk">Slovenčina</option>
+        <option value="uk">Українська</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div class="sidebar-footer">
+      <div data-i18n="devCredit">Разработчик: Vlad Ponomarenko</div>
+      <div><a href="#" id="dev-site-link" class="dev-site-link">loya-loyalty.com</a></div>
+      <div data-i18n="allRightsReserved">Все права защищены.</div>
+      <div id="update-status-line" class="update-status-line" style="display:none"></div>
+    </div>
+  </nav>
+
+  <div id="update-banner" class="update-banner" style="display:none">
+    <div class="update-banner-main">
+      <span id="update-banner-text"></span>
+      <div class="update-banner-progress" id="update-banner-progress" style="display:none">
+        <div class="update-banner-track"><i id="update-banner-fill"></i></div>
+        <b id="update-banner-pct">0%</b>
+      </div>
+    </div>
+    <button type="button" id="btn-update-install" style="display:none">🔄 <span data-i18n="btnUpdateInstall">Перезапустить и установить</span></button>
+    <button type="button" id="btn-update-dismiss" class="update-banner-dismiss">×</button>
+  </div>
+
+  <main class="content">
+
+    <!-- ГЛАВНАЯ / DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <div class="dash-header-row dash-hero">
+        <div class="dash-hero-text">
+          <h1 id="dash-greet" data-i18n="dashboardHeading">Главная</h1>
+          <div class="dash-hero-sub" id="dash-hero-sub"></div>
+        </div>
+        <div class="dash-hero-actions">
+          <form class="dash-qsearch" id="dash-qsearch" autocomplete="off">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+            <input type="search" id="dash-qsearch-input" data-i18n-placeholder="dashSearchPh" placeholder="Найти клиента…">
+          </form>
+          <button type="button" id="btn-dash-scan" class="dash-scan-btn"><span data-ic="scan"></span><span data-i18n="dashScanBtn">Сканировать</span></button>
+          <button type="button" id="btn-toggle-dash-edit" class="btn-secondary btn-dash-edit-toggle"><span data-ic="layout"></span><span data-i18n="btnCustomizeDashboard">Настроить</span></button>
+        </div>
+      </div>
+      <div id="dash-edit-toolbar" class="dash-edit-toolbar" style="display:none">
+        <span data-i18n="dashEditHint">Щёлкните виджет — появится рамка с точками. Тяните за точки, чтобы менять размер, а за сам виджет — чтобы перенести: пунктир покажет, куда он встанет. Ненужное скройте ✕.</span>
+        <div class="dash-edit-toolbar-actions">
+          <button type="button" id="btn-dash-add-header" data-i18n="btnAddDashHeader">+ Заголовок раздела</button>
+          <button type="button" id="btn-dash-reset" data-i18n="btnResetDashboard">Восстановить стандартный вид</button>
+          <button type="button" id="btn-dash-done" data-i18n="btnDoneDashboard">Готово</button>
+        </div>
+      </div>
+
+      <div id="point-bar" class="point-bar" style="display:none"></div>
+      <div id="point-remote" class="point-remote" style="display:none"></div>
+      <div id="home-start" class="home-start" style="display:none"></div>
+      <div id="dashboard-grid" class="dashboard-grid">
+      <div id="client-of-month-box" class="com-box dash-widget" data-widget="clientOfMonth" data-width="12" style="display:none">
+        <div class="com-trophy">🏆</div>
+        <div class="com-info">
+          <div class="com-label" data-i18n="clientOfMonthLabel">Самый активный клиент месяца</div>
+          <div class="com-name" id="com-name"></div>
+          <div class="com-visits" id="com-visits"></div>
+        </div>
+        <div class="com-gift">
+          <div id="com-gift-new-box">
+            <label data-i18n="comGiftLabel">Подарок</label>
+            <input type="text" id="com-gift-input" data-i18n-placeholder="comGiftPlaceholder" placeholder="Например: бесплатный кофе">
+            <button id="btn-save-gift" data-i18n="btnSaveGift">Сохранить</button>
+          </div>
+          <div id="com-gift-existing-box" style="display:none">
+            <span id="com-gift-existing-text"></span>
+            <button id="btn-mark-gift-given" data-i18n="btnMarkGiftGiven">Отметить как выданный</button>
+          </div>
+          <button type="button" id="btn-com-congrats" class="com-congrats" data-i18n="comCongrats">🎉 Поздравить</button>
+          <span id="com-gift-status" class="hint"></span>
+        </div>
+      </div>
+
+      <div id="stat-clients-box" class="stat-card dash-widget" data-widget="statClients" data-width="4"></div>
+      <div id="stat-cards-box" class="stat-card dash-widget" data-widget="statCards" data-width="4"></div>
+      <div id="stat-scans-box" class="stat-card dash-widget" data-widget="statScans" data-width="4"></div>
+      <div id="stat-rewards-box" class="stat-card dash-widget" data-widget="statRewards" data-width="4"></div>
+
+      <div class="weather-smart-section dash-widget" id="weather-box" data-widget="weather" data-width="6" style="display:none">
+        <div class="weather-glass-card" id="weather-card">
+          <div class="weather-header">
+            <div class="weather-icon-large" id="weather-icon"></div>
+            <div class="weather-info">
+              <h2 id="weather-city-name"></h2>
+              <div class="weather-temp" id="weather-temp"></div>
+              <div class="weather-condition" id="weather-condition"></div>
+            </div>
+          </div>
+
+          <div class="weather-offer-box" id="weather-suggestion-box" style="display:none">
+            <div class="weather-offer-content">
+              <div class="weather-offer-icon" id="weather-offer-icon"></div>
+              <div>
+                <div class="weather-offer-title" id="weather-offer-title"></div>
+                <div class="weather-offer-text" id="weather-suggestion-text"></div>
+              </div>
+            </div>
+            <button id="btn-weather-fill-campaign" class="weather-send-btn" type="button" data-i18n="btnWeatherFillCampaign">Заполнить рассылку</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-widget wk-widget" id="wk-box" data-widget="weekCompare" data-width="12">
+        <div class="wk-head"><div><div class="wk-title" data-i18n="wkHeading">📈 Эта неделя и прошлая</div><div class="wk-hint" data-i18n="wkHint">Последние 7 дней в сравнении с предыдущими 7.</div></div></div>
+        <div id="wk-grid" class="wk-grid"></div>
+      </div>
+      <div class="dash-widget attn-widget" id="attn-box" data-widget="attention" data-width="12">
+        <div class="attn-head"><div><div class="attn-title" data-i18n="attnHeading">Требует внимания</div><div class="attn-hint" data-i18n="attnHint">Что стоит сделать сегодня — одним нажатием.</div></div></div>
+        <div id="attn-list" class="attn-list"></div>
+      </div>
+      <div class="overdue-section dash-widget" id="overdue-box" data-widget="overdue" data-width="6" style="display:none">
+        <div class="overdue-header">
+          <div class="overdue-icon">🔔</div>
+          <div>
+            <div class="overdue-title" data-i18n="overdueHeading">Клиенты, которым пора вернуться</div>
+            <div class="overdue-hint" data-i18n="overdueHint">Обычно приходят с одним ритмом, но в этот раз задержались дольше своего обычного — хороший повод напомнить о себе.</div>
+          </div>
+        </div>
+        <div id="overdue-list" class="list"></div>
+      </div>
+
+      <div class="dash-col dash-widget" data-widget="birthdays" data-width="6">
+        <h2 data-i18n="birthdaysHeading">Дни рождения</h2>
+        <div id="birthdays-list" class="list"></div>
+        <button id="btn-congratulate-all" class="btn-birthday" data-i18n="btnCongratulateAll">🎉 Поздравить всех</button>
+        <div id="congratulate-status" class="hint"></div>
+      </div>
+
+      <div class="dash-col dash-widget" data-widget="recentActivity" data-width="6">
+        <div class="dash-col-head">
+          <h2 data-i18n="recentActivityHeading">Последняя активность</h2>
+          <button id="btn-toggle-activity" class="btn-expand-list" type="button" data-i18n="btnExpandList">Развернуть</button>
+        </div>
+        <div id="recent-activity-list" class="list"></div>
+      </div>
+
+      <div id="nameday-box" class="nameday-box dash-widget" data-widget="nameday" data-width="12" style="display:none">
+        <div class="inactive-box-head">
+          <div class="inactive-box-text">
+            <span class="inactive-icon">🎉</span>
+            <span id="nameday-text"></span>
+          </div>
+          <div class="nameday-controls">
+            <select id="nameday-gift-select">
+              <option value="" data-i18n="giftOptionNone">— без подарка —</option>
+              <option value="discount10" data-i18n="giftOptionDiscount10">Скидка 10% сегодня</option>
+              <option value="freeCoffee" data-i18n="giftOptionFreeCoffee">Кофе бесплатно</option>
+              <option value="freeDessert" data-i18n="giftOptionFreeDessert">Десерт бесплатно при покупке кофе</option>
+              <option value="doubleStamps" data-i18n="giftOptionDoubleStamps">Двойные штампы на карту</option>
+            </select>
+            <button id="btn-congratulate-nameday" data-i18n="btnCongratulateNameday">🎉 Поздравить именинников</button>
+          </div>
+        </div>
+        <div id="nameday-list" class="list inactive-clients-list"></div>
+        <div id="nameday-status" class="hint"></div>
+      </div>
+
+      <div id="adv-stat-active-box" class="stat-card dash-widget" data-widget="analyticsActive" data-width="4"></div>
+      <div id="adv-stat-new-box" class="stat-card dash-widget" data-widget="analyticsNew" data-width="4"></div>
+      <div id="adv-stat-returning-box" class="stat-card dash-widget" data-widget="analyticsReturning" data-width="4"></div>
+      <div id="adv-stat-avgvisits-box" class="stat-card dash-widget" data-widget="analyticsAvgVisits" data-width="4"></div>
+      <div id="adv-stat-discounts-box" class="stat-card dash-widget" data-widget="analyticsDiscounts" data-width="4"></div>
+      <div class="donut-card dash-widget" data-widget="clientActivityDonut" data-width="4">
+        <div class="donut-card-title" data-i18n="clientActivityHeading">Активность клиентов</div>
+        <div class="donut-card-body">
+          <svg id="client-activity-donut" viewBox="0 0 120 120" class="donut-svg"></svg>
+          <div class="donut-legend" id="client-activity-legend"></div>
+        </div>
+      </div>
+
+      <div id="inactive-clients-box" class="inactive-box dash-widget" data-widget="inactive" data-width="12" style="display:none">
+        <div class="inactive-box-head">
+          <div class="inactive-box-text">
+            <span class="inactive-icon">⚠️</span>
+            <span id="inactive-clients-text"></span>
+          </div>
+          <button id="btn-send-reengagement" data-i18n="btnSendOffer">Отправить предложение</button>
+        </div>
+        <div id="inactive-clients-list" class="list inactive-clients-list"></div>
+        <div id="reengagement-status" class="hint"></div>
+      </div>
+
+      <div class="dash-col dash-widget" data-widget="topClients" data-width="6">
+        <h2 data-i18n="topClientsHeading">Самые активные клиенты</h2>
+        <div id="top-clients-list" class="list"></div>
+      </div>
+      <div class="dash-col dash-widget" data-widget="topCards" data-width="6">
+        <h2 data-i18n="topCardsHeading">Самые популярные карты</h2>
+        <div id="top-cards-list" class="list"></div>
+      </div>
+      <div class="dash-col dash-widget" data-widget="topSpenders" data-width="6">
+        <h2 data-i18n="topSpendersHeading">💰 Больше всех потратили</h2>
+        <div id="top-spenders-list" class="list"></div>
+      </div>
+
+      <div class="chart-box dash-widget" data-widget="chartVisits" data-width="6">
+        <h3 data-i18n="chartVisits">Посещения по дням</h3>
+        <div id="chart-visits"></div>
+      </div>
+      <div class="chart-box dash-widget" data-widget="chartNewClients" data-width="6">
+        <h3 data-i18n="chartNewClients">Новые клиенты по месяцам</h3>
+        <div id="chart-new-clients"></div>
+      </div>
+      <div class="chart-box dash-widget" data-widget="chartCardUsage" data-width="6">
+        <h3 data-i18n="chartCardUsage">Использование карт</h3>
+        <div id="chart-card-usage"></div>
+      </div>
+      <div class="chart-box dash-widget" data-widget="chartRewards" data-width="6">
+        <h3 data-i18n="chartRewards">Выданные награды по дням</h3>
+        <div id="chart-rewards"></div>
+      </div>
+
+      <div id="stat-revenue-box" class="stat-card dash-widget" data-widget="statRevenue" data-width="6"></div>
+      <div id="stat-avgcheck-box" class="stat-card dash-widget" data-widget="statAvgCheck" data-width="6"></div>
+      <div class="chart-box dash-widget" data-widget="chartRevenue" data-width="6">
+        <h3 data-i18n="chartRevenue">Оборот по месяцам</h3>
+        <div id="chart-revenue"></div>
+      </div>
+      <div class="dash-col dash-widget" data-widget="loyaltyFunnel" data-width="6">
+        <h2 data-i18n="funnelHeading">Воронка лояльности</h2>
+        <div id="loyalty-funnel" class="funnel"></div>
+      </div>
+      <div class="dash-col dash-widget" data-widget="teamReport" data-width="12">
+        <h2 data-i18n="teamReportHeading">Команда и точки за месяц</h2>
+        <div id="team-report" class="team-report"></div>
+      </div>
+      <div class="dash-col dash-widget" data-widget="visitHeatmap" data-width="12">
+        <div class="dash-col-head heatmap-head"><h2 data-i18n="heatmapHeading">Когда приходят клиенты</h2><span class="hint" data-i18n="heatmapHint">Последние 90 дней</span></div>
+        <div id="visit-heatmap" class="heatmap-wrap"></div>
+      </div>
+      </div>
+    </section>
+
+    <!-- КЛИЕНТЫ -->
+    <section id="view-clients" class="view">
+      <h1 data-i18n="clientsHeading">Клиенты и карты</h1>
+
+      <div class="clients-toolbar">
+        <div class="clients-search-wrap">
+          <span class="clients-search-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span>
+          <input type="text" id="client-search" class="search-input" data-i18n-placeholder="searchClients2" placeholder="Имя, email, телефон или код карты">
+        </div>
+        <button type="button" id="btn-refresh-online" class="icon-btn" data-i18n-title="refreshTitle" title="Обновить" aria-label="Обновить">⟳</button>
+        <button type="button" id="btn-recent-clients" class="clients-print-btn">🆕 <span data-i18n="recentBtn">Новые</span> <b id="recent-count" class="recent-count"></b></button>
+        <button type="button" id="btn-open-print" class="clients-print-btn" data-i18n="printBtn">🖨 Печать карт</button>
+        <select id="clients-sort" class="clients-sort">
+          <option value="name" data-i18n="sortName">По имени</option>
+          <option value="recent" data-i18n="sortRecent">Недавно были</option>
+          <option value="visits" data-i18n="sortVisits">Больше визитов</option>
+          <option value="newest" data-i18n="sortNewest">Новые клиенты</option>
+        </select>
+      </div>
+      <div class="clients-filters-row"><div class="clients-filters" id="clients-filters"></div><span class="clients-count" id="clients-count"></span></div>
+
+      <details class="add-client-box">
+        <summary data-i18n="addClientSummary">+ Добавить клиента</summary>
+        <form id="add-client-form" novalidate>
+          <input type="text" id="c-name" data-i18n-placeholder="phName" placeholder="Имя" required maxlength="100">
+          <input type="email" id="c-email" data-i18n-placeholder="phEmail" placeholder="Email (для отправки карты)">
+          <input type="text" id="c-phone" data-i18n-placeholder="phPhone" placeholder="Телефон (необязательно)">
+          <label class="birthday-label"><span data-i18n="phBirthday">Дата рождения (необязательно)</span>
+            <input type="date" id="c-birthday">
+          </label>
+          <label class="birthday-label"><span data-i18n="phNotes">Заметка (необязательно)</span>
+            <textarea id="c-notes" rows="2" placeholder="Например: не любит горячий кофе"></textarea>
+          </label>
+          <label class="birthday-label"><span data-i18n="phPreferredLanguage">Язык рассылок для клиента</span>
+            <select id="c-language">
+              <option value="" data-i18n="langUseAppDefault">— как язык приложения —</option>
+              <option value="ru">Русский</option>
+              <option value="sk">Slovenčina</option>
+              <option value="uk">Українська</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <div class="consent-box"><div class="consent-box-title" data-i18n="consentTitle">Согласие на рассылки</div>
+            <label class="segment-check"><input type="checkbox" id="c-consent-email"> <span data-i18n="consentEmailLbl">Email</span></label>
+            <label class="segment-check"><input type="checkbox" id="c-consent-telegram"> <span data-i18n="consentTelegramLbl">Telegram</span></label>
+            <div class="hint" data-i18n="consentHint">Отмечайте, только если клиент сам согласился получать акции. Карта и сервисные сообщения приходят и без согласия.</div></div>
+          <button type="submit" data-i18n="btnAdd">Добавить</button>
+        </form>
+      </details>
+
+      <div id="clients-list" class="list"></div>
+    </section>
+
+    <!-- ПРОФИЛЬ КЛИЕНТА -->
+    <section id="view-profile" class="view">
+      <button id="btn-profile-back" class="btn-back" data-i18n="profileBack">← Клиенты</button>
+      <div id="profile-content"></div>
+    </section>
+
+    <!-- НОВАЯ КАРТА -->
+    <section id="view-newcard" class="view">
+      <h1 data-i18n="newCardHeading">Новая карта</h1>
+      <div class="nc-layout">
+        <form id="new-card-form" class="card-form nc-form" novalidate>
+          <label class="nc-field"><span data-i18n="lblClient">Клиент</span>
+            <select id="nc-client" required></select>
+          </label>
+          <p class="hint nc-no-clients" id="nc-no-clients" style="display:none" data-i18n="ncNoClientsHint">Сначала добавьте клиента во вкладке «Клиенты».</p>
+
+          <div class="nc-field">
+            <span class="nc-field-label" data-i18n="lblCardType">Тип карты</span>
+            <!-- Настоящий select остаётся (на него завязана логика), но скрыт — выбор делается плитками. -->
+            <select id="nc-type" class="nc-type-select" tabindex="-1" aria-hidden="true">
+              <option value="discount" data-i18n="optDiscount">Скидочная карта (%)</option>
+              <option value="stamp" data-i18n="optStamp">Штамп-карта (N-я покупка бесплатно)</option>
+              <option value="combo" data-i18n="optCombo">Штампы + скидка</option>
+              <option value="spend" data-i18n="optSpend">Накопительная карта (по сумме покупок)</option>
+              <option value="gift" data-i18n="optGift">Подарочный сертификат</option>
+            </select>
+            <div class="nc-type-tiles" role="radiogroup">
+              <button type="button" class="nc-type-tile active" data-type="discount" role="radio" aria-checked="true">
+                <span class="nc-type-icon">💳</span>
+                <span class="nc-type-name" data-i18n="ncTypeDiscountName">Скидочная</span>
+                <span class="nc-type-desc" data-i18n="ncTypeDiscountDesc">Постоянная скидка на каждую покупку</span>
+              </button>
+              <button type="button" class="nc-type-tile" data-type="stamp" role="radio" aria-checked="false">
+                <span class="nc-type-icon">☕</span>
+                <span class="nc-type-name" data-i18n="ncTypeStampName">Штамп-карта</span>
+                <span class="nc-type-desc" data-i18n="ncTypeStampDesc">Каждая N-я покупка бесплатно</span>
+              </button>
+              <button type="button" class="nc-type-tile" data-type="combo" role="radio" aria-checked="false">
+                <span class="nc-type-icon">🎯</span>
+                <span class="nc-type-name" data-i18n="ncTypeComboName">Штампы + скидка</span>
+                <span class="nc-type-desc" data-i18n="ncTypeComboDesc">Скидка на каждую покупку и подарок за N-й визит</span>
+              </button>
+              <button type="button" class="nc-type-tile" data-type="spend" role="radio" aria-checked="false">
+                <span class="nc-type-icon">💰</span>
+                <span class="nc-type-name" data-i18n="ncTypeSpendName">Накопительная</span>
+                <span class="nc-type-desc" data-i18n="ncTypeSpendDesc">Считает сумму покупок клиента</span>
+              </button>
+              <button type="button" class="nc-type-tile" data-type="gift" role="radio" aria-checked="false">
+                <span class="nc-type-icon">🎁</span>
+                <span class="nc-type-name" data-i18n="ncTypeGiftName">Сертификат</span>
+                <span class="nc-type-desc" data-i18n="ncTypeGiftDesc">Подарок на сумму — тратится частями</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="nc-discount-fields" class="nc-type-fields">
+            <label class="nc-field"><span data-i18n="lblDiscountPercent">Скидка, %</span>
+              <input type="number" id="nc-discount" min="1" max="100" value="5">
+            </label>
+          </div>
+
+          <div id="nc-stamp-fields" class="nc-type-fields" style="display:none">
+            <div class="nc-row">
+              <label class="nc-field"><span data-i18n="lblCardTitle">Название карты</span>
+                <input type="text" id="nc-title" data-i18n-placeholder="phCardTitle" placeholder="Например: Кофейная карта">
+              </label>
+              <label class="nc-field"><span data-i18n="lblStampTarget">Каждая какая по счёту покупка бесплатна?</span>
+                <input type="number" id="nc-target" min="2" max="50" value="10">
+              </label>
+            </div>
+          </div>
+
+          <div id="nc-gift-fields" class="nc-type-fields" style="display:none">
+            <div class="nc-row">
+              <label class="nc-field nc-field-narrow"><span data-i18n="lblGiftAmount">Номинал</span>
+                <input type="text" inputmode="decimal" id="nc-gift-amount" value="50">
+              </label>
+              <label class="nc-field nc-field-narrow"><span data-i18n="lblGiftMonths">Срок действия</span>
+                <select id="nc-gift-months">
+                  <option value="3" data-i18n="gm3">3 месяца</option>
+                  <option value="6" data-i18n="gm6">6 месяцев</option>
+                  <option value="12" selected data-i18n="gm12">1 год</option>
+                  <option value="24" data-i18n="gm24">2 года</option>
+                  <option value="0" data-i18n="gm0">Без срока</option>
+                </select>
+              </label>
+              <label class="nc-field"><span data-i18n="lblCardTitle">Название карты</span>
+                <input type="text" id="nc-gift-title" data-i18n-placeholder="phGiftTitle" placeholder="Например: С днём рождения!">
+              </label>
+            </div>
+            <p class="hint" data-i18n="hintGift">Клиент в списке — тот, кому дарят сертификат. После создания его можно отправить на почту, в Telegram и в Wallet или распечатать.</p>
+          </div>
+
+          <div id="nc-spend-fields" class="nc-type-fields" style="display:none">
+            <div class="nc-row">
+              <label class="nc-field"><span data-i18n="lblCardTitle">Название карты</span>
+                <input type="text" id="nc-spend-title" data-i18n-placeholder="phCardTitle" placeholder="Например: Накопительная карта">
+              </label>
+              <label class="nc-field nc-field-narrow"><span data-i18n="lblSpendCurrency">Валюта</span>
+                <select id="nc-spend-currency" class="currency-select"></select>
+              </label>
+            </div>
+            <label class="check-row nc-check">
+              <input type="checkbox" id="nc-spend-bonus-enabled" checked>
+              <span data-i18n="lblSpendBonusEnabled">Давать бонус, когда клиент накопит сумму</span>
+            </label>
+            <p class="hint check-row-hint" id="nc-spend-track-hint" style="display:none" data-i18n="hintSpendTrackOnly">Галочка снята — карта просто считает, сколько клиент у вас потратил. Без скидок и подарков, только отчёт.</p>
+            <div id="nc-spend-bonus-fields" class="nc-row">
+              <label class="nc-field nc-field-narrow"><span data-i18n="lblSpendTarget">Сумма, после которой клиент получает бонус</span>
+                <input type="number" id="nc-spend-target" min="1" step="1" value="500">
+              </label>
+              <label class="nc-field nc-field-narrow"><span data-i18n="lblSpendPoints">Сколько бонусов за эту сумму</span>
+                <input type="number" id="nc-spend-points" min="1" max="1000" step="1" value="1">
+              </label>
+              <label class="nc-field"><span data-i18n="lblSpendBonusText">Какой бонус получит клиент</span>
+                <input type="text" id="nc-spend-bonus-text" data-i18n-placeholder="phSpendBonusText" placeholder="Например: скидка 10% или подарок">
+              </label>
+            </div>
+            <p class="hint nc-spend-rule" id="nc-spend-rule"></p>
+          </div>
+
+          <div class="nc-actions">
+            <button type="submit" data-i18n="btnCreateCard">Создать карту</button>
+          </div>
+        </form>
+
+        <aside class="nc-preview-col" aria-live="polite">
+          <div class="nc-preview-label" data-i18n="ncPreviewLabel">Так будет выглядеть карта</div>
+          <div class="nc-preview-card" id="nc-preview-card">
+            <div class="ncp-top">
+              <span class="ncp-brand" id="ncp-brand"></span>
+              <span class="ncp-type" id="ncp-type"></span>
+            </div>
+            <div class="ncp-body" id="ncp-body"></div>
+            <div class="ncp-bottom">
+              <span class="ncp-title" id="ncp-title"></span>
+              <span class="ncp-client" id="ncp-client"></span>
+            </div>
+          </div>
+          <p class="nc-preview-how" id="ncp-how"></p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- СКАНИРОВАНИЕ -->
+    <section id="view-scan" class="view">
+      <h1 data-i18n="scanHeading">Сканирование карты</h1>
+      <div class="scan-layout">
+        <div class="scan-main">
+          <button type="button" id="btn-scan-big" class="scan-big-btn"><span class="sbb-ic">📷</span><span data-i18n="btnScanBig">Сканировать карту</span></button>
+          <div class="scan-input-panel">
+            <div class="scan-input-wrap">
+              <span class="scan-input-icon" aria-hidden="true">⌁</span>
+              <input type="text" id="scan-manual-input" data-i18n-placeholder="phScanInput" placeholder="Код карты: отсканируйте или введите и нажмите Enter" autofocus>
+            </div>
+            <div class="scan-input-row">
+              <p class="hint scan-input-hint" data-i18n="scanInputShortHint">USB-сканер работает как клавиатура: курсор в поле — и сканируйте. Код можно ввести и вручную, затем Enter.</p>
+              <div class="scan-camera-box">
+                <button id="btn-start-camera" type="button" class="btn-secondary" data-i18n="btnCameraStart">Включить камеру для сканирования</button>
+                <button id="btn-stop-camera" type="button" class="btn-secondary" style="display:none" data-i18n="btnCameraStop">Остановить камеру</button>
+              </div>
+            </div>
+            <video id="scan-video" width="360" height="270" style="display:none" muted></video>
+          </div>
+
+          <div id="scan-promo-banner" class="scan-promo-banner" style="display:none"></div>
+          <div id="scan-result"></div>
+          <div id="scan-empty" class="scan-empty">
+            <div class="scan-empty-icon">📇</div>
+            <div class="scan-empty-title" data-i18n="scanWaitingTitle">Жду сканирования</div>
+            <div class="hint" id="scan-waiting-hint" data-i18n="scanWaitingHint">Отсканируйте карту клиента USB-сканером, камерой или телефоном — здесь сразу появятся все его карты и бонусы.</div>
+          </div>
+          <div id="scan-insight" class="scan-insight" style="display:none"></div>
+          <div id="scan-client-cards" class="scan-client-cards" style="display:none"></div>
+        </div>
+
+        <aside class="scan-side">
+          <div class="scan-phone-panel">
+            <div class="scan-phone-title" data-i18n="phoneScanHeading">📷 Сканировать с телефона</div>
+            <div class="pairing-box">
+              <img id="phone-scan-qr" class="pairing-qr-img" alt="QR">
+              <div class="pairing-info">
+                <div class="pairing-line"><span data-i18n="pairingAddressLabel">Адрес:</span> <b id="phone-scan-url">…</b></div>
+              </div>
+            </div>
+            <details class="scan-phone-help">
+              <summary data-i18n="scanPhoneHowTo">Как подключить телефон</summary>
+              <p class="hint" data-i18n="phoneScanHint">Если в заведении нет отдельного сканера — отсканируйте этот QR-код своим рабочим телефоном (той же WiFi-сетью, что и компьютер). Откроется страница с камерой прямо в браузере — можно наводить и сканировать карты клиентов одну за другой, без установки приложения.</p>
+              <p class="hint" data-i18n="phoneScanFlagHint">⚠️ При первом открытии браузер покажет предупреждение о сертификате — это нормально, подтвердите переход и один раз разрешите доступ к камере.</p>
+            </details>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- РАССЫЛКИ -->
+    <section id="view-campaigns" class="view">
+      <div class="campaign-header">
+        <h1 data-i18n="campaignsHeading">Рассылки</h1>
+        <div class="campaign-quick send-all-cards-box">
+          <div class="campaign-quick-text">
+            <div class="send-all-cards-title" data-i18n="sendCardsHeading">Отправить карточки всем</div>
+            <div class="hint" data-i18n="sendCardsHint">Каждому клиенту с указанным email уйдёт письмо с его открыткой (по одному письму на каждую карту). Язык письма берётся из настроек клиента.</div>
+            <div id="send-all-cards-status" class="hint"></div>
+          </div>
+          <button id="btn-send-all-cards" type="button" data-i18n="btnSendAllCards">📇 Отправить всем их карточки</button>
+        </div>
+      </div>
+
+      <div id="consent-summary" class="consent-summary"></div>
+      <form id="campaign-form" class="campaign-compose" novalidate>
+        <div class="campaign-col-main">
+          <div class="campaign-compose-title" data-i18n="campaignComposeHeading">Новая рассылка</div>
+          <div class="campaign-tpls" id="campaign-tpls"></div>
+          <label class="campaign-field"><span data-i18n="lblCampaignSubject">Тема письма</span>
+            <input type="text" id="campaign-subject" required data-i18n-placeholder="phCampaignSubject" placeholder="Например: Скидка 20% на выходных">
+          </label>
+          <div class="campaign-body-tools">
+            <button type="button" id="btn-cp-insert-name" class="cp-tool" data-i18n-title="cpInsertNameHint" title="Вставить имя клиента">👤 <span data-i18n="cpInsertName">Имя клиента</span></button>
+            <button type="button" id="btn-cp-preview" class="cp-tool">👁 <span data-i18n="cpPreview">Предпросмотр</span></button>
+          </div>
+          <label class="campaign-field campaign-field-grow"><span data-i18n="lblCampaignBody">Текст сообщения</span>
+            <textarea id="campaign-body" rows="6" required data-i18n-placeholder="phCampaignBody" placeholder="Напишите, о чём хотите рассказать клиентам"></textarea>
+          </label>
+        </div>
+
+        <div class="campaign-col-side">
+          <div class="campaign-block">
+            <div class="campaign-block-label" data-i18n="campaignAudienceLabel">Кому отправить</div>
+            <div class="campaign-segments segment-box">
+              <label class="segment-check seg-pill"><input type="checkbox" id="seg-all" checked> <span data-i18n="segAll">Все клиенты</span></label>
+              <label class="segment-check seg-pill"><input type="checkbox" id="seg-active"> <span data-i18n="segActive">Только активные</span></label>
+              <label class="segment-check seg-pill"><input type="checkbox" id="seg-inactive"> <span data-i18n="segInactive">Не были более 30 дней</span></label>
+              <label class="segment-check seg-pill"><input type="checkbox" id="seg-birthday"> <span data-i18n="segBirthday">Именинники (ближайшие 14 дней)</span></label>
+              <label class="segment-check seg-pill"><input type="checkbox" id="seg-vip"> <span data-i18n="segVip">VIP (GOLD)</span></label>
+              <label class="segment-check seg-pill seg-pill-smart"><input type="checkbox" id="seg-near"> <span data-i18n="segNear">В шаге от подарка</span></label>
+              <label class="segment-check seg-pill seg-pill-smart"><input type="checkbox" id="seg-newbie"> <span data-i18n="segNewbie">Новички без 2-го визита</span></label>
+              <label class="segment-check seg-pill seg-pill-smart"><input type="checkbox" id="seg-risk"> <span data-i18n="segRisk">Могут уйти</span></label>
+              <label class="segment-check seg-pill seg-pill-smart"><input type="checkbox" id="seg-fans"> <span data-i18n="segFans">Фанаты (5+ визитов)</span></label>
+            </div>
+          </div>
+
+          <div class="campaign-block">
+            <label class="campaign-field"><span data-i18n="emailLangLabel">Язык письма</span>
+              <select id="campaign-lang-select">
+                <option value="ru">Русский</option>
+                <option value="uk">Українська</option>
+                <option value="sk">Slovenčina</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+            <label class="segment-check campaign-lang-filter-check"><input type="checkbox" id="campaign-lang-filter" checked> <span data-i18n="campaignLangFilterLabel">Отправлять только клиентам с этим языком</span></label>
+          </div>
+
+          <div class="campaign-block">
+            <span class="campaign-attach-label"><span data-i18n="lblCampaignAttachment">Картинка или файл (необязательно)</span></span>
+            <label class="campaign-attach-btn" for="campaign-attachment"><span data-i18n="campaignAttachBtn">📎 Прикрепить картинку или файл</span></label>
+            <input type="file" id="campaign-attachment" class="visually-hidden-file" multiple>
+            <div id="campaign-attachment-preview" class="attachment-preview"></div>
+          </div>
+
+          <div class="campaign-footer">
+            <span class="campaign-recipients-badge">👥 <span id="campaign-recipient-count"></span></span>
+            <div class="send-dropdown-wrap">
+              <button type="button" id="btn-campaign-send-toggle" class="btn-with-caret" data-i18n="btnSendDropdown">📤 Отправить</button>
+              <div id="campaign-send-menu" class="send-dropdown-menu send-dropdown-up" style="display:none">
+                <button type="button" data-channel="email" id="campaign-send-email">✉️ <span data-i18n="sendChannelEmail">Email</span></button>
+                <button type="button" data-channel="telegram" id="campaign-send-telegram">✈️ <span data-i18n="sendChannelTelegram">Telegram</span></button>
+                <div class="send-dropdown-menu-divider"></div>
+                <button type="button" data-channel="both" id="campaign-send-both">✉️✈️ <span data-i18n="sendChannelBoth">Email и Telegram</span></button>
+              </div>
+            </div>
+            <div id="campaign-status" class="hint"></div>
+          </div>
+        </div>
+      </form>
+      <div class="campaign-recent" id="campaign-recent"></div>
+    </section>
+
+    <!-- МАРКЕТИНГ -->
+    <section id="view-marketing" class="view">
+      <h1 data-i18n="navMarketing">Маркетинг</h1>
+      <p class="hint mk-lead" data-i18n="marketingHint">Умные подсказки на сегодня: кому написать, что предложить и когда это сработает лучше всего.</p>
+
+      <div class="mk-editbar">
+        <button type="button" id="btn-mk-edit" class="btn-secondary mk-edit-btn">🧩 <span data-i18n="mkEditBtn">Настроить блоки</span></button>
+        <div class="mk-edit-actions" id="mk-edit-actions" style="display:none">
+          <span class="hint" data-i18n="mkEditHint">Перетаскивайте блоки, меняйте ширину за край, скрывайте лишнее.</span>
+          <button type="button" id="btn-mk-reset" class="btn-secondary" data-i18n="btnResetDashboard">Восстановить стандартный вид</button>
+          <button type="button" id="btn-mk-save" data-i18n="btnDoneDashboard">Готово</button>
+        </div>
+      </div>
+      <div class="mk-grid" id="mk-grid">
+        <div class="mk-block" data-mk="kpi"><div class="mk-section mk-kpi-sec">
+          <div class="mk-section-head"><h2 data-i18n="mkKpiHeading">🔁 Возвращаемость</h2><p class="hint" data-i18n="mkKpiHint">Главный показатель программы лояльности: сколько клиентов приходит снова.</p></div>
+          <div class="mk-kpi" id="mk-kpi"></div>
+        </div></div>
+        <div class="mk-block" data-mk="idea">
+        <div class="surprise-card mk-idea">
+          <div class="mk-idea-head">
+            <span class="surprise-icon">🎁</span>
+            <span class="mk-kicker" data-i18n="mkIdeaLabel">Идея для рассылки</span>
+          </div>
+          <div class="surprise-title" data-i18n="surpriseHeading">Сюрприз дня</div>
+          <div class="surprise-body"><div id="surprise-text" class="surprise-text"></div><div id="surprise-thumb" class="surprise-thumb" aria-hidden="true"></div></div>
+          <div class="surprise-actions">
+            <button id="btn-surprise-fill" type="button" data-i18n="btnSurpriseFill">Заполнить рассылку</button>
+            <button id="btn-surprise-reroll" type="button" class="btn-secondary">🎲 <span data-i18n="btnSurpriseReroll">Другой вариант</span></button>
+          </div>
+        </div>
+        </div>
+        <div class="mk-block" data-mk="insights">
+        <div class="insight-card mk-insights">
+          <h3 data-i18n="insightsHeading">⏰ Время и дни</h3>
+          <div class="mk-insight-grid">
+            <div id="weekday-insight" class="insight-row"></div>
+            <div id="hour-insight" class="insight-row"></div>
+          </div>
+        </div>
+        </div>
+        <div class="mk-block" data-mk="todo">
+      <div class="mk-section">
+        <div class="mk-section-head"><h2 data-i18n="mkTodoHeading">Что сделать сегодня</h2></div>
+        <div class="mk-todo" id="mk-todo"></div>
+      </div>
+        </div>
+        <div class="mk-block" data-mk="atrisk"><div class="mk-section">
+          <div class="mk-section-head"><h2 data-i18n="mkRiskHeading">⚠️ Под угрозой ухода</h2><p class="hint" data-i18n="mkRiskHint">Обычно приходили регулярно, но сейчас задерживаются. Самое время напомнить о себе.</p></div>
+          <div class="mk-list" id="mk-atrisk"></div>
+        </div></div>
+        <div class="mk-block" data-mk="birthdays"><div class="mk-section">
+          <div class="mk-section-head"><h2 data-i18n="mkBdayHeading">🎂 Дни рождения — 2 недели</h2><p class="hint" data-i18n="mkBdayHint">Подарок в день рождения — самый тёплый повод вернуться.</p></div>
+          <div class="mk-list" id="mk-birthdays"></div>
+        </div></div>
+        <div class="mk-block" data-mk="segments">
+      <div class="mk-section">
+        <div class="mk-section-head">
+          <h2 data-i18n="segmentsHeading">Сегменты клиентов</h2>
+          <p class="hint" data-i18n="mkSegmentsHint">Нажмите на сегмент — откроется рассылка с готовым текстом для этих клиентов.</p>
+        </div>
+        <div class="mk-segments" id="segments-grid"></div>
+      </div>
+        </div>
+        <div class="mk-block" data-mk="roi">
+      <div class="mk-section">
+        <div class="mk-section-head mk-roi-head">
+          <div><h2 data-i18n="roiHeading">📬 Отдача от рассылок</h2>
+          <p class="hint" data-i18n="roiHint">Сколько получателей пришло за выбранное число дней после письма. Это не доказательство, что пришли именно из-за письма, но хорошо видно, какие письма работают лучше.</p></div>
+          <div class="roi-days" id="roi-days"></div>
+        </div>
+        <div class="mk-roi" id="mk-roi"></div>
+      </div>
+        </div>
+        <div class="mk-block" data-mk="referral">
+      <div class="mk-section">
+        <div class="mk-section-head"><h2 data-i18n="mkReferralHeading">🤝 Приведи друга</h2></div>
+        <div class="mk-referral" id="mk-referral"></div>
+      </div>
+        </div>
+        <div class="mk-block" data-mk="reviews">
+      <div class="mk-section">
+        <div class="mk-section-head"><h2 data-i18n="mkReviewsHeading">⭐ Отзывы гостей</h2></div>
+        <div class="mk-reviews" id="mk-reviews"></div>
+      </div>
+        </div>
+        <div class="mk-block" data-mk="lang">
+      <div class="mk-section">
+        <div class="mk-section-head">
+          <h2 data-i18n="languageStatsHeading">🌍 Клиенты по языку</h2>
+          <p class="hint" data-i18n="languageStatsHint">Помогает решить, на какой язык делать акцент в рассылках.</p>
+        </div>
+        <div class="mk-lang-panel" id="language-stats-grid"></div>
+      </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- НАСТРОЙКИ ПОЧТЫ -->
+    <!-- 2.20: ЗАПИСИ (онлайн-запись и журнал) -->
+    <section id="view-appointments" class="view">
+      <div class="ap-head">
+        <h1 data-i18n="apHeading">📅 Записи</h1>
+        <div class="ap-tools">
+          <div class="ap-nav"><button type="button" class="btn-secondary" id="ap-prev" aria-label="‹">‹</button><button type="button" class="btn-secondary" id="ap-today" data-i18n="apToday">Сегодня</button><button type="button" class="btn-secondary" id="ap-next" aria-label="›">›</button></div>
+          <button type="button" class="btn-secondary" id="ap-link">🔗 <span data-i18n="apLink">Ссылка для записи</span></button>
+          <button type="button" class="team-btn-primary" id="ap-add" data-i18n="apAdd">+ Записать</button>
+        </div>
+      </div>
+      <div class="ap-off" id="ap-off" style="display:none"></div>
+      <div class="ap-week" id="ap-week"></div>
+      <div class="ap-day-title" id="ap-day-title"></div>
+      <div class="ap-list" id="ap-list"></div>
+      <p class="hint ap-sync" id="ap-sync"></p>
+    </section>
+
+    <section id="view-inventory" class="view">
+      <div class="inv-head">
+        <div><h1 data-i18n="navInventoryFull">Товары и склад</h1>
+        <p class="hint inv-lead" data-i18n="invLead">Учёт товаров и остатков. Чек клиенту по-прежнему печатает ваша касса — Loya получает копию чека, начисляет бонусы и списывает товары.</p></div>
+        <div class="inv-head-actions">
+          <button type="button" id="btn-inv-add" class="inv-btn inv-btn-primary" data-i18n="invAdd">+ Товар</button>
+          <button type="button" id="btn-inv-import" class="inv-btn" data-i18n="invImport">Импорт CSV</button>
+          <button type="button" id="btn-inv-export" class="inv-btn" data-i18n="invExport">Выгрузка для бухгалтерии</button>
+          <button type="button" id="btn-inv-pos" class="inv-btn" data-i18n="invPos">🧾 Касса</button>
+        </div>
+      </div>
+      <div class="inv-tiles" id="inv-tiles"></div>
+      <div class="inv-tabs" id="inv-tabs">
+        <button type="button" class="inv-tab active" data-tab="products" data-i18n="invTabProducts">Товары</button>
+        <button type="button" class="inv-tab" data-tab="moves" data-i18n="invTabMoves">Движения</button>
+        <button type="button" class="inv-tab" data-tab="receipts" data-i18n="invTabReceipts">Чеки из кассы</button>
+      </div>
+      <div class="inv-toolbar" id="inv-toolbar">
+        <input type="text" id="inv-search" data-i18n-placeholder="invSearch" placeholder="Поиск: название, артикул, штрихкод">
+        <select id="inv-category"></select>
+        <label class="inv-low"><input type="checkbox" id="inv-low"><span data-i18n="invLowOnly">Только заканчиваются</span></label>
+      </div>
+      <div class="inv-table" id="inv-list"></div>
+    </section>
+
+    <section id="view-settings" class="view">
+      <h1 data-i18n="navSettings">Настройки</h1>
+      <div class="settings-search-row">
+        <p class="hint" data-i18n="settingsTilesHint">Выберите раздел, чтобы открыть его настройки.</p>
+        <div class="settings-search"><span class="settings-search-ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span><input type="search" id="settings-search" data-i18n-placeholder="settingsSearchPh" placeholder="Поиск по настройкам: почта, PIN, Wallet…" autocomplete="off"></div>
+      </div>
+      <div class="settings-search-empty hint" id="settings-search-empty" style="display:none" data-i18n="settingsSearchNone">Ничего не нашлось. Попробуйте другое слово.</div>
+      <div class="settings-layout">
+      <div class="settings-side">
+      <nav class="settings-cats" id="settings-cats" aria-label="Settings"></nav>
+      <div class="site-link-row"><button type="button" id="btn-setup-show" class="site-link-btn" style="display:none">📋 <span data-i18n="setupShowAgain">Список настройки</span></button>
+        <button type="button" id="btn-open-site" class="site-link-btn">🌐 <span data-i18n="siteLinkLabel">Сайт Loya: loya-loyalty.com</span></button></div>
+      </div>
+      <div class="settings-main">
+      <div class="venue-panel" id="venue-panel">
+        <div class="venue-main">
+          <div class="venue-head"><b data-i18n="venueTitle">Ваше заведение</b><span class="venue-saved" id="venue-saved" aria-live="polite"></span></div>
+          <div class="venue-row">
+            <button type="button" class="venue-logo" id="venue-logo" data-i18n-title="venueLogoTitle" title="Логотип"></button>
+            <label class="venue-field"><span data-i18n="brandNameLabel">Название бренда</span><input type="text" id="venue-name" maxlength="60" autocomplete="off"></label>
+          </div>
+          <div class="venue-meta">
+            <button type="button" class="venue-chip" id="venue-niche"></button>
+            <span class="venue-chip venue-chip-static" id="venue-region"></span>
+          </div>
+          <div class="venue-rule">
+            <div class="venue-rule-text"><b data-i18n="venueRuleTitle">Карта для новых гостей</b><span class="hint" id="venue-rule-desc"></span></div>
+            <div class="venue-stepper" id="venue-stepper">
+              <button type="button" id="venue-minus" aria-label="−">−</button><span id="venue-val"></span><button type="button" id="venue-plus" aria-label="+">+</button>
+            </div>
+          </div>
+          <div class="venue-quick" id="venue-quick">
+            <button type="button" data-q="settings-modal-poster"><span data-ic="printer"></span><span data-i18n="vqPoster">Афиша с QR</span></button>
+            <button type="button" data-q="settings-modal-selfreg"><span data-ic="qr"></span><span data-i18n="vqReg">Регистрация гостей</span></button>
+            <button type="button" data-q="settings-modal-geo"><span data-ic="mapPin"></span><span data-i18n="vqGeo">Wallet рядом</span></button>
+            <button type="button" data-q="settings-modal-promo"><span data-ic="zap"></span><span data-i18n="vqPromo">Акции</span></button>
+          </div>
+          <div class="venue-foot">
+            <span class="venue-sub" id="venue-sub"></span>
+            <button type="button" class="venue-link" id="venue-more" data-i18n="venueMore">Бренд и логотип →</button>
+          </div>
+        </div>
+        <div class="venue-card-col">
+          <div class="venue-card" id="venue-card"></div>
+          <div class="venue-card-hint hint" data-i18n="venueCardHint">Так карта выглядит у гостя в Wallet</div>
+          <button type="button" class="btn-secondary venue-design-btn" id="venue-design" data-i18n="venueDesign">🎨 Дизайн карты</button>
+        </div>
+      </div>
+      <div id="setup-checklist" class="setup-checklist"></div>
+
+      <div class="settings-groups" id="settings-tiles">
+        <div class="settings-group" data-cat="start">
+          <div class="settings-group-title" data-i18n="setGroupStart">Начало работы</div>
+          <p class="settings-group-intro" data-i18n="setIntroStart"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" type="button" id="tile-setup-wizard">
+          <span class="settings-tile-icon">🧭</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="wsTile">Первые шаги за 5 минут</span>
+        <span class="settings-tile-desc" data-i18n="wsTileDesc"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-brand">
+          <span class="settings-tile-icon">🏷️</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="brandHeading">Бренд и вид бизнеса</span>
+        <span class="settings-tile-desc" data-i18n="setDescBrand"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-subscription" data-owner-only="1">
+          <span class="settings-tile-icon">🔑</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="subHeading">Подписка</span>
+        <span class="settings-tile-desc" data-i18n="setDescSubscription"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-manual">
+          <span class="settings-tile-icon">📖</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="manualHeading">Руководство</span>
+        <span class="settings-tile-desc" data-i18n="setDescManual"></span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="clients">
+          <div class="settings-group-title" data-i18n="setGroupReg">Регистрация клиентов</div>
+          <p class="settings-group-intro" data-i18n="setIntroClients"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-selfreg">
+          <span class="settings-tile-icon">📋</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="selfregHeading">Саморегистрация по QR</span>
+        <span class="settings-tile-desc" data-i18n="setDescSelfreg"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-online">
+          <span class="settings-tile-icon">🔗</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="onlineHeading">Регистрация по ссылке</span>
+        <span class="settings-tile-desc" data-i18n="setDescOnline"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-poster">
+          <span class="settings-tile-icon">🖨️</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="posterHeading">Афиша для стойки</span>
+        <span class="settings-tile-desc" data-i18n="setDescPoster"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-booking" id="tile-booking">
+          <span class="settings-tile-icon">📅</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="bookHeading">Онлайн-запись</span>
+        <span class="settings-tile-desc" data-i18n="setDescBooking">Услуги, мастера и часы работы — гости записываются сами</span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="cards">
+          <div class="settings-group-title" data-i18n="setGroupCards">Карты и Wallet</div>
+          <p class="settings-group-intro" data-i18n="setIntroCards"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-promo">
+          <span class="settings-tile-icon">⚡</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="promoHeading">Акции и защита</span>
+        <span class="settings-tile-desc" data-i18n="setDescPromo"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-tiers">
+          <span class="settings-tile-icon">🥇</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="tiersHeading">Уровни и сгорание бонусов</span>
+        <span class="settings-tile-desc" data-i18n="setDescTiers">Silver и Gold с привилегиями, срок жизни бонусов</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-walletdesign">
+          <span class="settings-tile-icon">📲</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="wdTile">Карты в Wallet: свой дизайн</span>
+        <span class="settings-tile-desc" data-i18n="wdTileDesc">Логотип, картинка и цвет карты в Google Wallet и Apple Wallet</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-gwallet">
+          <span class="settings-tile-icon">🎟️</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="gwalletHeading">Google Wallet</span>
+        <span class="settings-tile-desc" data-i18n="setDescGwallet"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-geo">
+          <span class="settings-tile-icon">📍</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="geoHeading">Wallet рядом с заведением</span>
+        <span class="settings-tile-desc" data-i18n="setDescGeo">Напоминание на экране телефона, когда гость проходит мимо</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-cardart">
+          <span class="settings-tile-icon">🐱</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="cardArtHeading">Дизайн карточек</span>
+        <span class="settings-tile-desc" data-i18n="setDescCardart"></span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="marketing">
+          <div class="settings-group-title" data-i18n="setGroupMessages">Сообщения и рассылки</div>
+          <p class="settings-group-intro" data-i18n="setIntroMarketing"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-sending">
+          <span class="settings-tile-icon">📨</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="sendHeading">Отправка клиентам</span>
+        <span class="settings-tile-desc" data-i18n="setDescSending">Email, Telegram и картинки к сообщениям</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-email">
+          <span class="settings-tile-icon">✉️</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="emailSectionHeading">Настройки почты</span>
+        <span class="settings-tile-desc" data-i18n="setDescEmail"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-telegram">
+          <span class="settings-tile-icon">📱</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="telegramHeading">Telegram</span>
+        <span class="settings-tile-desc" data-i18n="setDescTelegram"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-auto">
+          <span class="settings-tile-icon">🤖</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="autoHeading">Автоматические рассылки</span>
+        <span class="settings-tile-desc" data-i18n="setDescAuto"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-nameday">
+          <span class="settings-tile-icon">🎉</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="namedayAutoHeading">Meniny — автоматика</span>
+        <span class="settings-tile-desc" data-i18n="setDescNameday"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-reviews">
+          <span class="settings-tile-icon">⭐</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="fbHeading">Отзывы после визита</span>
+        <span class="settings-tile-desc" data-i18n="setDescReviews">Довольных — в Google, недовольных — лично вам</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-weather">
+          <span class="settings-tile-icon">🌦</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="weatherHeading">Погода и маркетинг</span>
+        <span class="settings-tile-desc" data-i18n="setDescWeather"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-report" data-owner-only="1">
+          <span class="settings-tile-icon">📈</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="reportHeading">Отчёт за месяц на почту</span>
+        <span class="settings-tile-desc" data-i18n="setDescReport">Итоги месяца 1-го числа: визиты, выручка, кто вернулся</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-sendhistory">
+          <span class="settings-tile-icon">📊</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="sendHistoryHeading">История рассылок</span>
+        <span class="settings-tile-desc" data-i18n="setDescSendhistory"></span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="team">
+          <div class="settings-group-title" data-i18n="setGroupTeam2">Сотрудники и доступ</div>
+          <p class="settings-group-intro" data-i18n="setIntroTeam"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-team">
+          <span class="settings-tile-icon">👥</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="teamHeading2">Сотрудники и роли</span>
+        <span class="settings-tile-desc" data-i18n="setDescTeam"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-pin" data-owner-only="1">
+          <span class="settings-tile-icon">🔒</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="pinHeading">Защита PIN-кодом</span>
+        <span class="settings-tile-desc" data-i18n="setDescPin"></span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="network">
+          <div class="settings-group-title" data-i18n="setGroupNetwork">Точки и устройства</div>
+          <p class="settings-group-intro" data-i18n="setIntroNetwork"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile settings-tile-hero" type="button" id="tile-sync" data-owner-only="1">
+          <span class="settings-tile-icon">🏪</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="netTile">Сеть точек и общая база</span>
+        <span class="settings-tile-desc" data-i18n="netTileDesc">Эта точка, другие точки, общая база клиентов, статистика и общий бот</span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-pairing">
+          <span class="settings-tile-icon">📱</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="pairingHeading">Подключение телефона</span>
+        <span class="settings-tile-desc" data-i18n="setDescPairing"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-pos">
+          <span class="settings-tile-icon">🧾</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="posHeading">Подключение кассы</span>
+        <span class="settings-tile-desc" data-i18n="setDescPos"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-owner" data-owner-only="1">
+          <span class="settings-tile-icon">🏠</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="ownerHeading">Доступ из дома</span>
+        <span class="settings-tile-desc" data-i18n="setDescOwner"></span></span>
+        </button>
+          </div>
+        </div>
+        <div class="settings-group" data-cat="look">
+          <div class="settings-group-title" data-i18n="setGroupLook2">Оформление и функции</div>
+          <p class="settings-group-intro" data-i18n="setIntroLook"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-theme">
+          <span class="settings-tile-icon">🎨</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="themeHeading">Конструктор дизайна</span>
+        <span class="settings-tile-desc" data-i18n="setDescTheme"></span></span>
+        </button>
+          </div>
+          <div class="ui-size-box" id="ui-size-box">
+            <div class="ui-size-row">
+              <div class="ui-size-text"><b data-i18n="uiSizeTitle">Размер интерфейса</b><small data-i18n="uiSizeHint">Если текст кажется слишком крупным или мелким. Быстро: Ctrl + и Ctrl −.</small></div>
+              <div class="ui-size-seg" id="ui-size-seg" role="group"></div>
+            </div>
+            <div class="ui-size-row">
+              <div class="ui-size-text"><b data-i18n="uiFullTitle">Во весь экран</b><small data-i18n="uiFullHint">Программа занимает весь экран, без рамки окна. Включить и выключить — клавиша F11.</small></div>
+              <button type="button" class="btn-secondary ui-full-btn" id="ui-full-btn"></button>
+            </div>
+          </div>
+          <div class="settings-subtitle" data-i18n="featGroup">Возможности программы</div>
+          <div class="feature-toggles">
+            <label class="feature-toggle"><input type="checkbox" id="feat-inventory"> <span><b>📦 <span data-i18n="featInventory">Товары и склад</span></b><small data-i18n="featInventoryD">Учёт товаров, приход, списание, остатки</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="feat-network"> <span><b>🏪 <span data-i18n="featNetwork">Несколько точек</span></b><small data-i18n="featNetworkD">Общая база, статистика по точкам, общий бот</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="feat-staff"> <span><b>👥 <span data-i18n="featStaff">Сотрудники с PIN</span></b><small data-i18n="featStaffD">Вход кассиров, права, отчёт по сотрудникам</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="feat-weather"> <span><b>🌦 <span data-i18n="featWeather">Погода и акции под погоду</span></b><small data-i18n="featWeatherD">Подсказки на Главной: дождь — повод для акции</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="feat-booking"> <span><b>📅 <span data-i18n="featBooking">Онлайн-запись</span></b><small data-i18n="featBookingD">Для салонов и барбершопов: гости записываются сами, напоминания, визит на карту</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="s-sound-enabled" checked> <span><b>🔊 <span data-i18n="lblSoundEnabled">Звук при сканировании</span></b><small data-i18n="soundToggleD">Короткий сигнал, когда карта отсканирована</small></span></label>
+            <label class="feature-toggle"><input type="checkbox" id="feat-pos"> <span><b>🧾 <span data-i18n="featPos">Чеки из кассы</span></b><small data-i18n="featPosD">Касса присылает чеки — бонусы и списание товаров сами</small></span></label>
+          </div>
+          <label class="start-view-row"><span data-i18n="startViewLabel">При запуске открывать</span>
+            <select id="start-view-select">
+              <option value="" data-i18n="startViewAuto">Авто: на телефоне — сканирование</option>
+              <option value="dashboard" data-i18n="navDashboard">Главная</option>
+              <option value="scan" data-i18n="startViewScan">Сканирование (касса)</option>
+            </select></label>
+        </div>
+        <div class="settings-group" data-cat="system">
+          <div class="settings-group-title" data-i18n="setGroupSystem">Система</div>
+          <p class="settings-group-intro" data-i18n="setIntroSystem"></p>
+          <div class="settings-tiles">
+            <button class="settings-tile" data-modal="settings-modal-data" data-owner-only="1">
+          <span class="settings-tile-icon">💾</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="dataManagementHeading">Управление данными</span>
+        <span class="settings-tile-desc" data-i18n="setDescData"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-updates" data-owner-only="1">
+          <span class="settings-tile-icon">🔄</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="updatesHeading">Обновления</span>
+        <span class="settings-tile-desc" data-i18n="setDescUpdates"></span></span>
+        </button>
+            <button class="settings-tile" data-modal="settings-modal-support">
+          <span class="settings-tile-icon">🆘</span>
+          <span class="settings-tile-text"><span class="settings-tile-title" data-i18n="supportHeading">Поддержка</span>
+        <span class="settings-tile-desc" data-i18n="setDescSupport"></span></span>
+        </button>
+          </div>
+        </div>
+
+      </div>
+      </div>
+      </div>
+
+      <!-- ПОЧТА -->
+      <!-- БРЕНД И ВИД БИЗНЕСА -->
+      <div id="settings-modal-brand" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="brandHeading">🏷️ Бренд и вид бизнеса</h2>
+          <p class="hint" data-i18n="brandHint">Название используется везде — в приложении, в письмах клиентам, на карточках лояльности. Вид бизнеса определяет тексты рассылок и подсказки на Главной.</p>
+<div class="brand-top">
+          <div class="selfreg-settings-box">
+            <label class="nameday-auto-field"><span data-i18n="brandNameLabel">Название бренда</span>
+              <input type="text" id="brand-name-input" placeholder="Loya">
+            </label>
+            <button id="btn-save-brand-name" data-i18n="btnApply">Применить</button>
+            <div class="brand-region">
+            <label class="nameday-auto-field brand-country"><span data-i18n="countryLabel">Страна заведения</span>
+              <select id="brand-country"></select>
+            </label>
+            <label class="nameday-auto-field brand-currency"><span data-i18n="lblSpendCurrency">Валюта</span>
+              <select id="brand-currency" class="currency-select"></select>
+            </label>
+            </div>
+          </div>
+          <div class="brand-logo-box">
+            <div class="brand-logo-preview" id="brand-logo-preview"></div>
+            <div class="brand-logo-text">
+              <b data-i18n="brandLogoLabel">Логотип заведения</b>
+              <p class="hint" data-i18n="brandLogoHint">Показывается в шапке программы вместо значка. Лучше всего — квадратный PNG с прозрачным фоном.</p>
+              <div class="brand-logo-actions">
+                <button type="button" id="btn-brand-logo-upload" class="btn-secondary" data-i18n="brandLogoUpload">Загрузить логотип</button>
+                <button type="button" id="btn-brand-logo-edit" class="btn-secondary" data-i18n="ieEditBtn" style="display:none">✏️ Настроить</button>
+                <button type="button" id="btn-brand-logo-remove" class="btn-secondary" data-i18n="brandLogoRemove" style="display:none">Убрать</button>
+              </div>
+              <input type="file" id="brand-logo-file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none">
+            </div>
+          </div>
+          </div>
+          <p class="onboarding-question" data-i18n="onboardNicheQuestion" style="text-align:left;margin-top:22px;">Чем вы занимаетесь?</p>
+          <div class="onboarding-niche-grid" id="settings-niche-grid"></div>
+          <div id="brand-settings-status" class="hint"></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-email" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="emailSectionHeading">Настройки почты</h2>
+          <div class="mail-mode-box" id="mail-mode-box">
+            <div class="mail-mode-ic" id="mail-mode-ic">✉️</div>
+            <div class="mail-mode-text">
+              <b id="mail-mode-title"></b>
+              <p class="hint" id="mail-mode-desc"></p>
+              <button type="button" id="btn-mail-reset-default" class="btn-secondary" style="display:none" data-i18n="emailResetBtn">↩ Вернуть рабочую почту Loya</button>
+            </div>
+          </div>
+          <form id="settings-form" class="card-form">
+            <label><span data-i18n="lblReplyTo">Email для ответов клиентов</span> <input type="email" id="s-replyto" placeholder="info@mycafe.com"></label>
+            <p class="hint field-tip" data-i18n="tipReplyTo">Необязательно. Если клиент ответит на письмо, ответ придёт на этот адрес. Без него ответы уйдут на служебный адрес Loya, и вы их не увидите.</p>
+            <details class="mail-custom" id="mail-custom">
+              <summary data-i18n="emailCustomSummary">Использовать свою почту (необязательно)</summary>
+              <p class="hint" data-i18n="emailCustomHint">Подойдёт, если хотите, чтобы письма уходили с вашего адреса. Для Gmail нужен «пароль приложения» (App Password), обычный пароль не подойдёт: Аккаунт Google → Безопасность → Двухэтапная аутентификация → Пароли приложений. Если что-то не получится, нажмите «Вернуть рабочую почту Loya».</p>
+              <label><span data-i18n="lblSmtpHost">SMTP хост</span> <input type="text" id="s-host" placeholder="smtp.gmail.com"></label>
+              <label><span data-i18n="lblSmtpPort">SMTP порт</span> <input type="text" id="s-port" placeholder="587"></label>
+              <label><span data-i18n="lblSmtpUser">Email (логин)</span> <input type="text" id="s-user" placeholder="you@gmail.com"></label>
+              <label><span data-i18n="lblSmtpPass">Пароль приложения</span> <input type="password" id="s-pass"></label>
+              <label><span data-i18n="lblSmtpFromName">Имя отправителя</span> <input type="text" id="s-fromname" placeholder="Моя кофейня"></label>
+            </details>
+            <button type="submit" data-i18n="btnSaveSettings">Сохранить настройки</button>
+            <button type="button" id="btn-mail-preview" class="btn-secondary" data-i18n="mailPvBtn">👁 Как клиент увидит письмо</button>
+            <button type="button" id="btn-send-test-email" class="btn-secondary" data-i18n="btnSendTestEmail">✉️ Отправить тестовое письмо себе</button>
+          </form>
+          <div id="settings-status"></div>
+        </div>
+      </div>
+
+      <!-- TELEGRAM -->
+      <div id="settings-modal-telegram" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="telegramHeading">📱 Telegram</h2>
+          <p class="hint" data-i18n="telegramHint">Позволяет отправлять сообщения клиентам не только на email, но и в Telegram. У каждого бизнеса — свой собственный бот, это нормально и бесплатно: Telegram сам выдаёт бота любому желающему за пару минут.</p>
+
+          <div id="telegram-disconnected-box">
+            <ol class="telegram-steps">
+              <li data-i18n="telegramStep1">Откройте Telegram, найдите бота <b>@BotFather</b> и напишите ему <code>/newbot</code>.</li>
+              <li data-i18n="telegramStep2">Придумайте имя и username для бота (username должен заканчиваться на "bot", например <code>my_business_bot</code>).</li>
+              <li data-i18n="telegramStep3">BotFather пришлёт длинный токен вида <code>123456:ABC-...</code> — скопируйte его и вставьте сюда:</li>
+            </ol>
+            <div class="selfreg-settings-box">
+              <label class="nameday-auto-field"><span data-i18n="telegramTokenLabel">Токен бота</span>
+                <input type="text" id="telegram-token-input" placeholder="123456789:AAExampleTokenFromBotFather">
+              </label>
+              <button id="btn-telegram-connect" data-i18n="btnTelegramConnect">Подключить</button>
+            </div>
+            <div id="telegram-status" class="hint"></div>
+          </div>
+
+          <div id="telegram-connected-box" style="display:none">
+            <div class="telegram-connected-row">
+              <span class="telegram-connected-icon">✅</span>
+              <div>
+                <div class="telegram-connected-name" id="telegram-bot-name"></div>
+                <div class="hint" data-i18n="telegramConnectedHint">Бот подключён и слушает сообщения клиентов, пока открыто приложение.</div>
+              </div>
+            </div>
+            <button id="btn-telegram-disconnect" class="btn-secondary" data-i18n="btnTelegramDisconnect">Отключить бота</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOOGLE WALLET -->
+      <div id="settings-modal-gwallet" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="gwalletHeading">🎟️ Google Wallet</h2>
+          <p class="hint" data-i18n="gwalletHint">Клиенты сохраняют карту лояльности в Google Wallet на телефоне — без установки приложений.</p>
+
+          <div class="gwallet-cloud-box" id="gwallet-cloud-box">
+            <div class="gwallet-cloud-ic">✓</div>
+            <div><b data-i18n="gwalletCloudTitle">Работает автоматически</b><p class="hint" id="gwallet-cloud-text" data-i18n="gwalletCloudText"></p></div>
+          </div>
+
+          <div id="gwallet-disconnected-box">
+            <details class="gwallet-own">
+            <summary data-i18n="gwalletOwnSummary">Подключить свой аккаунт Google Wallet (необязательно)</summary>
+            <ol class="telegram-steps">
+              <li data-i18n="gwalletStep1">Зарегистрируйтесь в <b>Google Wallet Business Console</b> (pay.google.com/business/console) и дождитесь подтверждения от Google.</li>
+              <li data-i18n="gwalletStep2">В разделе Google Cloud создайте сервисный аккаунт (Service Account), выпустите для него JSON-ключ и добавьте этот аккаунт как участника (Admin) в Wallet Business Console.</li>
+              <li data-i18n="gwalletStep3">Скопируйте свой Issuer ID (число) из Business Console и вставьте вместе с содержимым JSON-ключа сюда:</li>
+            </ol>
+            <div class="selfreg-settings-box">
+              <label class="nameday-auto-field"><span data-i18n="gwalletIssuerLabel">Issuer ID</span>
+                <input type="text" id="gwallet-issuer-input" placeholder="3388000000012345678">
+              </label>
+              <label class="nameday-auto-field"><span data-i18n="gwalletKeyLabel">Содержимое JSON-ключа сервисного аккаунта</span>
+                <textarea id="gwallet-key-input" rows="5" placeholder='{"type": "service_account", "private_key": "...", "client_email": "..."}'></textarea>
+              </label>
+              <button id="btn-gwallet-connect" data-i18n="btnGwalletConnect">Подключить</button>
+            </div>
+            </details>
+            <div id="gwallet-status" class="hint"></div>
+          </div>
+
+          <div id="gwallet-connected-box" style="display:none">
+            <div class="telegram-connected-row">
+              <span class="telegram-connected-icon">✅</span>
+              <div>
+                <div class="telegram-connected-name" id="gwallet-account-email"></div>
+                <div class="hint" data-i18n="gwalletConnectedHint">Google Wallet подключён — в карточке клиента и на странице регистрации появится кнопка «Добавить в Google Wallet».</div>
+              </div>
+            </div>
+            <button id="btn-gwallet-disconnect" class="btn-secondary" data-i18n="btnGwalletDisconnect">Отключить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ПОДПИСКА -->
+      <div id="settings-modal-subscription" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="subHeading">🔑 Подписка</h2>
+          <p class="hint" data-i18n="subHint">Если приложение распространяется по подписке — введите ключ, который вы получили на сайте после оплаты. Пока ключ не введён (или проверка не настроена), приложение работает без ограничений.</p>
+
+          <div class="selfreg-settings-box">
+            <label class="nameday-auto-field"><span data-i18n="subKeyLabel">Лицензионный ключ</span>
+              <input type="text" id="sub-key-input" placeholder="LOYA-XXXX-XXXX-XXXX">
+            </label>
+            <button id="btn-sub-save">💾 <span data-i18n="btnSubSave">Сохранить и проверить</span></button>
+          </div>
+          <div id="sub-status" class="hint"></div>
+          <div class="sub-plan-box" id="sub-plan-box"></div>
+
+          <div class="server-check-box">
+            <button type="button" id="btn-server-check" class="btn-secondary" data-i18n="serverCheckBtn">🔌 Проверить связь с сервером</button>
+            <button type="button" id="btn-manage-sub" class="btn-secondary" data-i18n="manageSubBtn">💳 Управление подпиской и отмена</button>
+            <div id="server-check-result" class="server-check-result"></div>
+          </div>
+
+          <div id="sub-info-box" style="display:none">
+            <div class="telegram-connected-row">
+              <span class="telegram-connected-icon" id="sub-status-icon">✅</span>
+              <div>
+                <div class="telegram-connected-name" id="sub-status-text"></div>
+                <div class="hint" id="sub-status-detail"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- САМОРЕГИСТРАЦИЯ -->
+      <div id="settings-modal-selfreg" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="selfregHeading">📋 Саморегистрация клиентов по QR</h2>
+          <p class="hint" id="selfreg-intro" data-i18n="selfregHint">Новый клиент сканирует QR-код на стойке, заполняет короткую форму на своём телефоне — и сразу получает карту лояльности (и письмо на email, если указал). Работает по той же локальной WiFi-сети — телефону клиента для этого нужно подключиться к вашему WiFi (см. пояснение ниже).</p>
+
+          <div class="selfreg-mode" id="selfreg-mode">
+            <div class="selfreg-mode-title" data-i18n="srModeTitle">Как клиенты регистрируются</div>
+            <label class="selfreg-mode-opt"><input type="radio" name="selfreg-mode" value="wifi"> <span><b data-i18n="srModeWifi">Через Wi-Fi заведения</b><small data-i18n="srModeWifiD">Как раньше: телефон клиента должен быть в вашей сети Wi-Fi. Работает без интернета.</small></span></label>
+            <label class="selfreg-mode-opt"><input type="radio" name="selfreg-mode" value="online"> <span><b data-i18n="srModeOnline">Через интернет</b><small data-i18n="srModeOnlineD">QR ведёт на сайт: клиенту не нужен ваш Wi-Fi.</small></span></label>
+            <div class="hint" id="selfreg-mode-status"></div>
+          </div>
+          <div class="sr-logo-row">
+            <div class="sr-logo-pv" id="sr-logo-pv"></div>
+            <div class="sr-logo-t"><b data-i18n="srLogoTitle">Логотип на странице регистрации</b><span class="hint" data-i18n="srLogoHint">Гость увидит его в шапке рядом с названием — и на странице по QR, и по ссылке, и на странице записи.</span></div>
+            <div class="sr-logo-act"><button type="button" class="btn-secondary" id="btn-sr-logo" data-i18n="brandLogoUpload">Загрузить логотип</button><button type="button" class="btn-secondary" id="btn-sr-logo-rm" data-i18n="brandLogoRemove">Убрать</button></div>
+          </div>
+<div class="sr-logo-row sr-bg-row">
+            <div class="sr-logo-pv sr-bg-pv" id="sr-bg-pv"></div>
+            <div class="sr-logo-t"><b data-i18n="srBgTitle">Фон страницы для гостей</b><span class="hint" data-i18n="srBgHint">Фото заведения или фирменный фон — на странице регистрации, акции, записи и отзыва.</span>
+              <label class="sr-dim" id="sr-dim-row"><span data-i18n="srBgDim">Затемнение</span><input type="range" id="sr-bg-dim" min="0" max="85" step="5" value="45"><b id="sr-bg-dim-v">45%</b></label></div>
+            <div class="sr-logo-act"><button type="button" class="btn-secondary" id="btn-sr-bg" data-i18n="srBgPick">Выбрать фото</button><button type="button" class="btn-secondary" id="btn-sr-bg-rm" data-i18n="brandLogoRemove">Убрать</button><input type="file" id="sr-bg-file" accept="image/png,image/jpeg,image/webp" hidden></div>
+          </div>
+                    <div class="selfreg-settings-box">
+            <label class="nameday-auto-field"><span data-i18n="selfregCardTypeLabel">Какую карту выдавать</span>
+              <select id="selfreg-card-type">
+                <option value="stamp" data-i18n="optStamp">Штамп-карта (N-я покупка бесплатно)</option>
+                <option value="discount" data-i18n="optDiscount">Скидочная карта (%)</option>
+                <option value="combo" data-i18n="optCombo">Штампы + скидка</option>
+                <option value="spend" data-i18n="optSpend">Накопительная карта (по сумме покупок)</option>
+              </select>
+            </label>
+            <label class="nameday-auto-field" id="selfreg-stamp-fields">
+              <span data-i18n="lblCardTitle">Название карты</span>
+              <input type="text" id="selfreg-stamp-title" data-i18n-placeholder="chipStamp" placeholder="Штамп-карта">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-stamp-target-field">
+              <span data-i18n="lblStampTarget">Какая по счёту бесплатна</span>
+              <input type="number" id="selfreg-stamp-target" min="2" max="50" value="10">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-discount-field" style="display:none">
+              <span data-i18n="lblDiscountPercent">Скидка, %</span>
+              <input type="number" id="selfreg-discount-percent" min="1" max="90" value="5">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-spend-title-field" style="display:none">
+              <span data-i18n="lblCardTitle">Название карты</span>
+              <input type="text" id="selfreg-spend-title" data-i18n-placeholder="chipSpend" placeholder="Накопительная">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-spend-target-field" style="display:none">
+              <span data-i18n="lblSpendTarget">Сумма, после которой клиент получает бонус</span>
+              <input type="number" id="selfreg-spend-target" min="1" step="1" value="500">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-spend-points-field" style="display:none">
+              <span data-i18n="lblSpendPoints">Сколько бонусов за эту сумму</span>
+              <input type="number" id="selfreg-spend-points" min="1" max="1000" step="1" value="1">
+            </label>
+            <label class="nameday-auto-field" id="selfreg-spend-currency-field" style="display:none">
+              <span data-i18n="lblSpendCurrency">Валюта</span>
+              <select id="selfreg-spend-currency" class="currency-select"></select>
+            </label>
+            <button id="btn-save-selfreg" data-i18n="btnApply">Применить</button>
+          </div>
+          <div id="selfreg-status" class="hint"></div>
+
+          <p class="hint sr-wifi-only" data-i18n="selfregWifiHint">Чтобы клиенту не пришлось вводить пароль от WiFi вручную — укажите данные вашей гостевой сети. Тогда рядом появится QR-код «Подключиться к WiFi»: одно сканирование — и телефон уже в сети, второе сканирование (QR ниже) — открывает форму регистрации.</p>
+          <div class="selfreg-settings-box sr-wifi-only">
+            <label class="nameday-auto-field"><span data-i18n="wifiSsidLabel">Имя сети (SSID)</span>
+              <input type="text" id="wifi-ssid-input" placeholder="Loya_Guest">
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="wifiPasswordLabel">Пароль WiFi</span>
+              <input type="text" id="wifi-password-input" placeholder="••••••••">
+            </label>
+            <button id="btn-save-wifi" data-i18n="btnApply">Применить</button>
+          </div>
+
+          <div class="pairing-box">
+            <div class="selfreg-qr-block">
+              <img id="wifi-qr" class="pairing-qr-img" alt="WiFi QR">
+              <div class="selfreg-qr-label" data-i18n="selfregQrStep1">1. Подключиться к WiFi</div>
+            </div>
+            <div class="selfreg-qr-block">
+              <img id="register-qr" class="pairing-qr-img" alt="Register QR">
+              <div class="selfreg-qr-label" id="register-qr-label" data-i18n="selfregQrStep2">2. Зарегистрироваться</div>
+            </div>
+            <div class="pairing-info">
+              <div class="pairing-line"><span data-i18n="pairingAddressLabel">Адрес:</span> <b id="register-url">…</b></div>
+              <div class="hint" data-i18n="selfregPrintHint">Распечатайте или выведите на экран у кассы оба QR-кода вместе — или воспользуйтесь готовой афишей.</div>
+            </div>
+          </div>
+
+          <details class="regtext-details">
+          <summary class="cardart-subheading" data-i18n="regTextHeading">Текст страницы регистрации</summary>
+          <p class="hint" data-i18n="regTextHint">По умолчанию текст уже подобран под вашу нишу и язык клиента. Здесь можно заменить его своим — тогда он будет показан всем клиентам независимо от выбранного ими языка. Оставьте поле пустым, чтобы вернуть текст по умолчанию.</p>
+          <div class="selfreg-settings-box">
+            <label class="nameday-auto-field"><span data-i18n="regTextHeadingLabel">Заголовок</span>
+              <input type="text" id="reg-text-heading" data-i18n-placeholder="regTextHeadingPh" placeholder="Например: Создайте карту лояльности">
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="regTextSubtitleLabel">Подзаголовок (необязательно)</span>
+              <input type="text" id="reg-text-subtitle" data-i18n-placeholder="regTextSubtitlePh" placeholder="Например: Бонусы и подарки для постоянных клиентов">
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="regTextButtonLabel">Текст кнопки</span>
+              <input type="text" id="reg-text-button" data-i18n-placeholder="regTextButtonPh" placeholder="Например: Готово">
+            </label>
+            <button id="btn-save-regtext" data-i18n="btnApply">Применить</button>
+            <button id="btn-preview-regpage" type="button" class="btn-secondary" data-i18n="btnPreviewRegPage">👁️ Предпросмотр</button>
+          </div>
+          <div id="regtext-status" class="hint"></div>
+          </details>
+        </div>
+      </div>
+
+      <!-- АФИША ДЛЯ СТОЙКИ -->
+      <div id="settings-modal-poster" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal poster-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="posterHeading">🖨️ Афиша для стойки</h2>
+          <div class="pz-layout">
+            <div class="pz-preview-col">
+              <div class="pz-preview" id="pz-preview"><canvas id="pz-canvas"></canvas></div>
+              <p class="hint pz-tip" data-i18n="pzTip">Положите у кассы или на столики: клиент наводит камеру — и через минуту у него карта в телефоне.</p>
+            </div>
+            <div class="pz-controls">
+              <div class="pz-block">
+                <div class="pz-label" data-i18n="pzDesign">Дизайн</div>
+                <div class="pz-tpls" id="pz-tpls"></div>
+              </div>
+              <div class="pz-row2">
+                <div class="pz-block">
+                  <div class="pz-label" data-i18n="pzFormat">Формат</div>
+                  <div class="pz-seg" id="pz-format">
+                    <button type="button" data-fmt="a4" data-i18n="pzFmtA4">A4 / A5</button>
+                    <button type="button" data-fmt="square" data-i18n="pzFmtSquare">Квадрат</button>
+                    <button type="button" data-fmt="story" data-i18n="pzFmtStory">Stories</button>
+                  </div>
+                </div>
+                <div class="pz-block">
+                  <div class="pz-label" data-i18n="pzLang">Язык афиши</div>
+                  <select id="pz-lang"><option value="uk">Українська</option><option value="sk">Slovenčina</option><option value="en">English</option><option value="ru">Русский</option></select>
+                </div>
+              </div>
+              <div class="pz-block">
+                <div class="pz-label"><span data-i18n="pzTexts">Тексты</span> <small data-i18n="pzTextsHint">(пусто — стандартный текст)</small></div>
+                <input type="text" id="pz-title" maxlength="80">
+                <input type="text" id="pz-offer" maxlength="80">
+                <input type="text" id="pz-footer" maxlength="140">
+              </div>
+              <div class="pz-block">
+                <div class="pz-label" data-i18n="pzColor">Цвет акцента</div>
+                <div class="pz-colors" id="pz-colors"></div>
+              </div>
+              <div class="pz-block">
+                <div class="pz-label" data-i18n="pzBg">Свой фон</div>
+                <div class="pz-bg-row">
+                  <div class="pz-bg-thumb" id="pz-bg-thumb"></div>
+                  <button type="button" id="pz-bg-pick" class="btn-secondary" data-i18n="pzBgPick">Загрузить фото</button>
+                  <button type="button" id="pz-bg-edit" class="btn-secondary" data-i18n="ieEditBtn" style="display:none">✏️ Настроить</button>
+                  <button type="button" id="pz-bg-remove" class="btn-secondary" data-i18n="brandLogoRemove" style="display:none">Убрать</button>
+                  <input type="file" id="pz-bg-file" accept="image/*" style="display:none">
+                </div>
+                <label class="pz-range" id="pz-dim-row" style="display:none"><span data-i18n="pzDim">Затемнение фото</span><input type="range" id="pz-dim" min="0" max="85" step="5"></label>
+                <label class="segment-check"><input type="checkbox" id="pz-logo"> <span data-i18n="pzShowLogo">Показывать логотип заведения</span></label>
+              </div>
+              <div class="pz-actions">
+                <button type="button" id="btn-print-poster" data-i18n="btnPrintPoster">🖨️ Распечатать / сохранить как PDF</button>
+                <button type="button" id="btn-save-poster-image" class="btn-secondary" data-i18n="btnSavePosterImage">💾 Сохранить как картинку на ПК</button>
+                <button type="button" id="pz-reset" class="btn-secondary pz-reset" data-i18n="pzReset">Сбросить</button>
+                <span class="hint" id="pz-status"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ПОДКЛЮЧЕНИЕ ТЕЛЕФОНА -->
+      <div id="settings-modal-pairing" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="pairingHeading">📱 Подключение телефона по WiFi</h2>
+          <p class="hint" data-i18n="pairingHint">Отсканируйте этот код в приложении на телефоне (раздел «Подключение к ПК» в настройках) — тогда телефон будет напрямую работать с базой этого компьютера: сканирование карт на телефоне сразу видно здесь, а клиенты и статистика — общие. Компьютер и телефон должны быть в одной WiFi-сети.</p>
+          <div class="pairing-box">
+            <img id="pairing-qr" class="pairing-qr-img" alt="QR">
+            <div class="pairing-info">
+              <div class="pairing-line"><span data-i18n="pairingAddressLabel">Адрес:</span> <b id="pairing-url">…</b></div>
+              <div class="pairing-line"><span data-i18n="pairingKeyLabel">Код:</span> <b id="pairing-key">…</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ПОГОДА -->
+      <div id="settings-modal-sending" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal sending-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="sendHeadingFull">📨 Отправка клиентам</h2>
+          <p class="hint" data-i18n="sendHint">Куда уходят поздравления, напоминания и рассылки и какие картинки к ним прикладываются.</p>
+          <div class="send-two">
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">📤</span><b data-i18n="sendModeTitle">Когда вы нажимаете «Отправить»</b></div>
+            <div class="send-seg" id="send-mode-seg">
+              <button type="button" class="send-seg-btn" data-v="ask" data-i18n="sendModeAskS">Спрашивать каждый раз</button>
+              <button type="button" class="send-seg-btn" data-v="all" data-i18n="sendModeAllS">Сразу везде, не спрашивая</button>
+            </div>
+            <p class="hint send-seg-hint" id="send-mode-hint"></p>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🤖</span><b data-i18n="sendAutoTitle">Автоматические рассылки пишут</b></div>
+            <div class="send-seg" id="send-auto-ch">
+              <button type="button" class="send-seg-btn" data-v="both" data-i18n="sendChBothS">✉️ + ✈️ Везде</button>
+              <button type="button" class="send-seg-btn" data-v="email" data-i18n="sendChEmailS">✉️ Только email</button>
+              <button type="button" class="send-seg-btn" data-v="telegram" data-i18n="sendChTelegramS">✈️ Только Telegram</button>
+            </div>
+            <p class="hint send-seg-hint" data-i18n="sendAutoHint"></p>
+          </div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🖼️</span><b data-i18n="msgImgTitle">Картинки к сообщениям</b>
+              <label class="auto-switch"><input type="checkbox" id="msg-images-on"><span></span></label></div>
+            <p class="hint" data-i18n="msgImgHint">К каждому поздравлению и рассылке прикладывается картинка по теме — в цветах и с названием вашего заведения. Любую можно заменить своей.</p>
+            <div class="msgimg-grid" id="msgimg-grid"></div>
+            <input type="file" id="msgimg-file" accept="image/png,image/jpeg,image/webp" hidden>
+          </div>
+          <div id="send-status" class="hint" role="status"></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-auto" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal auto-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="autoHeading">🤖 Автоматические рассылки</h2>
+          <p class="hint" data-i18n="autoHint"></p>
+          <p class="hint team-warn" id="auto-need-mail" style="display:none" data-i18n="autoNeedMail"></p>
+          <div class="promo-grid auto-time-row">
+            <label class="nameday-auto-field"><span data-i18n="autoTime">Время отправки</span><input type="time" id="auto-time" value="10:00"></label>
+          </div>
+          
+          <div class="promo-section auto-rule" data-rule="winback">
+            <div class="promo-section-head"><span class="promo-ic">🔁</span><b data-i18n="autoWinbackTitle"></b>
+              <label class="auto-switch"><input type="checkbox" id="auto-winback-enabled"><span></span></label></div>
+            <p class="hint" data-i18n="autoWinbackDesc"></p>
+            <label class="nameday-auto-field auto-days"><span data-i18n="autoWinbackDays">Не был(а), дней</span><select id="auto-winback-days"><option value="21">21</option><option value="30">30</option><option value="45">45</option><option value="60">60</option><option value="90">90</option></select></label>
+            <div class="auto-meta"><span id="auto-winback-waiting"></span><span id="auto-winback-sent"></span></div>
+          </div>
+          <div class="promo-section auto-rule" data-rule="near">
+            <div class="promo-section-head"><span class="promo-ic">🎯</span><b data-i18n="autoNearTitle"></b>
+              <label class="auto-switch"><input type="checkbox" id="auto-near-enabled"><span></span></label></div>
+            <p class="hint" data-i18n="autoNearDesc"></p>
+            
+            <div class="auto-meta"><span id="auto-near-waiting"></span><span id="auto-near-sent"></span></div>
+          </div>
+          <div class="promo-section auto-rule" data-rule="welcome">
+            <div class="promo-section-head"><span class="promo-ic">🌱</span><b data-i18n="autoWelcomeTitle"></b>
+              <label class="auto-switch"><input type="checkbox" id="auto-welcome-enabled"><span></span></label></div>
+            <p class="hint" data-i18n="autoWelcomeDesc"></p>
+            
+            <div class="auto-meta"><span id="auto-welcome-waiting"></span><span id="auto-welcome-sent"></span></div>
+          </div>
+          <div class="promo-section auto-rule" data-rule="birthday">
+            <div class="promo-section-head"><span class="promo-ic">🎂</span><b data-i18n="autoBirthdayTitle"></b>
+              <label class="auto-switch"><input type="checkbox" id="auto-birthday-enabled"><span></span></label></div>
+            <p class="hint" data-i18n="autoBirthdayDesc"></p>
+            
+            <div class="auto-meta"><span id="auto-birthday-waiting"></span><span id="auto-birthday-sent"></span></div>
+          </div>
+          <div class="promo-actions">
+            <button type="button" id="btn-auto-run" class="team-btn-primary" data-i18n="autoRunNow">▶ Отправить сейчас</button>
+            <span id="auto-status" class="hint"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-manual" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal manual-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="manualHeading">📖 Руководство</h2>
+          <p class="hint" data-i18n="manualHint"></p>
+          <div class="manual-tools">
+            <input type="text" id="manual-search" data-i18n-placeholder="manualSearch" placeholder="Поиск по руководству">
+            <button type="button" id="btn-manual-tour" class="btn-secondary" data-i18n="manualTourBtn">▶ Показать презентацию снова</button>
+          </div>
+          <div class="manual-list" id="manual-list"></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-owner" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal online-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="ownerHeading">🏠 Доступ из дома</h2>
+          <p class="hint" data-i18n="ownerHint"></p>
+          <p class="hint owner-app-hint" data-i18n="ownerAppHint">📲 Кабинет можно поставить на телефон как приложение: на iPhone — «Поделиться» → «На экран «Домой»», на Android — «Установить приложение».</p>
+          <p class="hint team-warn" id="owner-need-license" style="display:none" data-i18n="onlineNeedLicense"></p>
+          <div id="owner-off">
+            <div class="promo-section">
+              <div class="promo-section-head"><b data-i18n="ownerPassTitle">Придумайте пароль</b></div>
+              <p class="hint" data-i18n="ownerPassHint"></p>
+              <input type="password" id="owner-pass" autocomplete="new-password" maxlength="100" data-i18n-placeholder="ownerPassPh">
+              <label class="owner-exp-row"><span data-i18n="ownerExpLabel">Ссылка действует:</span> <select id="owner-exp1" class="owner-expiry"><option value="0" data-i18n="ownerExpNever">без срока</option><option value="90" data-i18n="ownerExp90">90 дней</option><option value="30" data-i18n="ownerExp30">30 дней</option></select></label>
+              <p class="hint field-tip" data-i18n="ownerPrivacy"></p>
+              <div class="promo-actions"><button type="button" id="btn-owner-enable" class="team-btn-primary" data-i18n="ownerEnableBtn">Включить доступ из дома</button><span id="owner-status-off" class="hint"></span></div>
+            </div>
+          </div>
+          <div id="owner-on" style="display:none">
+            <div class="promo-section online-link-box">
+              <div class="promo-section-head"><b data-i18n="ownerLinkTitle">Ваша личная ссылка</b></div>
+              <p class="hint" data-i18n="ownerLinkHint"></p>
+              <div class="online-link-row"><input type="text" id="owner-url" readonly><button type="button" id="btn-owner-copy" class="btn-secondary" data-i18n="onlineCopy">Копировать</button><button type="button" id="btn-owner-open" class="btn-secondary" data-i18n="onlineOpen">Открыть</button></div>
+              <img id="owner-qr" alt="QR" width="150" height="150" style="display:none">
+              <p class="hint" id="owner-sync-state"></p>
+              <p class="hint" id="owner-link-exp"></p>
+              <div class="promo-actions"><button type="button" id="btn-owner-sync" class="btn-secondary" data-i18n="ownerSyncBtn">Обновить сейчас</button><button type="button" id="btn-owner-logout-all" class="btn-secondary" data-i18n="ownerLogoutAll">Выйти со всех устройств</button></div>
+            </div>
+            <div class="promo-section">
+              <div class="promo-section-head"><b data-i18n="ownerLoginsTitle">Последние входы</b></div>
+              <p class="hint" data-i18n="ownerLoginsHint"></p>
+              <div id="owner-logins" class="owner-logins"></div>
+            </div>
+            <div class="promo-section">
+              <div class="promo-section-head"><b data-i18n="ownerChangeTitle">Сменить пароль или создать новую ссылку</b></div>
+              <p class="hint" data-i18n="ownerChangeHint"></p>
+              <input type="password" id="owner-pass2" autocomplete="new-password" maxlength="100" data-i18n-placeholder="ownerPassPh">
+              <label class="owner-exp-row"><span data-i18n="ownerExpLabel">Ссылка действует:</span> <select id="owner-exp2" class="owner-expiry"><option value="0" data-i18n="ownerExpNever">без срока</option><option value="90" data-i18n="ownerExp90">90 дней</option><option value="30" data-i18n="ownerExp30">30 дней</option></select></label>
+              <div class="promo-actions"><button type="button" id="btn-owner-change" class="btn-secondary" data-i18n="ownerChangeBtn">Сменить</button></div>
+            </div>
+            <div class="promo-section">
+              <div class="promo-actions"><button type="button" id="btn-owner-disable" class="btn-danger" data-i18n="ownerDisableBtn">Выключить и удалить копию с сервера</button></div>
+            </div>
+            <p class="hint field-tip" data-i18n="ownerComputerOn"></p>
+          </div>
+          <span id="owner-status" class="hint"></span>
+        </div>
+      </div>
+
+      <div id="settings-modal-pos" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal online-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="posHeading">🧾 Подключение кассы</h2>
+          <p class="hint" data-i18n="posHint"></p>
+          <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="pos-enabled"><span></span></span><b data-i18n="posEnable">Принимать чеки из кассы</b></label>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="posLocalTitle">Касса в этом заведении (локальная сеть)</b></div>
+            <p class="hint" data-i18n="posLocalHint"></p>
+            <div class="pos-kv"><span data-i18n="posAddress">Адрес</span><code id="pos-local-url">—</code><button type="button" class="btn-secondary" data-copy="pos-local-url" data-i18n="onlineCopy">Копировать</button></div>
+            <div class="pos-kv"><span data-i18n="posToken">Токен</span><code id="pos-token">—</code><button type="button" class="btn-secondary" data-copy="pos-token" data-i18n="onlineCopy">Копировать</button></div>
+            <div class="promo-actions"><button type="button" id="btn-pos-rotate-local" class="btn-secondary" data-i18n="posRotate">Сменить токен</button></div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="posCloudTitle">Облачная касса (через интернет)</b></div>
+            <p class="hint" data-i18n="posCloudHint"></p>
+            <label class="auto-switch-row inline"><span class="auto-switch"><input type="checkbox" id="pos-cloud"><span></span></span><span data-i18n="posCloudEnable">Принимать чеки через интернет</span></label>
+            <div class="pos-kv" id="pos-cloud-row" style="display:none"><span data-i18n="posWebhook">Адрес веб-хука</span><code id="pos-cloud-url">—</code><button type="button" class="btn-secondary" data-copy="pos-cloud-url" data-i18n="onlineCopy">Копировать</button></div>
+            <div class="promo-actions" id="pos-cloud-actions" style="display:none"><button type="button" id="btn-pos-rotate-cloud" class="btn-secondary" data-i18n="posRotate">Сменить адрес</button></div>
+          </div>
+          <div class="promo-section dk-section">
+            <div class="promo-section-head"><b data-i18n="dkTitle">Dotykačka</b></div>
+            <p class="hint" data-i18n="dkHint">Касса Dotykačka подключается в один клик: войдите в свой аккаунт Dotykačka — и оплаченные чеки будут приходить в Loya сами.</p>
+            <p class="hint" id="dk-status"></p>
+            <div class="promo-actions" style="margin:0"><button type="button" class="team-btn-primary" id="btn-dk-connect" data-i18n="dkConnect">Подключить Dotykačka</button><button type="button" class="btn-secondary" id="btn-dk-disconnect" style="display:none" data-i18n="dkDisconnect">Отключить</button></div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="csvRcTitle">Чеки из файла (любая касса)</b></div>
+            <p class="hint" data-i18n="csvRcHint">Выгрузите чеки из кассы в CSV (колонки: номер, дата, сумма и — если есть — карта или телефон гостя) и загрузите сюда. Повторная загрузка того же файла ничего не задвоит.</p>
+            <div class="promo-actions" style="margin:0"><button type="button" class="btn-secondary" id="btn-csv-receipts" data-i18n="csvRcBtn">Загрузить CSV с чеками</button><span class="hint" id="csv-rc-status"></span></div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="posClaimTitle">Чек без карты</b></div>
+            <p class="hint" data-i18n="posClaimHint"></p>
+            <div class="promo-grid"><label class="nameday-auto-field"><span data-i18n="posClaimMinutes">Ждать карту, минут</span><input type="number" id="pos-claim" min="1" max="120" value="10"></label></div>
+          </div>
+          <details class="pos-format"><summary data-i18n="posFormat">Формат чека для программиста кассы</summary><pre id="pos-format-json"></pre></details>
+          <div class="promo-actions" style="margin-left:26px;margin-right:26px"><button type="button" id="btn-pos-save" data-i18n="promoSave">Сохранить</button><button type="button" id="btn-pos-test" class="btn-secondary" data-i18n="posTest">Тестовый чек</button><span id="pos-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-online" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal online-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="onlineHeading">🔗 Регистрация по ссылке</h2>
+          <p class="hint" data-i18n="onlineHint"></p>
+          <p class="hint team-warn" id="online-need-license" style="display:none" data-i18n="onlineNeedLicense"></p>
+          <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="online-enabled"><span></span></span><b data-i18n="onlineEnable">Включить регистрацию по ссылке</b></label>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="onlineBonusTitle">Бонус за регистрацию</b></div>
+            <p class="hint" data-i18n="onlineBonusHint"></p>
+            <div class="promo-grid">
+              <label class="nameday-auto-field" style="grid-column:1/-1"><span data-i18n="onlineBonusName">Что получает клиент</span><input type="text" id="online-title" maxlength="80" data-i18n-placeholder="onlineBonusNamePh"></label>
+              <label class="nameday-auto-field"><span data-i18n="onlineBonusPercent">Скидка на первый визит, %</span><input type="number" id="online-percent" min="1" max="100" value="100"></label>
+              <label class="nameday-auto-field"><span data-i18n="onlineBonusDays">Действует, дней</span><input type="number" id="online-days" min="1" max="90" value="14"></label>
+            </div>
+            <p class="hint field-tip" data-i18n="onlineBonusTip"></p>
+          </div>
+          <div class="promo-section online-link-box" id="online-link-box" style="display:none">
+            <div class="promo-section-head"><b data-i18n="onlineLinkTitle">Ваша ссылка</b></div>
+            <p class="hint" data-i18n="onlineLinkHint"></p>
+            <div class="online-link-row"><input type="text" id="online-url" readonly><button type="button" id="btn-online-copy" class="btn-secondary" data-i18n="onlineCopy">Копировать</button><button type="button" id="btn-online-open" class="btn-secondary" data-i18n="onlineOpen">Открыть</button></div>
+            <img id="online-qr" alt="QR" width="150" height="150" style="display:none">
+          </div>
+          <div class="online-stats" id="online-stats"></div>
+          <div class="promo-actions"><button type="button" id="btn-online-save" class="team-btn-primary" data-i18n="promoSave">Сохранить</button><span id="online-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-booking" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal bk-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="bookHeading2">📅 Онлайн-запись</h2>
+          <p class="hint" data-i18n="bookHint">Гости сами выбирают услугу, мастера и свободное время на вашей странице записи. Записи появляются в программе, гостю приходит подтверждение и напоминание накануне, а когда он пришёл — визит засчитывается на его карту.</p>
+          <p class="hint team-warn" id="bk-need-license" style="display:none" data-i18n="bookNeedLicense">Онлайн-запись работает с ключом подписки: страница записи находится на сайте Loya.</p>
+          <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="bk-on"><span></span></span><b data-i18n="bookOn">Принимать записи онлайн</b></label>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="bookServices">✂️ Услуги</b></div>
+            <div class="bk-rows" id="bk-services"></div>
+            <button type="button" class="btn-secondary bk-add" id="bk-add-service" data-i18n="bookAddService">+ Добавить услугу</button>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="bookStaff">👤 Мастера</b></div>
+            <p class="hint" data-i18n="bookStaffHint">Если мастер один или записывают «в заведение», список можно оставить пустым. Отметьте, какие услуги делает каждый мастер.</p>
+            <div class="bk-rows" id="bk-staff"></div>
+            <button type="button" class="btn-secondary bk-add" id="bk-add-staff" data-i18n="bookAddStaff">+ Добавить мастера</button>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="bookHours">🕘 Часы работы</b></div>
+            <div class="bk-hours" id="bk-hours"></div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-grid">
+              <label class="nameday-auto-field"><span data-i18n="bookStep">Шаг времени</span><select id="bk-step"><option value="15">15 min</option><option value="20">20 min</option><option value="30">30 min</option><option value="60">60 min</option></select></label>
+              <label class="nameday-auto-field"><span data-i18n="bookLead">Записаться можно не позже чем за</span><select id="bk-lead"><option value="0">0</option><option value="30">30 min</option><option value="60">1 h</option><option value="120">2 h</option><option value="1440">24 h</option></select></label>
+              <label class="nameday-auto-field"><span data-i18n="bookDays">Записывать вперёд на</span><select id="bk-days"><option value="7">7</option><option value="14">14</option><option value="30">30</option><option value="60">60</option></select></label>
+              <label class="nameday-auto-field"><span data-i18n="bookPhone">Телефон заведения</span><input type="tel" id="bk-phone" maxlength="30"></label>
+              <label class="nameday-auto-field promo-wide"><span data-i18n="bookAddress">Адрес</span><input type="text" id="bk-address" maxlength="120"></label>
+              <label class="nameday-auto-field promo-wide"><span data-i18n="bookNote">Сообщение на странице записи</span><input type="text" id="bk-note" maxlength="300" data-i18n-placeholder="bookNotePh" placeholder="Например: опоздание больше 15 минут — запись переносится"></label>
+            </div>
+          </div>
+          <div class="promo-section online-link-box" id="bk-link-box" style="display:none">
+            <div class="promo-section-head"><b data-i18n="bookLinkTitle">Ваша страница записи</b></div>
+            <p class="hint" data-i18n="bookLinkHint">Поставьте ссылку в Instagram, Google Картах и на сайт. QR-код можно распечатать на стойку.</p>
+            <div class="online-link-row"><input type="text" id="bk-url" readonly><button type="button" class="btn-secondary" id="btn-bk-copy" data-i18n="onlineCopy">Копировать</button><button type="button" class="btn-secondary" id="btn-bk-open" data-i18n="onlineOpen">Открыть</button></div>
+            <img id="bk-qr" alt="QR" width="150" height="150" style="display:none">
+          </div>
+          <div class="promo-actions"><button type="button" id="btn-bk-save" class="team-btn-primary" data-i18n="promoSave">Сохранить</button><span id="bk-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-reviews" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="fbHeading2">⭐ Отзывы после визита</h2>
+          <p class="hint" data-i18n="fbHint">Через пару часов после визита гость получает короткое сообщение «Как вам у нас?» с пятью звёздами. Поставил 4–5 — страница предложит оставить отзыв в Google. Поставил 1–3 — сможет написать, что улучшить, и это увидите только вы.</p>
+          <p class="hint team-warn" id="fb-need-license" style="display:none" data-i18n="fbNeedLicense">Нужен ключ подписки и настроенная почта или Telegram-бот.</p>
+          <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="fb-on"><span></span></span><b data-i18n="fbOn">Просить отзыв после визита</b></label>
+          <div class="promo-section">
+            <div class="promo-grid">
+              <label class="nameday-auto-field"><span data-i18n="fbDelay">Когда спрашивать</span><select id="fb-delay"><option value="1" data-i18n="fbDelay1">Через 1 час</option><option value="2" data-i18n="fbDelay2">Через 2 часа</option><option value="3" data-i18n="fbDelay3">Через 3 часа</option><option value="6" data-i18n="fbDelay6">Через 6 часов</option><option value="24" data-i18n="fbDelay24">На следующий день</option></select></label>
+              <label class="nameday-auto-field promo-wide"><span data-i18n="fbGoogle">Ссылка «Оставить отзыв» в Google</span><input type="url" id="fb-url" data-i18n-placeholder="promoReviewPh" placeholder="https://g.page/r/…/review"></label>
+            </div>
+            <p class="hint field-tip" data-i18n="fbGoogleTip">Где взять: Google Профиль компании → «Попросить оставить отзыв» → скопировать ссылку. Одному гостю пишем не чаще раза в 2 месяца и только тем, кто согласился на сообщения. Ночью сообщения не уходят.</p>
+          </div>
+          <div class="promo-section"><div class="fb-panel" id="fb-panel"></div></div>
+          <div class="promo-actions"><button type="button" id="btn-fb-save" class="team-btn-primary" data-i18n="promoSave">Сохранить</button><span id="fb-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-tiers" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="tiersHeading2">🥇 Уровни и сгорание бонусов</h2>
+          <p class="hint" data-i18n="tiersHint">Постоянные гости получают уровень Silver или Gold и настоящие привилегии — у них появляется азарт дорасти до следующего уровня. А бонусы со сроком жизни мягко напоминают вернуться вовремя.</p>
+          <div class="promo-section">
+            <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="tier-on"><span></span></span><b data-i18n="tierOn">Привилегии уровней</b></label>
+            <div class="promo-grid tier-grid">
+              <label class="nameday-auto-field"><span data-i18n="tierSilverAt">🥈 Silver — с какой покупки</span><input type="number" id="tier-silver-at" min="2" max="100000" value="50"></label>
+              <label class="nameday-auto-field"><span data-i18n="tierGoldAt">🥇 Gold — с какой покупки</span><input type="number" id="tier-gold-at" min="3" max="100000" value="100"></label>
+              <label class="nameday-auto-field"><span data-i18n="tierSilverMult">🥈 Штампы и бонусы</span><select id="tier-silver-mult"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option></select></label>
+              <label class="nameday-auto-field"><span data-i18n="tierGoldMult">🥇 Штампы и бонусы</span><select id="tier-gold-mult"><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option></select></label>
+              <label class="nameday-auto-field"><span data-i18n="tierSilverDisc">🥈 Скидка уровня, %</span><input type="number" id="tier-silver-disc" min="0" max="50" value="0"></label>
+              <label class="nameday-auto-field"><span data-i18n="tierGoldDisc">🥇 Скидка уровня, %</span><input type="number" id="tier-gold-disc" min="0" max="50" value="5"></label>
+            </div>
+            <p class="hint field-tip" data-i18n="tierTip">«×2» — за каждую покупку вдвое больше штампов или бонусов. Скидку уровня кассир видит при скане и даёт её сам. Уровень виден клиенту в карте Wallet.</p>
+            <div class="tier-preview" id="tier-preview"></div>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><b data-i18n="expiryTitle">⏳ Сгорание бонусов</b></div>
+            <div class="promo-grid">
+              <label class="nameday-auto-field"><span data-i18n="expiryMonths">Бонусы сгорают, если не было визита</span>
+                <select id="expiry-months"><option value="0" data-i18n="expiryOff">Никогда</option><option value="3" data-i18n="gm3">3 месяца</option><option value="6" data-i18n="gm6">6 месяцев</option><option value="12" data-i18n="gm12">1 год</option></select></label>
+            </div>
+            <label class="check-row"><input type="checkbox" id="expiry-stamps"> <span data-i18n="expiryStamps">Штампы тоже сгорают</span></label>
+            <label class="check-row"><input type="checkbox" id="expiry-remind" checked> <span data-i18n="expiryRemind">За неделю напомнить клиенту (почта / Telegram)</span></label>
+            <p class="hint" id="expiry-overview"></p>
+          </div>
+          <div class="promo-actions"><button type="button" id="btn-tiers-save" class="team-btn-primary" data-i18n="promoSave">Сохранить</button><span id="tiers-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="settings-modal-geo" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal geo-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="geoHeading2">📍 Wallet рядом с заведением</h2>
+          <p class="hint" data-i18n="geoHint">Когда гость с картой в Apple Wallet или Google Wallet проходит рядом с вами, телефон сам покажет карту на экране блокировки — с напоминанием, сколько осталось до подарка.</p>
+          <div class="geo-layout">
+            <div class="geo-main">
+              <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="geo-on"><span></span></span><b data-i18n="geoOn">Показывать карту рядом с заведением</b></label>
+              <div class="promo-section">
+                <div class="promo-section-head"><b data-i18n="geoPlaces">Ваши адреса</b><span class="hint" id="geo-count"></span></div>
+                <div id="geo-list" class="geo-list"></div>
+                <div class="geo-add">
+                  <div class="geo-search-row"><input type="text" id="geo-q" data-i18n-placeholder="geoSearchPh" placeholder="Адрес: улица, дом, город"><button type="button" class="btn-secondary" id="btn-geo-search" data-i18n="geoSearch">Найти</button></div>
+                  <div id="geo-results" class="geo-results"></div>
+                  <div class="geo-search-row"><input type="text" id="geo-coords" data-i18n-placeholder="geoCoordsPh" placeholder="48.3774, 17.5872 или ссылка Google Maps"><button type="button" class="btn-secondary" id="btn-geo-add" data-i18n="geoAdd">+ Добавить</button></div>
+                  <p class="hint field-tip" data-i18n="geoPlacesTip">До 10 адресов — например, все ваши точки. Гость увидит карту рядом с любой из них.</p>
+                </div>
+              </div>
+              <div class="promo-section">
+                <label class="nameday-auto-field"><span data-i18n="geoText">Текст на экране блокировки</span><input type="text" id="geo-text" maxlength="120" data-i18n-placeholder="geoTextPh" placeholder="Вы рядом! Заходите на кофе ☕"></label>
+                <div class="geo-tpls" id="geo-tpls"></div>
+                <p class="hint field-tip" data-i18n="geoTip">Если оставить пустым, гость увидит свой прогресс: например, «Ещё 2 штампа до подарка». В Google Wallet текст выбирает сам Google.</p>
+              </div>
+              <div class="geo-check" id="geo-check"></div>
+              <div class="promo-actions"><button type="button" id="btn-geo-save" class="team-btn-primary" data-i18n="geoSaveApply">Сохранить и обновить карты</button><span id="geo-status" class="hint"></span></div>
+            </div>
+            <aside class="geo-preview">
+              <div class="geo-tabs" id="geo-tabs"><button type="button" class="active" data-k="ios">iPhone</button><button type="button" data-k="android">Android</button></div>
+              <div class="geo-phone" id="geo-phone"></div>
+              <p class="hint geo-prev-hint" id="geo-prev-hint"></p>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-report" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="reportHeading2">📈 Отчёт за месяц на почту</h2>
+          <p class="hint" data-i18n="reportHint">1-го числа программа сама пришлёт итоги прошлого месяца: визиты, разные гости, кто вернулся, выручка по картам, средний чек и лучшие гости — со сравнением с предыдущим месяцем.</p>
+          <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="report-on"><span></span></span><b data-i18n="reportOn">Присылать отчёт каждый месяц</b></label>
+          <div class="promo-section">
+            <label class="nameday-auto-field"><span data-i18n="reportEmail">На какую почту</span><input type="email" id="report-email" placeholder="owner@example.com"></label>
+            <p class="hint" id="report-last"></p>
+          </div>
+          <div class="promo-actions">
+            <button type="button" id="btn-report-save" class="team-btn-primary" data-i18n="promoSave">Сохранить</button>
+            <button type="button" id="btn-report-preview" class="btn-secondary" data-i18n="reportPreview">Посмотреть</button>
+            <button type="button" id="btn-report-test" class="btn-secondary" data-i18n="reportTest">Прислать пример сейчас</button>
+            <span id="report-status" class="hint"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-promo" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="promoHeading">⚡ Акции и защита</h2>
+          <p class="hint" data-i18n="promoHint">Инструменты, которые помогают привлекать клиентов и защищают от накруток.</p>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🎁</span><b data-i18n="welcomeTitle">Приветственный бонус</b></div>
+            <p class="hint" data-i18n="welcomeHint">Гость зарегистрировался сам (QR на стойке или ссылка) — при первом визите получает сразу два штампа вместо одного. Хороший повод зарегистрироваться прямо сейчас.</p>
+            <label class="segment-check"><input type="checkbox" id="promo-welcome-enabled"> <span data-i18n="welcomeEnable">Двойной штамп за первый визит после саморегистрации</span></label>
+          </div>
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">✨</span><b data-i18n="promoBonusTitle">Двойные штампы</b></div>
+            <p class="hint" data-i18n="promoBonusHint"></p>
+            <label class="segment-check"><input type="checkbox" id="promo-bonus-enabled"> <span data-i18n="promoBonusEnable">Включить акцию</span></label>
+            <div class="promo-grid" id="promo-bonus-fields">
+              <label class="nameday-auto-field"><span data-i18n="promoMult">Штампов за скан</span>
+                <select id="promo-bonus-mult"><option value="2">×2</option><option value="3">×3</option></select>
+              </label>
+              <label class="nameday-auto-field"><span data-i18n="promoFrom">С</span><input type="time" id="promo-bonus-from" value="14:00"></label>
+              <label class="nameday-auto-field"><span data-i18n="promoTo">До</span><input type="time" id="promo-bonus-to" value="16:00"></label>
+              <div class="promo-days-wrap">
+                <div class="promo-label" data-i18n="promoDays">Дни недели</div>
+                <div class="promo-days" id="promo-bonus-days"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🛡️</span><b data-i18n="promoCooldownTitle">Защита от повторного скана</b></div>
+            <p class="hint" data-i18n="promoCooldownHint"></p>
+            <div class="promo-grid">
+              <label class="nameday-auto-field"><select id="promo-cooldown"></select></label>
+            </div>
+          </div>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🤝</span><b data-i18n="promoReferralTitle">Приведи друга</b></div>
+            <p class="hint" data-i18n="promoReferralHint"></p>
+            <label class="segment-check"><input type="checkbox" id="promo-referral-enabled"> <span data-i18n="promoReferralEnable">Включить</span></label>
+            <div class="promo-grid">
+              <label class="nameday-auto-field"><span data-i18n="promoReferralBonus2">Вам за друга (штампов / бонусов)</span>
+                <select id="promo-referral-bonus"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+              </label>
+              <label class="nameday-auto-field"><span data-i18n="promoReferralFriend">Другу при регистрации</span>
+                <select id="promo-referral-friend"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+              </label>
+              <label class="nameday-auto-field promo-wide"><span data-i18n="promoReferralWhen">Когда начислять пригласившему</span>
+                <select id="promo-referral-when"><option value="visit" data-i18n="promoRefWhenVisit">После первого визита друга (защита от накруток)</option><option value="signup" data-i18n="promoRefWhenSignup">Сразу при регистрации друга</option></select>
+              </label>
+            </div>
+            <p class="hint field-tip" id="promo-referral-link"></p>
+          </div>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">⭐</span><b data-i18n="promoReviewTitle">Отзывы</b></div>
+            <p class="hint" data-i18n="promoReviewMoved">Ссылка на отзывы Google и автоматическая просьба об отзыве — в «Отзывы после визита».</p>
+            <div class="promo-actions" style="margin:0"><button type="button" class="btn-secondary" id="btn-promo-open-reviews" data-i18n="promoReviewOpen">Открыть «Отзывы после визита»</button></div>
+          </div>
+
+          <div class="promo-actions">
+            <button type="button" id="btn-promo-save" data-i18n="promoSave">Сохранить</button>
+            <span id="promo-status" class="hint"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-weather" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="weatherHeading">🌦 Погода и маркетинг</h2>
+          <p class="hint" data-i18n="weatherHint">Укажите город кофейни — на Главной будет появляться подсказка: в жару предложить клиентам прохладительные напитки, а в холод или дождь — пригласить на тёплый кофе или десерт.</p>
+          <div class="weather-settings-box">
+            <label class="nameday-auto-field"><span data-i18n="weatherCityLabel">Город</span>
+              <input type="text" id="weather-city-input" placeholder="Bratislava">
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="weatherHotLabel">Порог «жарко», °C</span>
+              <input type="number" id="weather-hot-input" value="25">
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="weatherColdLabel">Порог «холодно», °C</span>
+              <input type="number" id="weather-cold-input" value="8">
+            </label>
+            <button id="btn-save-weather-city" data-i18n="btnApply">Применить</button>
+          </div>
+          <div id="weather-settings-status" class="hint"></div>
+        </div>
+      </div>
+
+      <!-- MENINY -->
+      <div id="settings-modal-nameday" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="namedayAutoHeading">🎉 Meniny — автоматика</h2>
+          <p class="hint" data-i18n="namedayAutoHint">Пока приложение запущено, оно раз в минуту проверяет время и, если оно наступило, само ищет сегодняшних именинников среди клиентов и отправляет им письмо. Если приложение закрыто — автоматика не сработает, отправить вручную всегда можно кнопкой на Главной.</p>
+          <div class="nameday-auto-box">
+            <label class="segment-check"><input type="checkbox" id="nameday-auto-enabled"> <span data-i18n="namedayAutoEnable">Автоматически поздравлять именинников</span></label>
+            <label class="nameday-auto-field"><span data-i18n="namedayAutoGiftLabel">Подарок</span>
+              <select id="nameday-auto-gift">
+                <option value="" data-i18n="giftOptionNone">— без подарка —</option>
+                <option value="discount10" data-i18n="giftOptionDiscount10">Скидка 10% сегодня</option>
+                <option value="freeCoffee" data-i18n="giftOptionFreeCoffee">Кофе бесплатно</option>
+                <option value="freeDessert" data-i18n="giftOptionFreeDessert">Десерт бесплатно при покупке кофе</option>
+                <option value="doubleStamps" data-i18n="giftOptionDoubleStamps">Двойные штампы на карту</option>
+              </select>
+            </label>
+            <label class="nameday-auto-field"><span data-i18n="namedayAutoTimeLabel">Время проверки</span>
+              <input type="time" id="nameday-auto-time" value="09:00">
+            </label>
+            <button id="btn-save-nameday-auto" data-i18n="btnApply">Применить</button>
+          </div>
+          <div id="nameday-auto-status" class="hint"></div>
+        </div>
+      </div>
+
+      <!-- ТЕМА -->
+      <div id="settings-modal-theme" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="themeHeading">Конструктор дизайна</h2>
+          <p class="hint" data-i18n="themeHint">Выберите готовую тему одним кликом, либо откройте «Свой цвет» и настройте каждый элемент отдельно — включая свой цвет для каждого графика на Главной.</p>
+          <div class="theme-presets" id="theme-presets">
+            <button class="theme-swatch" data-theme="glossy"><span class="otc-preview" data-preview="glossy"></span><span class="otc-name" data-i18n="themeGlossy">Глянцевый чёрный с золотом</span><span class="otc-tag" data-i18n="themeNewTag">новая</span></button>
+            <button class="theme-swatch" data-theme="gold"><span class="otc-preview" data-preview="gold"></span><span class="otc-name" data-i18n="themeGold">Графит и золото</span><span class="otc-tag" data-i18n="themeDarkTag"></span></button>
+            <button class="theme-swatch" data-theme="coffee"><span class="otc-preview" data-preview="coffee"></span><span class="otc-name" data-i18n="themeCoffee">Кофейный</span><span class="otc-tag" data-i18n="themeLightTag"></span></button>
+            <button class="theme-swatch" data-theme="mint"><span class="otc-preview" data-preview="mint"></span><span class="otc-name" data-i18n="themeMint">Мятный</span><span class="otc-tag" data-i18n="themeLightTag"></span></button>
+            <button class="theme-swatch" data-theme="ocean"><span class="otc-preview" data-preview="ocean"></span><span class="otc-name" data-i18n="themeOcean">Океан</span><span class="otc-tag" data-i18n="themeLightTag"></span></button>
+            <button class="theme-swatch" data-theme="berry"><span class="otc-preview" data-preview="berry"></span><span class="otc-name" data-i18n="themeBerry">Ягодный</span><span class="otc-tag" data-i18n="themeLightTag"></span></button>
+            <button class="theme-swatch" data-theme="graphite"><span class="otc-preview" data-preview="graphite"></span><span class="otc-name" data-i18n="themeGraphite">Графит</span><span class="otc-tag" data-i18n="themeLightTag"></span></button>
+            <button class="theme-swatch" data-theme="auto"><span class="otc-preview" data-preview="auto"></span><span class="otc-name" data-i18n="themeAuto">Как в системе</span><span class="otc-tag" data-i18n="themeAutoTag">авто</span></button>
+            <button class="theme-swatch" data-theme="custom"><span class="otc-preview" data-preview="custom"></span><span class="otc-name" data-i18n="themeCustom">Свой цвет</span></button>
+          </div>
+
+          <div id="theme-custom-box" class="theme-custom-box" style="display:none">
+            <div class="theme-group">
+              <div class="theme-group-title" data-i18n="themeGroupGeneral">Основное</div>
+              <div class="theme-field-row">
+                <label><span data-i18n="themeSidebarColor">Цвет меню</span><input type="color" id="theme-sidebar-color" value="#2b1d15"></label>
+                <label><span data-i18n="themeScreenColor">Цвет фона экрана</span><input type="color" id="theme-screen-color" value="#f5f4f2"></label>
+                <label><span data-i18n="themeTextColor">Цвет текста</span><input type="color" id="theme-text-color" value="#241c1c"></label>
+                <label><span data-i18n="themePrimaryColor">Цвет кнопок</span><input type="color" id="theme-primary-color" value="#a9682f"></label>
+              </div>
+            </div>
+            <div class="theme-group">
+              <div class="theme-group-title" data-i18n="themeGroupCharts">Графики на Главной (у каждого свой цвет)</div>
+              <div class="theme-field-row">
+                <label><span data-i18n="chartVisits">Посещения по дням</span><input type="color" id="theme-chart-visits" value="#a9682f"></label>
+                <label><span data-i18n="chartNewClients">Новые клиенты по месяцам</span><input type="color" id="theme-chart-newclients" value="#6b8f4e"></label>
+                <label><span data-i18n="chartCardUsage">Использование карт</span><input type="color" id="theme-chart-cardusage" value="#4a7fa6"></label>
+                <label><span data-i18n="chartRewards">Выданные награды по дням</span><input type="color" id="theme-chart-rewards" value="#c9a227"></label>
+              </div>
+            </div>
+            <button id="btn-apply-custom-theme" data-i18n="btnApply">Применить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ДИЗАЙН КАРТОЧЕК -->
+      <div id="settings-modal-walletdesign" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal wd-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="wdHeading">📲 Карты в Wallet: свой дизайн</h2>
+          <p class="hint" data-i18n="wdHint">Так выглядит карта вашего заведения в телефоне клиента — в Google Wallet (Android) и Apple Wallet (iPhone). Поставьте свой логотип и картинку.</p>
+          <div class="wd-layout">
+            <div class="wd-controls">
+              <div class="wd-fromsite">
+                <span class="wd-fromsite-tx"><b data-i18n="wdFromSiteT">Собрали карту на сайте?</b><small data-i18n="wdFromSiteHint">Конструктор на loya-loyalty.com даёт код дизайна — вставьте его сюда.</small></span>
+                <button type="button" class="btn-secondary" id="wd-fromsite" data-i18n="wdFromSite">🌐 Дизайн с сайта</button>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdPresetsTitle">Готовые стили</div>
+                <div class="wd-styles" id="wd-styles"></div>
+                <small class="hint" data-i18n="wdPresetsHint">Одно нажатие — цвет карты, значки и расположение штампов. Ваш логотип и фото остаются, всё можно поправить ниже.</small>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdLogo">Логотип</div>
+                <div class="wd-row">
+                  <div class="wd-thumb wd-thumb-logo" id="wd-logo-thumb"></div>
+                  <div class="wd-btns">
+                    <button type="button" class="btn-secondary" id="wd-logo-pick" data-i18n="wdPick">Выбрать файл…</button>
+                    <button type="button" class="btn-secondary wd-edit" id="wd-logo-edit" data-i18n="ieEditBtn">✏️ Настроить</button>
+                    <button type="button" class="btn-secondary wd-remove" id="wd-logo-remove" data-i18n="wdRemove">Убрать</button>
+                  </div>
+                </div>
+                <small class="hint" data-i18n="wdLogoHint">Квадратный, PNG или JPG. В Google Wallet показывается в круге.</small>
+                <input type="file" id="wd-logo-file" accept="image/png,image/jpeg,image/webp" hidden>
+                <div class="wd-sub" data-i18n="wdLogoOnCard">На картинке карты</div>
+                <div class="wd-lm" id="wd-logo-mode" role="radiogroup">
+                  <button type="button" class="wd-lm-btn" data-lm="name" data-i18n="wdLm_name">Значок и название</button>
+                  <button type="button" class="wd-lm-btn" data-lm="both" data-i18n="wdLm_both">Логотип и название</button>
+                  <button type="button" class="wd-lm-btn" data-lm="logo" data-i18n="wdLm_logo">Только логотип</button>
+                </div>
+                <div class="wd-logo-tools" id="wd-logo-tools" hidden>
+                  <label class="wd-range"><span data-i18n="wdLogoSize">Размер</span><input type="range" id="wd-logo-size" min="24" max="260" step="2"><output id="wd-logo-size-v"></output></label>
+                  <label class="wd-range"><span data-i18n="wdLogoRot">Поворот</span><input type="range" id="wd-logo-rot" min="-180" max="180" step="1"><output id="wd-logo-rot-v"></output></label>
+                  <div class="wd-logo-btns"><button type="button" class="btn-secondary wd-mini" id="wd-logo-flip" data-i18n="wdLogoFlip">⇆ Отразить</button><button type="button" class="btn-secondary wd-mini" id="wd-logo-reset" data-i18n="wdLogoReset">Сбросить</button></div>
+                  <small class="hint" data-i18n="wdLogoDragHint">Перетащите логотип на картинке в превью справа, колесо мыши меняет размер.</small>
+                  <small class="hint" id="wd-logo-gnote" data-i18n="wdLogoGoogleNote">Google Wallet всегда пишет название в шапке карты — это его правило. На картинке карты и в Apple Wallet будет только логотип.</small>
+                </div>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdHero">Картинка на карте</div>
+                <div class="wd-row">
+                  <div class="wd-thumb wd-thumb-hero" id="wd-hero-thumb"></div>
+                  <div class="wd-btns">
+                    <button type="button" class="btn-secondary" id="wd-hero-pick" data-i18n="wdPick">Выбрать файл…</button>
+                    <button type="button" class="btn-secondary wd-edit" id="wd-hero-edit" data-i18n="ieEditBtn">✏️ Настроить</button>
+                    <button type="button" class="btn-secondary wd-remove" id="wd-hero-remove" data-i18n="wdRemove">Убрать</button>
+                  </div>
+                </div>
+                <div class="wd-presets" id="wd-hero-presets"></div>
+                <small class="hint" data-i18n="wdHeroHint3">Своё фото или готовая картинка — большая полоса на карте клиента.</small>
+                <label class="segment-check wd-check"><input type="checkbox" id="wd-hero-stamps" checked> <span data-i18n="wdHeroStamps">Показывать штампы и прогресс поверх картинки</span></label>
+                <input type="file" id="wd-hero-file" accept="image/png,image/jpeg,image/webp" hidden>
+              </div>
+              <div class="wd-block wd-look">
+                <div class="wd-label" data-i18n="wdStampsTitle">Штампы на карте</div>
+                <div class="wd-sub-row"><span class="wd-sub" data-i18n="wdStampIcon">Значок штампа</span><button type="button" class="btn-secondary wd-mini" id="wd-niche-icon" data-i18n="wdNicheIcon">✨ Под мой бизнес</button></div>
+                <div class="wd-icons" id="wd-stamp-icons" role="radiogroup"></div>
+                <div class="wd-sub" data-i18n="wdRewardIcon">Значок подарка — последний кружок</div>
+                <div class="wd-icons wd-icons-sm" id="wd-reward-icons" role="radiogroup"></div>
+                <div class="wd-sub" data-i18n="wdStampColor">Цвет штампов</div>
+                <div class="wd-colors wd-stamp-colors" id="wd-stamp-colors"></div>
+                <label class="wd-sub wd-label-row"><span data-i18n="wdStampLabel">Подпись счётчика</span>
+                  <input type="text" id="wd-stamp-label" maxlength="18" data-i18n-placeholder="wdStampLabelPh" placeholder="Штампы"></label>
+                <small class="hint" data-i18n="wdStampLabelHint">Например: «Лапки», «Кофе», «Бокалы» — так будет подписано «5 / 8» на карте.</small>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdLayoutTitle">Как расположить</div>
+                <div class="wd-layouts" id="wd-layouts">
+                  <button type="button" class="wd-layout-opt" data-ly="classic"><span class="wd-ly-pic wd-ly-classic"><i></i><b></b><b></b><b></b><b></b></span><span><b data-i18n="wdLayoutClassic">Классика</b><small data-i18n="wdLayoutClassicSub">Название и штампы слева</small></span></button>
+                  <button type="button" class="wd-layout-opt" data-ly="photo"><span class="wd-ly-pic wd-ly-photo"><b></b><b></b><b></b><b></b><b></b></span><span><b data-i18n="wdLayoutPhoto">Фото</b><small data-i18n="wdLayoutPhotoSub">Картинка на всю полосу, штампы рядом внизу</small></span></button>
+                </div>
+                <div class="wd-sub" data-i18n="wdArrTitle">Расположение штампов</div>
+                <div class="wd-arrs" id="wd-arrs" role="radiogroup"></div>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdSeasonTitle">Праздники и сезоны</div>
+                <div class="wd-seasons" id="wd-seasons" role="radiogroup"></div>
+                <small class="hint" id="wd-season-hint" data-i18n="wdSeasonHint">«По календарю» — карта сама меняет оформление к Рождеству, Новому году, 8 Марта, Пасхе, Хэллоуину и по временам года.</small>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdBg">Цвет карты</div>
+                <div class="wd-colors" id="wd-colors"></div>
+                <div class="wd-match-row"><button type="button" class="btn-secondary" id="wd-match" data-i18n="wdMatch">🪄 Цвет под картинку</button><small class="hint" data-i18n="wdBgHint">Текст на карте сам станет светлым или тёмным.</small></div>
+              </div>
+              <div class="wd-block">
+                <div class="wd-label" data-i18n="wdShowTitle">Что показывать на карте</div>
+                <label class="segment-check wd-check"><input type="checkbox" id="wd-show-tier"> <span data-i18n="wdShowTier">Уровень гостя: Basic, Silver или Gold</span></label>
+                <label class="segment-check wd-check"><input type="checkbox" id="wd-show-next"> <span data-i18n="wdShowNext">Сколько визитов осталось до следующего уровня</span></label>
+                <small class="hint" data-i18n="wdShowHint">Пороги уровней — в «Уровни и сгорание бонусов». Карты в Wallet обновятся сами.</small>
+              </div>
+              <div class="wd-actions">
+                <button type="button" id="wd-save" data-i18n="wdSave">Сохранить</button>
+                <div class="hint" id="wd-status" role="status"></div>
+              </div>
+            </div>
+            <div class="wd-preview">
+              <div class="wd-tabs" role="tablist">
+                <button type="button" class="wd-tab active" data-wd-tab="google">Google Wallet</button>
+                <button type="button" class="wd-tab" data-wd-tab="apple">Apple Wallet</button>
+              </div>
+              <div class="wd-phone" id="wd-phone"></div>
+              <small class="hint" data-i18n="wdPreviewHint">Примерный вид: Google и Apple рисуют карту немного по-своему.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-cardart" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal cardart-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="cardArtHeading">🐱 Дизайн карточек</h2>
+          <p class="hint" data-i18n="cardArtHint">У каждого языка свой набор картинок — клиент получает открытку на том языке, который указал при регистрации. Можно удалить любую картинку или добавить свою, вручную указав мышкой, где на ней должен появиться QR-код.</p>
+
+          <div class="cardart-lang-tabs" id="cardart-lang-tabs">
+            <button type="button" class="cardart-lang-tab" data-lang="ru">Русский</button>
+            <button type="button" class="cardart-lang-tab" data-lang="sk">Slovenčina</button>
+            <button type="button" class="cardart-lang-tab" data-lang="uk">Українська</button>
+            <button type="button" class="cardart-lang-tab" data-lang="en">English</button>
+            <button type="button" class="cardart-lang-tab cardart-niche-tab" id="cardart-niche-tab" data-lang=""><span id="cardart-niche-tab-label">🏷️ По вашей нише</span></button>
+          </div>
+
+          <div id="cardart-grid" class="cardart-grid"></div>
+
+          <h3 class="cardart-subheading" data-i18n="cardArtAddHeading">Добавить новую картинку</h3>
+          <p class="hint" data-i18n="cardArtAddHint2">Выберите файл — место под QR сразу появится на картинке с настоящим примером QR-кода.</p>
+          <p class="hint" data-i18n="cardArtRequirements">Требования к файлу: формат JPG, PNG или WEBP; квадратное изображение (1:1) желательно, но не обязательно; рекомендуемый размер — от 500×500 до 1500×1500 пикселей; размер файла до 10 МБ. Картинки крупнее автоматически уменьшатся при сохранении.</p>
+          <div class="cardart-file-row">
+            <button type="button" id="cardart-file-trigger" class="btn-secondary" data-i18n="cardArtChooseFile">Выбрать файл</button>
+            <span id="cardart-file-name" class="hint" data-i18n="cardArtNoFile">Файл не выбран</span>
+          </div>
+          <input type="file" id="cardart-file-input" accept="image/*" style="display:none">
+          <div id="cardart-editor" class="cardart-editor" style="display:none">
+            <div class="cardart-editor-layout">
+              <div class="cardart-canvas-wrap">
+                <canvas id="cardart-canvas" tabindex="0"></canvas>
+              </div>
+              <div class="cardart-controls">
+                <div class="cardart-control">
+                  <div class="cardart-control-label"><span data-i18n="cardArtSizeLabel">Размер QR</span> <b id="cardart-size-value">35%</b></div>
+                  <input type="range" id="cardart-size-slider" min="8" max="90" value="35">
+                </div>
+                <div class="cardart-control">
+                  <div class="cardart-control-label" data-i18n="cardArtQuickPos">Быстро поставить</div>
+                  <div class="cardart-pos-grid" id="cardart-pos-grid">
+                    <button type="button" data-pos="0,0">↖</button><button type="button" data-pos="1,0">↑</button><button type="button" data-pos="2,0">↗</button>
+                    <button type="button" data-pos="0,1">←</button><button type="button" data-pos="1,1">●</button><button type="button" data-pos="2,1">→</button>
+                    <button type="button" data-pos="0,2">↙</button><button type="button" data-pos="1,2">↓</button><button type="button" data-pos="2,2">↘</button>
+                  </div>
+                </div>
+                <div class="cardart-control">
+                  <label class="cardart-radius-field">
+                    <span class="cardart-control-label"><span data-i18n="cardArtRadiusLabel">Скругление углов места под QR</span> <b id="cardart-radius-value">0%</b></span>
+                    <input type="range" id="cardart-radius-slider" min="0" max="50" value="0">
+                  </label>
+                </div>
+                <label class="segment-check" id="cardart-overlay-row" style="display:none">
+                  <input type="checkbox" id="cardart-overlay-checkbox" checked>
+                  <span data-i18n="cardArtOverlayLabel">Подставлять название бренда поверх картинки (на этой картинке текста ещё нет)</span>
+                </label>
+                <div class="cardart-warn" id="cardart-small-warn" style="display:none" data-i18n="cardArtSmallWarn">QR маловат</div>
+              </div>
+            </div>
+            <p class="hint cardart-drag-hint" data-i18n="cardArtDragHint2">Тяните QR мышкой, за уголки — меняйте размер.</p>
+            <div class="cardart-editor-actions">
+              <button type="button" id="btn-cardart-save" data-i18n="cardArtSave">Сохранить</button>
+              <button type="button" id="btn-cardart-cancel" class="btn-secondary" data-i18n="pinCancel">Отмена</button>
+            </div>
+          </div>
+          <div id="cardart-status" class="hint"></div>
+        </div>
+      </div>
+
+      <!-- ДАННЫЕ -->
+      <div id="settings-modal-data" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="dataManagementHeading">Управление данными</h2>
+          <p class="hint" data-i18n="dataModalHint">Здесь можно выгрузить клиентов в таблицу (CSV), загрузить их из таблицы, восстановить базу из резервной копии или начать с чистого листа. Копия базы создаётся автоматически каждый день.</p>
+          <div class="data-group">
+            <div class="data-group-title" data-i18n="dataGroupTable">📄 Таблица клиентов</div>
+            <div class="data-actions">
+              <button id="btn-export-clients" class="btn-secondary" data-i18n="btnExportClients">Экспортировать клиентов (CSV)</button>
+              <button id="btn-import-clients" class="btn-secondary" data-i18n="btnImportClients">Импортировать клиентов (Excel или CSV)</button>
+              <button id="btn-export-operations" class="btn-secondary" data-i18n="btnExportOperations">Экспорт операций (CSV)</button>
+            </div>
+          </div>
+          <div class="data-group">
+            <div class="data-group-title" data-i18n="dataGroupBackup">💾 Резервные копии</div>
+            <div class="data-actions">
+              <button id="btn-backup-now" class="btn-secondary" data-i18n="btnBackupNow">Сделать резервную копию</button>
+              <button id="btn-backup-open" class="btn-secondary" data-i18n="btnBackupOpen">Открыть папку с копиями</button>
+              <button id="btn-backup-restore" class="btn-secondary" data-i18n="btnBackupRestore">Восстановить из копии…</button>
+              <button id="btn-backup-export" class="btn-secondary" data-i18n="btnBackupExport">Сохранить базу в файл…</button>
+            </div>
+            <div id="backup-status" class="hint backup-status"></div>
+          </div>
+          <div class="data-group cloud-group">
+            <div class="data-group-title" data-i18n="cloudTitle">☁️ Облачная копия</div>
+            <p class="hint" data-i18n="cloudHint">Раз в день программа сама отправляет зашифрованную копию базы на сервер Loya. Сломался или потерялся компьютер — установите Loya на новый, введите тот же ключ подписки и восстановите всё отсюда. Прочитать копию без вашего ключа нельзя.</p>
+            <label class="auto-switch-row"><span class="auto-switch"><input type="checkbox" id="cloud-on"><span></span></span><b data-i18n="cloudOn">Сохранять копию в облако каждый день</b></label>
+            <div class="data-actions">
+              <button id="btn-cloud-now" class="btn-secondary" data-i18n="cloudNow">Сохранить сейчас</button>
+              <button id="btn-cloud-restore" class="btn-secondary" data-i18n="cloudRestore">Восстановить из облака…</button>
+            </div>
+            <div id="cloud-status" class="hint backup-status"></div>
+          </div>
+          <div class="data-group data-group-danger">
+            <div class="data-group-title" data-i18n="dataGroupDanger">⚠️ Опасная зона</div>
+            <p class="hint" data-i18n="dataDangerHint">Эти действия нельзя отменить. Перед ними программа сама сделает резервную копию.</p>
+            <div class="data-actions">
+              <button id="btn-reset-stats" class="btn-danger-outline" data-i18n="btnResetStats">Сбросить всю статистику</button>
+              <button id="btn-reset-all" class="btn-danger-outline" data-i18n="btnResetAll">Сбросить всю базу клиентов</button>
+            </div>
+          </div>
+          <div id="data-actions-status" class="hint"></div>
+        </div>
+      </div>
+
+      <!-- PIN -->
+      <div id="settings-modal-team" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal promo-modal team-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="teamHeading2">👥 Сотрудники и роли</h2>
+          <p class="hint" data-i18n="teamHint"></p>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🔐</span><b data-i18n="teamModeTitle">Вход по PIN</b></div>
+            <p class="hint" data-i18n="teamRolesInfo"></p>
+            <label class="segment-check"><input type="checkbox" id="team-mode-enabled"> <span data-i18n="teamModeEnable">Спрашивать при запуске, кто работает</span></label>
+            <p class="hint team-warn" id="team-mode-needpin" style="display:none" data-i18n="teamModeNeedPin"></p>
+            <label class="nameday-auto-field team-this-pc"><span data-i18n="teamAutolock">Автоблокировка при простое</span>
+              <select id="team-autolock"></select>
+            </label>
+            <div class="team-owner-card" data-owner-only="1">
+              <span class="hint" data-i18n="scOwnerHint">QR-карточка входа есть и у владельца — вход одним сканом.</span>
+              <button type="button" id="btn-owner-card" class="team-btn-primary" data-i18n="scOwnerBtn">🪪 Моя карточка входа</button>
+            </div>
+          </div>
+
+          <div class="promo-section" id="perm-section">
+            <div class="promo-section-head"><span class="promo-ic">🛡</span><b data-i18n="permTitle2">Права сотрудников</b></div>
+            <p class="hint" data-i18n="permHint2">Какие вкладки открывает сотрудник и что может делать на них. Владелец может всё.</p>
+            <div class="perm-roles" id="perm-roles">
+              <button type="button" data-role="cashier" class="active" data-i18n="teamRoleCashier">Кассир</button>
+              <button type="button" data-role="manager" data-owner-only="1" data-i18n="teamRoleManager">Администратор</button>
+            </div>
+            <div class="perm-matrix" id="perm-matrix"></div>
+            <div class="perm-foot">
+              <label class="segment-check"><input type="checkbox" id="perm-staff-theme"> <span data-i18n="permTheme">Сотрудники могут выбрать свой цвет программы (меняется только у них)</span></label>
+              <span class="hint" id="perm-status"></span>
+            </div>
+          </div>
+
+          <div class="team-net-link"><span data-i18n="teamNetMoved">Точки, эта точка и общая база теперь в разделе «Сеть точек».</span> <button type="button" class="btn-secondary" id="btn-team-open-net" data-i18n="teamNetOpen">🏪 Открыть «Сеть точек»</button></div>
+          <div class="promo-section" style="display:none" id="team-locations-section">
+            <div class="promo-section-head"><span class="promo-ic">📍</span><b data-i18n="teamLocationsTitle">Точки продаж</b></div>
+            <p class="hint" data-i18n="teamLocationsHint"></p>
+            <div class="team-list" id="team-locations-list"></div>
+            <div class="team-add-row">
+              <input type="text" id="team-location-name" data-i18n-placeholder="teamLocationPh" placeholder="Название точки">
+              <button type="button" id="btn-team-location-add" class="team-btn-primary" data-i18n="teamAdd">Добавить</button>
+            </div>
+            <label class="nameday-auto-field team-this-pc"><span data-i18n="teamThisComputer">Этот компьютер работает в точке</span>
+              <select id="team-current-location"></select>
+            </label>
+          </div>
+
+          <div class="promo-section">
+            <div class="promo-section-head"><span class="promo-ic">🧑‍💼</span><b data-i18n="teamStaffTitle">Сотрудники</b></div>
+            <div class="team-list" id="team-staff-list"></div>
+            <div class="team-add-grid">
+              <label class="nameday-auto-field"><span data-i18n="teamStaffName">Имя</span><input type="text" id="team-staff-name"></label>
+              <label class="nameday-auto-field"><span data-i18n="teamStaffRole">Роль</span>
+                <select id="team-staff-role"><option value="cashier" data-i18n="teamRoleCashier">Кассир</option><option value="manager" data-i18n="teamRoleManager">Администратор</option></select>
+              </label>
+              <label class="nameday-auto-field"><span data-i18n="teamStaffPin">PIN</span><input type="password" id="team-staff-pin" inputmode="numeric" maxlength="8" autocomplete="new-password"></label>
+              <label class="nameday-auto-field"><span data-i18n="teamStaffLocation">Точка</span><select id="team-staff-location"></select></label>
+              <label class="nameday-auto-field"><span data-i18n="teamStaffEmail">Email (для карточки входа)</span><input type="email" id="team-staff-email" autocomplete="off"></label>
+              <button type="button" id="btn-team-staff-add" class="team-btn-primary" data-i18n="teamAdd">Добавить</button>
+            </div>
+            <div id="team-status" class="hint"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-modal-pin" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="pinHeading">🔒 Защита PIN-кодом</h2>
+          <p class="hint" data-i18n="pinHint">Если задать PIN-код, он будет спрашиваться перед удалением клиента, сбросом статистики и сбросом всей базы — защита от случайных нажатий или посторонних за компьютером.</p>
+          <div class="selfreg-settings-box">
+            <label class="nameday-auto-field"><span id="pin-status-label" data-i18n="pinNotSet">PIN не установлен</span></label>
+            <input type="password" id="pin-new-input" inputmode="numeric" maxlength="8" data-i18n-placeholder="pinNewPlaceholder" placeholder="Новый PIN (4–8 цифр)">
+            <button id="btn-pin-save" data-i18n="btnApply">Применить</button>
+            <button id="btn-pin-remove" class="btn-danger-outline" data-i18n="btnPinRemove">Убрать PIN</button>
+          </div>
+          <div id="pin-settings-status" class="hint"></div>
+        </div>
+      </div>
+
+      <!-- ИСТОРИЯ РАССЫЛОК -->
+      <div id="settings-modal-sendhistory" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="sendHistoryHeading">📊 История рассылок</h2>
+          <p class="hint" data-i18n="sendHistoryHint">Последние 100 отправок — и одиночные карты клиентам, и массовые рассылки, по всем каналам.</p>
+          <div id="send-history-list" class="send-history-list"></div>
+        </div>
+      </div>
+
+      <!-- ПОДДЕРЖКА -->
+      <div id="settings-modal-support" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="supportHeading">🆘 Поддержка</h2>
+          <p class="hint" data-i18n="supportHint">Нашли проблему или есть предложение? Напишите нам — откроется ваш почтовый клиент с уже заполненным письмом, останется только отправить.</p>
+          <form id="support-form" class="card-form">
+            <label><span data-i18n="supportTypeLabel">Тип обращения</span>
+              <select id="support-type">
+                <option value="problem" data-i18n="supportTypeProblem">Проблема</option>
+                <option value="suggestion" data-i18n="supportTypeSuggestion">Предложение</option>
+                <option value="question" data-i18n="supportTypeQuestion">Вопрос</option>
+                <option value="other" data-i18n="supportTypeOther">Другое</option>
+              </select>
+            </label>
+            <label><span data-i18n="supportSubjectLabel">Тема</span>
+              <input type="text" id="support-subject" required>
+            </label>
+            <label><span data-i18n="supportDescriptionLabel">Описание</span>
+              <textarea id="support-description" rows="5" required></textarea>
+            </label>
+            <label><span data-i18n="supportPriorityLabel">Приоритет</span>
+              <select id="support-priority">
+                <option value="low" data-i18n="supportPriorityLow">Низкий</option>
+                <option value="normal" selected data-i18n="supportPriorityNormal">Обычный</option>
+                <option value="high" data-i18n="supportPriorityHigh">Высокий</option>
+              </select>
+            </label>
+            <button type="submit" data-i18n="btnSupportSend">Написать в поддержку</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ОБНОВЛЕНИЯ -->
+      <div id="settings-modal-updates" class="modal-overlay settings-modal-overlay" style="display:none">
+        <div class="modal settings-modal">
+          <button class="modal-close settings-modal-close">×</button>
+          <h2 data-i18n="updatesHeading">🔄 Обновления</h2>
+          <p class="hint" data-i18n="updatesHint">Приложение само проверяет и скачивает обновления в фоне — раз при запуске и потом каждые 6 часов. Здесь можно проверить вручную.</p>
+
+          <div class="updates-current-row">
+            <span data-i18n="updatesCurrentVersionLabel">Установленная версия:</span>
+            <b id="updates-current-version">—</b>
+          </div>
+
+          <div class="tray-setting">
+            <label class="segment-check"><input type="checkbox" id="set-close-to-tray"> <span data-i18n="traySetting">Крестик сворачивает программу в трей (значок у часов)</span></label>
+            <p class="hint" data-i18n="traySettingHint">Сканер, регистрация клиентов и автоматические рассылки продолжают работать. Полностью закрыть — правый щелчок по значку Loya → «Выйти из Loya».</p>
+          </div>
+
+          <div class="updates-btn-row">
+            <button id="btn-updates-check" data-i18n="btnCheckUpdates">🔍 Проверить обновления</button>
+            <button id="btn-updates-history" type="button" class="btn-secondary" data-i18n="wnHistoryBtn">📜 История изменений</button>
+          </div>
+
+          <div id="updates-status-box" class="updates-status-box" style="display:none">
+            <div id="updates-status-text"></div>
+            <div id="updates-progress-track" class="updates-progress-track" style="display:none">
+              <div id="updates-progress-fill" class="updates-progress-fill" style="width:0%"></div>
+            </div>
+            <button id="btn-updates-install" style="display:none">🔄 <span data-i18n="btnUpdateInstall">Перезапустить и установить</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Окна раздела «Товары» (вне разделов, чтобы открываться с любой страницы) -->
+      <div id="inv-product-modal" class="modal-overlay" style="display:none">
+        <div class="modal settings-modal inv-modal">
+          <button class="modal-close" data-close="inv-product-modal">×</button>
+          <h2 id="inv-product-title" data-i18n="invProductNew">Новый товар</h2>
+          <div class="inv-form">
+            <label class="nameday-auto-field inv-wide"><span data-i18n="invName">Название</span><input type="text" id="invp-name" maxlength="120"></label>
+            <label class="nameday-auto-field"><span data-i18n="invSku">Артикул</span><input type="text" id="invp-sku" maxlength="60"></label>
+            <label class="nameday-auto-field"><span data-i18n="invBarcode">Штрихкод</span><input type="text" id="invp-barcode" maxlength="60"></label>
+            <label class="nameday-auto-field"><span data-i18n="invCategory">Категория</span><input type="text" id="invp-category" maxlength="60" list="inv-cat-list"><datalist id="inv-cat-list"></datalist></label>
+            <label class="nameday-auto-field"><span data-i18n="invUnit">Единица</span><select id="invp-unit"></select></label>
+            <label class="nameday-auto-field"><span data-i18n="invPrice">Цена продажи</span><input type="text" inputmode="decimal" id="invp-price"></label>
+            <label class="nameday-auto-field"><span data-i18n="invCost">Закупочная цена</span><input type="text" inputmode="decimal" id="invp-cost"></label>
+            <label class="nameday-auto-field" id="invp-stock-wrap"><span data-i18n="invStockStart">Остаток сейчас</span><input type="text" inputmode="decimal" id="invp-stock"></label>
+            <label class="nameday-auto-field"><span data-i18n="invMinStock">Предупредить, когда меньше</span><input type="text" inputmode="decimal" id="invp-min"></label>
+          </div>
+          <div class="promo-actions inv-actions"><button type="button" id="btn-invp-save" data-i18n="promoSave">Сохранить</button><button type="button" id="btn-invp-delete" class="btn-danger-outline" data-i18n="invDelete">Удалить товар</button><span id="invp-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="inv-move-modal" class="modal-overlay" style="display:none">
+        <div class="modal settings-modal inv-modal">
+          <button class="modal-close" data-close="inv-move-modal">×</button>
+          <h2 id="inv-move-title"></h2>
+          <p class="hint" id="inv-move-current"></p>
+          <div class="inv-kinds" id="inv-move-kinds"></div>
+          <div class="inv-form">
+            <label class="nameday-auto-field"><span id="inv-move-qty-label"></span><input type="text" inputmode="decimal" id="inv-move-qty"></label>
+            <label class="nameday-auto-field" id="inv-move-price-wrap"><span data-i18n="invCost">Закупочная цена</span><input type="text" inputmode="decimal" id="inv-move-price"></label>
+            <label class="nameday-auto-field inv-wide"><span data-i18n="invNote">Заметка</span><input type="text" id="inv-move-note" maxlength="200"></label>
+          </div>
+          <div class="promo-actions inv-actions"><button type="button" id="btn-inv-move-save" data-i18n="promoSave">Сохранить</button><span id="inv-move-status" class="hint"></span></div>
+        </div>
+      </div>
+
+      <div id="inv-export-modal" class="modal-overlay" style="display:none">
+        <div class="modal settings-modal inv-modal">
+          <button class="modal-close" data-close="inv-export-modal">×</button>
+          <h2 data-i18n="invExport">Выгрузка для бухгалтерии</h2>
+          <p class="hint" data-i18n="invExportHint">Три таблицы CSV: товары с остатками, движения по складу и чеки. Открываются в Excel и загружаются в Pohoda, Money S3, 1С/BAS и другие программы учёта.</p>
+          <div class="inv-kinds" id="inv-export-period"></div>
+          <div class="promo-actions inv-actions"><button type="button" id="btn-inv-export-go" data-i18n="invExportGo">Выбрать папку и сохранить</button><span id="inv-export-status" class="hint"></span></div>
+        </div>
+      </div>
+
+
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО КАРТЫ -->
+<!-- ПЕЧАТЬ КАРТ -->
+<div id="print-modal" class="modal-overlay settings-modal-overlay" style="display:none">
+  <div class="modal settings-modal promo-modal print-modal">
+    <button class="modal-close settings-modal-close" id="btn-print-close">×</button>
+    <h2 data-i18n="printHeading">🖨 Печать карт и наклеек</h2>
+    <p class="hint" data-i18n="printHint"></p>
+    <div class="promo-section">
+      <div class="print-options" id="print-type">
+        <label class="print-opt"><input type="radio" name="print-type" value="cards" checked><span data-i18n="printTypeCards">Карты</span></label>
+        <label class="print-opt"><input type="radio" name="print-type" value="stickers"><span data-i18n="printTypeStickers">Наклейки</span></label>
+      </div>
+    </div>
+    <div class="promo-section">
+      <div class="print-options" id="print-scope">
+        <label class="print-opt"><input type="radio" name="print-scope" value="all" checked><span data-i18n="printScopeAll">Все клиенты</span></label>
+        <label class="print-opt"><input type="radio" name="print-scope" value="list"><span data-i18n="printScopeList">Текущий список</span></label>
+        <label class="print-opt" id="print-scope-client-opt" style="display:none"><input type="radio" name="print-scope" value="client"><span data-i18n="printScopeClient">Этот клиент</span></label>
+      </div>
+      <div class="print-count" id="print-count"></div>
+    </div>
+    <div class="promo-actions">
+      <button type="button" id="btn-print-do" class="team-btn-primary" data-i18n="printDo">🖨 Печать</button>
+      <button type="button" id="btn-print-pdf" class="btn-secondary" data-i18n="printPdf">📄 Сохранить PDF</button>
+      <span id="print-status" class="hint"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ПРЕЗЕНТАЦИЯ ПРИ ПЕРВОМ ЗАПУСКЕ -->
+<div id="tour-overlay" style="display:none">
+  <div class="tour-box">
+    <button type="button" class="tour-skip" id="btn-tour-skip" data-i18n="tourSkip">Пропустить</button>
+    <div class="tour-art" id="tour-art"></div>
+    <h2 id="tour-title"></h2>
+    <p id="tour-desc"></p>
+    <div class="tour-dots" id="tour-dots"></div>
+    <button type="button" class="tour-next" id="btn-tour-next"></button>
+  </div>
+</div>
+
+<!-- ЧТО НОВОГО -->
+<div id="whats-new-overlay" style="display:none">
+  <div class="wn-box" role="dialog" aria-modal="true">
+    <div class="wn-hero"><span class="wn-sparkle">✨</span><h2 id="wn-title"></h2><div class="wn-sub" id="wn-sub"></div></div>
+    <div class="wn-body" id="wn-body"></div>
+    <button type="button" id="btn-wn-close" class="wn-btn"></button>
+  </div>
+</div>
+
+<!-- ЭКРАН ВХОДА СОТРУДНИКА -->
+<div id="staff-login-overlay" style="display:none">
+  <div class="login-box">
+    <div class="login-brand" id="login-brand"></div>
+    <h1 data-i18n="loginTitle">Кто сейчас работает?</h1>
+    <div class="login-code" id="login-code">
+      <div class="login-code-row">
+        <input type="text" id="login-code-input" inputmode="numeric" autocomplete="off" spellcheck="false" data-i18n-placeholder="loginCodePh" placeholder="Код с карточки сотрудника">
+        <button type="button" id="btn-login-code" data-i18n="loginEnter">Войти</button>
+        <button type="button" id="btn-login-camera" class="login-cam" data-i18n-title="loginCamera" title="Камера">📷</button>
+      </div>
+      <video id="login-video" playsinline muted style="display:none"></video>
+      <div class="login-code-hint" data-i18n="loginCodeHint">Отсканируйте свою карточку сканером, камерой или телефоном — или выберите себя ниже и введите PIN.</div>
+      <div class="login-error" id="login-code-error"></div>
+    </div>
+    <div class="login-users" id="login-users"></div>
+    <div class="login-pin" id="login-pin" style="display:none">
+      <div class="login-pin-for" id="login-pin-for"></div>
+      <input type="password" id="login-pin-input" inputmode="numeric" maxlength="8" autocomplete="off">
+      <div class="login-error" id="login-error"></div>
+      <button type="button" id="btn-login-enter" data-i18n="loginEnter">Войти</button>
+      <button type="button" id="btn-login-back" class="login-back" data-i18n="loginBack">← Другой пользователь</button>
+    </div>
+  </div>
+</div>
+
+<div id="card-modal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО PIN-КОДА -->
+<div id="pin-modal" class="modal-overlay" style="display:none">
+  <div class="modal pin-modal">
+    <h2 data-i18n="pinEnterHeading">Введите PIN-код</h2>
+    <input type="password" id="pin-input" inputmode="numeric" maxlength="8" autocomplete="off">
+    <div id="pin-error" class="hint pin-error"></div>
+    <div class="actions">
+      <button id="pin-submit" data-i18n="pinConfirm">Подтвердить</button>
+      <button id="pin-cancel" class="btn-secondary" type="button" data-i18n="pinCancel">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ПОЛНОЙ АКТИВНОСТИ -->
+<div id="activity-modal" class="modal-overlay" style="display:none">
+  <div class="modal activity-modal">
+    <button class="modal-close" id="activity-modal-close">×</button>
+    <h2 data-i18n="recentActivityHeading">Последняя активность</h2>
+    <div id="activity-modal-list" class="list activity-modal-list"></div>
+  </div>
+</div>
+
+<!-- ТОСТЫ ОТМЕНЫ ДЕЙСТВИЙ -->
+<div id="undo-toast-container" class="undo-toast-container"></div>
+
+<script src="demo.js"></script>
+<script src="loya-core.js"></script>
+<script src="preload.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="icons.js"></script>
+<script src="card-model.js"></script>
+<script src="msg-scenes.js"></script>
+<script src="emoji.js"></script>
+<script src="i18n.js"></script>
+<script src="niches.js"></script>
+<script src="cat-card.js"></script>
+<script src="nameday-calendar.js"></script>
+<script src="changelog.js"></script>
+<script src="manual.js"></script>
+
+<div id="lx-mytheme" class="lx-modal" style="display:none"><div class="lx-box">
+  <div class="lx-head"><b data-i18n="myThemeTitle">Мой цвет программы</b><button type="button" class="lx-close" data-close="lx-mytheme">✕</button></div>
+  <p class="hint" data-i18n="myThemeHint">Меняется только у вас: на афише, картах клиентов и у коллег всё остаётся как у заведения.</p>
+  <div class="mytheme-grid" id="mytheme-grid"></div>
+</div></div>
+<div id="lx-staffcard" class="lx-modal" style="display:none"><div class="lx-box lx-staffcard">
+  <div class="lx-head"><b id="sc-title" data-i18n="scTitle">Карточка входа</b><button type="button" class="lx-close" data-close="lx-staffcard">✕</button></div>
+  <p class="hint" data-i18n="scHint">Код показывается только сейчас. Сохраните, распечатайте или отправьте карточку. Новая карточка отменяет старую.</p>
+  <img id="sc-img" class="sc-img" alt="">
+  <div class="sc-mail-row">
+    <input type="email" id="sc-email" data-i18n-placeholder="scEmailPh" placeholder="Email сотрудника" autocomplete="off">
+    <button type="button" id="sc-send" data-i18n="scSend">✉️ Отправить на почту</button>
+  </div>
+  <div class="lx-actions">
+    <button type="button" class="btn-secondary" id="sc-print" data-i18n="scPrint">🖨 Печать</button>
+    <button type="button" class="btn-secondary" id="sc-save" data-i18n="scSave">⬇️ Сохранить картинку</button>
+  </div>
+  <div class="hint" id="sc-status" role="status"></div>
+</div></div>
+<div id="lx-restore" class="lx-modal" style="display:none"><div class="lx-box">
+  <div class="lx-head"><b data-i18n="restoreTitle">Восстановление из копии</b><button type="button" class="lx-close" data-close="lx-restore">✕</button></div>
+  <p class="hint" data-i18n="restoreHint">Перед восстановлением программа сама сохранит копию текущего состояния — восстановление можно будет отменить.</p>
+  <div id="lx-restore-list" class="lx-list"></div>
+  <button type="button" id="lx-restore-file" class="btn-secondary" data-i18n="restorePickFile">Выбрать файл на компьютере…</button>
+</div></div>
+<div id="lx-import" class="lx-modal" style="display:none"><div class="lx-box lx-wide">
+  <div class="lx-head"><b data-i18n="importTitle">Импорт клиентов</b><button type="button" class="lx-close" data-close="lx-import">✕</button></div>
+  <div id="lx-import-body"></div>
+</div></div>
+<div id="lx-optout" class="lx-modal" style="display:none"><div class="lx-box">
+  <div class="lx-head"><b data-i18n="optoutTitle">Отписались и исключены</b><button type="button" class="lx-close" data-close="lx-optout">✕</button></div>
+  <div id="lx-optout-list" class="lx-list"></div>
+</div></div>
+
+<div id="lx-setup" class="lx-modal" style="display:none"><div class="lx-box lx-setup-box">
+  <div class="lx-head"><b id="ws-title"></b><button type="button" class="lx-close" id="ws-close">✕</button></div>
+  <div class="ws-progress"><i id="ws-bar"></i></div>
+  <div id="ws-body"></div>
+</div></div>
+
+<div id="lx-net" class="lx-modal" style="display:none"><div class="lx-box lx-net-box">
+  <div class="lx-head"><b data-i18n="netTitle">Сеть точек</b><button type="button" class="lx-close" data-close="lx-net">✕</button></div>
+  <div id="lx-net-body"></div>
+</div></div>
+
+<div id="lx-join" class="lx-modal" style="display:none"><div class="lx-box lx-join-box">
+  <div class="lx-head"><b id="join-title" data-i18n="joinTitle">Ключ уже работает на другом устройстве</b><button type="button" class="lx-close" id="join-close">✕</button></div>
+  <div class="ws-progress"><i id="join-bar"></i></div>
+  <div id="lx-join-body"></div>
+</div></div>
+
+<div id="lx-sync" class="lx-modal" style="display:none"><div class="lx-box">
+  <div class="lx-head"><b data-i18n="syncTitle">Общая база точек</b><button type="button" class="lx-close" data-close="lx-sync">✕</button></div>
+  <div id="lx-sync-body"></div>
+</div></div>
+
+<div id="lx-recent" class="lx-modal" style="display:none"><div class="lx-box">
+  <div class="lx-head"><b data-i18n="recentTitle">Новые клиенты</b><button type="button" class="lx-close" data-close="lx-recent">✕</button></div>
+  <div class="recent-tabs" id="recent-tabs"></div>
+  <div id="lx-recent-list" class="lx-list"></div>
+</div></div>
+<div id="lx-editclient" class="lx-modal" style="display:none"><div class="lx-box lx-edit-client">
+  <div class="lx-head"><b id="ec-title"></b><button type="button" class="lx-close" data-close="lx-editclient">✕</button></div>
+  <div id="ec-body" class="ec-body client-edit-box"></div>
+</div></div>
+<div id="lx-cpreview" class="lx-modal" style="display:none"><div class="lx-box lx-cpreview-box">
+  <div class="lx-head"><b data-i18n="cpPreviewTitle">Так письмо увидит клиент</b><button type="button" class="lx-close" data-close="lx-cpreview">✕</button></div>
+  <div id="cp-preview-body"></div>
+</div></div>
+<div id="lx-region" class="lx-modal" style="display:none"><div class="lx-box lx-region-box">
+  <div class="lx-head"><b data-i18n="regionCheckTitle">Проверьте страну и валюту</b><button type="button" class="lx-close" data-close="lx-region">✕</button></div>
+  <p class="hint" data-i18n="regionCheckHint">Новое в Loya: страна и валюта заведения. От них зависят суммы на картах, праздники и подсказки.</p>
+  <div class="region-box" id="lx-region-box"></div>
+  <div class="lx-actions"><button type="button" id="lx-region-save" data-i18n="btnSave">Сохранить</button></div>
+</div></div>
+<div id="lx-imged" class="lx-modal" style="display:none"><div class="lx-box lx-imged-box">
+  <div class="lx-head"><b id="ie-title"></b><button type="button" class="lx-close" id="ie-x">✕</button></div>
+  <div class="ie-stage" id="ie-stage"><canvas id="ie-canvas" tabindex="0"></canvas></div>
+  <p class="hint ie-hint" data-i18n="ieHint">Перетаскивайте картинку мышкой. Колесо мыши или ползунок — размер.</p>
+  <div class="ie-tools">
+    <label class="ie-zoom"><span class="ie-zoom-ic">−</span><input type="range" id="ie-zoom" min="0" max="1000" value="500"><span class="ie-zoom-ic">+</span></label>
+    <div class="ie-btns">
+      <button type="button" class="ie-btn" id="ie-rotl" data-i18n-title="ieRotL" title="Повернуть влево">⟲</button>
+      <button type="button" class="ie-btn" id="ie-rotr" data-i18n-title="ieRotR" title="Повернуть вправо">⟳</button>
+      <button type="button" class="ie-btn" id="ie-flip" data-i18n-title="ieFlip" title="Отразить">⇋</button>
+      <button type="button" class="ie-btn ie-txt" id="ie-fit" data-i18n="ieFit">Вписать целиком</button>
+      <button type="button" class="ie-btn ie-txt" id="ie-fill" data-i18n="ieFill">Заполнить</button>
+      <button type="button" class="ie-btn ie-txt" id="ie-center" data-i18n="ieCenter">По центру</button>
+    </div>
+    <div class="ie-row">
+      <div class="ie-bg" id="ie-bg-row"><span data-i18n="ieBg">Фон</span><span id="ie-bg-chips" class="ie-bg-chips"></span></div>
+      <label class="ie-bright"><span data-i18n="ieBright">Яркость</span><input type="range" id="ie-bright" min="60" max="140" value="100"></label>
+    </div>
+  </div>
+  <div class="lx-actions"><button type="button" class="btn-secondary" id="ie-cancel" data-i18n="btnCancelEdit">Отмена</button><button type="button" id="ie-ok" data-i18n="ieApply">Готово</button></div>
+</div></div>
+<script src="renderer.js"></script>
+<script src="grow-ui.js"></script>
+</body>
+</html>

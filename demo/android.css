@@ -1,0 +1,21 @@
+/* Loya для Android: всё как на ПК, кроме того, чего на планшете/телефоне нет физически. */
+/* Телефон-сканер по Wi-Fi не нужен — сканирует сам планшет (камера, USB/Bluetooth-сканер). */
+.platform-android .settings-tile[data-modal="settings-modal-pairing"],
+.platform-android .scan-phone-panel,
+.platform-android .selfreg-mode-opt:has(input[value="wifi"]),
+.platform-android #btn-backup-open,
+.platform-android #btn-updates-check,
+.platform-android .tray-setting { display: none !important; }
+/* Сохранение файлов: подсказка вместо «папки» */
+.android-toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 100001;
+  background: #111827; color: #fff; padding: 10px 16px; border-radius: 12px; font: 600 13px/1.4 system-ui, sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,.35); max-width: 90vw; text-align: center; }
+/* Сенсорный экран: крупнее точки редактора и элементы управления */
+@media (pointer: coarse) {
+  .dw-h { width: 18px; height: 18px; }
+  .dw-h-nw, .dw-h-sw, .dw-h-w { left: -16px; } .dw-h-ne, .dw-h-se, .dw-h-e { right: -16px; }
+  .dw-h-nw, .dw-h-n, .dw-h-ne { top: -16px; } .dw-h-sw, .dw-h-s, .dw-h-se { bottom: -16px; }
+  button, .nav-btn, select, input { min-height: 40px; }
+  input[type="checkbox"], input[type="radio"] { min-height: 0; width: 20px; height: 20px; }
+}
+/* Вырез экрана/жестовая полоса */
+.platform-android body { padding-top: env(safe-area-inset-top, 0px); }
