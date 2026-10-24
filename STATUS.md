@@ -107,3 +107,12 @@ Manrope хранится локально (`fonts/`, подключение в �
 ## 2.27 (2026-10-23)
 - `_cardModel.js` (копия `loya-app/src/card-model.js`): значки штампов, раскладка «Фото», сезоны. `_wallet.js` добавляет si/sr/sc/ly/se в ссылку баннера, `_x_wallet_hero.js` их читает; Apple хранит вид в brand (`_walletLinks.js`, `_x_apple_link.js`, `_x_wallet_update.js`), подпись счётчика — в `_apple.js`.
 - `_admin_ed.js`: превью страницы гостя 390×844 с масштабом (pvFit). `style.css`: окно «Путь клиента» в реальных пропорциях. Страницы пересобраны build-seo.
+
+## 2.28 (2026-10-23)
+- `_cardModel.js`: расположения штампов и логотип на баннере. `_wallet.js` → ar/lm/lz/lr/lx/lq/lf + b/dv при логотипе; `_x_wallet_hero.js` берёт логотип из wallet_designs; `_apple.js` — логотип на полосе и без logoText в режиме «только логотип»; `_x_wallet_update.js` — новые ключи вида.
+
+## 2.29 (2026-10-23)
+- `_cardModel.js`: PRESETS/presetLook. `_admin_ed.js` + `_admin_tx4.js`: вид карты и готовые стили на вкладке Wallet. `_clientCfg.js`: поля wallet_* вида карты. `_online.js`: look в профиле и в картах онлайн-регистрации. `_x_online_page.js`: картинка карты на странице /j/ после регистрации. `_wallet.js`: экспорт heroImageUrl.
+
+## Админка 2.30 (2026-10-23)
+- `api/_admin_ui.js` + `api/_admin_tx5.js`, подключены в `_x_admin_page.js`: таблица клиентов с сортировкой/фильтрами/массовыми действиями, вкладка «Аналитика», окна вместо prompt/confirm, уведомления, журнал с поиском и CSV, автообновление, «/» и Esc. Серверные действия не менялись.
