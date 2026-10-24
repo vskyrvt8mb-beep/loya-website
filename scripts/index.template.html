@@ -21,6 +21,7 @@
     <a href="{{HOME}}" class="brand"><img src="/logo-80.webp" alt="Loya" width="40" height="40"><span>Loya</span></a>
     <nav class="nav-links" id="nav-links">
       {{NAV_FOR}}
+      <a href="#builder" data-i18n="navBuilder">Конструктор карты</a>
       <a href="#features" data-i18n="navFeatures">Возможности</a>
       <a href="#tour" data-i18n="navTour">Программа</a>
       <a href="#pricing" data-i18n="navPricing">Цена</a>
@@ -61,7 +62,7 @@
         </div>
         <div class="hero-more"><span data-i18n="heroMore"></span> <a href="/download" data-download data-os="win">Windows</a><i>·</i><a href="/download-android" data-os="android">Android</a><i>·</i><a href="{{STORE_URL}}" target="_blank" rel="noopener" data-os="store">Microsoft Store</a></div>
         <div class="hero-note" data-i18n="heroNote"></div>
-        <button type="button" class="demo-open" data-demo-open><span class="demo-dot" aria-hidden="true"></span><span data-i18n="demoBtn"></span> →</button>
+        <div class="demo-links"><button type="button" class="demo-open" data-demo-open><span class="demo-dot" aria-hidden="true"></span><span data-i18n="demoBtn"></span> →</button><a class="demo-open demo-live" href="/demo/?lang={{LANG}}" target="_blank" rel="noopener"><span class="demo-live-ic" aria-hidden="true">▶</span><span data-i18n="demoLive"></span> →</a></div>
         <div class="trust"><span data-i18n="trust1"></span><span data-i18n="trust2"></span><span data-i18n="trust3"></span><span data-i18n="trust4"></span></div>
       </div>
       <div class="hero-visual" aria-hidden="true">
@@ -95,6 +96,17 @@
       <div class="stat reveal"><b>€<span data-count="0">0</span></b><span data-i18n="stat2"></span></div>
       <div class="stat reveal"><b><span data-count="14">14</span></b><span data-i18n="stat3"></span></div>
       <div class="stat reveal"><b><span data-count="4">4</span></b><span data-i18n="stat4"></span></div>
+    </div>
+  </section>
+
+  <section class="section bld-sec" id="builder">
+    <div class="container">
+      <div class="bld-head center">
+        <div class="eyebrow" data-i18n="bEyebrow"></div>
+        <h2 class="h2 reveal" data-i18n="bTitle"></h2>
+        <p class="lead reveal" data-i18n="bSub"></p>
+      </div>
+      <div class="bld" id="bld" data-bld-v=""></div>
     </div>
   </section>
 

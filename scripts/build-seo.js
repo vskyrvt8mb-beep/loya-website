@@ -412,12 +412,21 @@ for (const lang of LANGS) {
   fs.writeFileSync(path.join(ROOT, 'i18n', `${lang}.js`),
     `// Сгенерировано scripts/build-seo.js из i18n.js — не править руками.\nwindow.SITE_I18N=${JSON.stringify({ [lang]: T[lang] })};\n`);
 }
+// Конструктор карты: модуль карты (тот же, что на сервере и в программе) и builder.js с данными значков
+fs.mkdirSync(path.join(ROOT, 'js'), { recursive: true });
+fs.copyFileSync(path.join(ROOT, 'api', '_cardModel.js'), path.join(ROOT, 'js', 'card-model.js'));
+const bldData = fs.readFileSync(path.join(__dirname, 'builder-data.json'), 'utf8').trim();
+const bldSrc = fs.readFileSync(path.join(ROOT, 'builder.src.js'), 'utf8');
+if (!bldSrc.includes('/*BLD_DATA*/{}')) throw new Error('builder.src.js: нет метки /*BLD_DATA*/{}');
+fs.writeFileSync(path.join(ROOT, 'builder.js'), '// Сгенерировано scripts/build-seo.js из builder.src.js — не править руками.' + String.fromCharCode(10) + bldSrc.replace('/*BLD_DATA*/{}', bldData));
 const cssSrc = fs.readFileSync(path.join(ROOT, 'style.css'), 'utf8');
 const cssMin = cssSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{};:,>])\s*/g, '$1').replace(/;}/g, '}').trim();
 fs.writeFileSync(path.join(ROOT, 'style.min.css'), cssMin + '\n');
 const ver = crypto.createHash('sha1').update(cssMin).digest('hex').slice(0, 8);
 const jsVer = crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'site.js'))).update(fs.readFileSync(path.join(ROOT, 'i18n.js'))).digest('hex').slice(0, 8);
+const bldVer = crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'builder.js'))).update(fs.readFileSync(path.join(ROOT, 'js', 'card-model.js'))).digest('hex').slice(0, 8);
 const assets = (html, lang) => html
+  .replace(/data-bld-v="[^"]*"/g, `data-bld-v="${bldVer}"`)
   .replace(/href="\/style(?:\.min)?\.css(?:\?v=[a-f0-9]+)?"/g, `href="/style.min.css?v=${ver}"`)
   .replace(/src="\/i18n(?:\/[a-z]{2})?\.js(?:\?v=[a-f0-9]+)?"/g, lang ? `src="/i18n/${lang}.js?v=${jsVer}"` : `src="/i18n.js?v=${jsVer}"`)
   .replace(/src="\/site\.js(?:\?v=[a-f0-9]+)?"/g, `src="/site.js?v=${jsVer}"`);
